@@ -3,7 +3,7 @@
     <el-container>
       <el-header>
         <div class="logo">
-          <img src="../assets/logo.png" alt />
+          <img src="@/assets/logo.png" alt />
         </div>
         <el-menu
           :default-active="activeIndex"
@@ -18,7 +18,13 @@
           <el-menu-item route="/robot" index="1">机器人中心</el-menu-item>
           <el-menu-item route="/product" index="2">产品库</el-menu-item>
           <el-menu-item route="/knowledge" index="3">知识库</el-menu-item>
-        </el-menu>.
+        </el-menu>
+        <div class="personInfo">
+          <div class="headerImg">
+            <img src="@/assets/logo.png" alt />
+          </div>
+          <div class="changeSys">系统管理</div>
+        </div>
       </el-header>
       <el-main>
         <router-view />
@@ -80,6 +86,32 @@ export default {
           left: 50%;
           transform: translateX(-50%);
         }
+      }
+    }
+    .personInfo {
+      width: 150px;
+      display: flex;
+      align-items: center;
+      .headerImg {
+        position: relative;
+        img {
+          width: 40px;
+          border-radius: 50%;
+        }
+        &::after {
+          content: "";
+          width: 2px;
+          height:29px;
+          background-color: #fff;
+          position: absolute;
+          right: -10px;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+      .changeSys{
+        color: #fff;
+        padding-left: 20px;
       }
     }
   }

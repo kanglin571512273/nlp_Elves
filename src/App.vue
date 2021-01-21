@@ -1,16 +1,22 @@
 <template>
   <div id="app">
-    <router-view />
+    <Home></Home>
   </div>
 </template>
 
 <script>
-import Vue from "vue";
-import { Button } from "element-ui";
-Vue.use(Button);
+import Home from "@/views/home.vue";
 export default {
-  name: "App"
+  name: "App",
+  components: {
+    Home,
+  },
 };
 </script>
 
-<style lang="less"></style>
+<style lang="less">
+#app,
+.el-container {
+  height: 100%;
+}
+</style>

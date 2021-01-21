@@ -5,10 +5,24 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'HelloWorld',
-    //   component: HelloWorld
-    // }
+    {
+      path: '/',
+      name: 'home',
+      redirect: '/robot',
+      component: () => import( /* webpackChunkName: 'home' */ "@/views/home")
+    }, {
+      path: '/robot',
+      name: 'robot',
+      component: () => import( /* webpackChunkName: 'robot' */ "@/views/robotCenter")
+    }, {
+      path: '/product',
+      name: 'product',
+      component: () => import( /* webpackChunkName: 'product' */ "@/views/productLibrary")
+
+    }, {
+      path: '/knowledge',
+      name: 'knowledge',
+      component: () => import( /* webpackChunkName: 'knowledge' */ "@/views/knowledgeBase")
+    }
   ]
 })

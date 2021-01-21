@@ -3,6 +3,7 @@
     <el-container>
       <el-header>
         <div class="logo">
+          <img src="@/assets/images/logo.png" alt />
         </div>
         <el-menu
           :default-active="activeIndex"
@@ -20,9 +21,12 @@
         </el-menu>
         <div class="personInfo">
           <div class="headerImg">
-            <img src="@/assets/logo.png" alt />
+            <img src="@/assets/images/avtor.png" alt />
           </div>
-          <div class="changeSys">系统管理</div>
+          <div class="changeSys">
+            <img src="@/assets/images/manage.png" alt />
+            <span>系统管理</span>
+          </div>
         </div>
       </el-header>
       <el-main>
@@ -45,14 +49,14 @@ export default {
   name: "home",
   data() {
     return {
-      activeIndex: "1"
+      activeIndex: "1",
     };
   },
   methods: {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -66,21 +70,21 @@ export default {
     background: #2d3291;
     box-sizing: border-box;
     box-shadow: 0px 2px 7px 0px rgba(45, 50, 145, 0.5);
-
     display: flex;
     .logo {
-      width:100px;
-      height:100%;
-      background:url(../assets/images/logo.png) no-repeat;
-      background-size: cover;
+      width: 200px;
+      padding-right: 80px;
       img {
         width: 100%;
-        height: 100%;
-        margin: 0 10px;
+        margin-top: 19px;
       }
     }
     .el-menu {
       flex: 1;
+      .el-menu-item {
+        font-size: 18px;
+        padding: 0 30px;
+      }
       .is-active {
         &::after {
           content: "";
@@ -107,7 +111,7 @@ export default {
         &::after {
           content: "";
           width: 2px;
-          height:29px;
+          height: 29px;
           background-color: #fff;
           position: absolute;
           right: -10px;
@@ -115,9 +119,16 @@ export default {
           transform: translateY(-50%);
         }
       }
-      .changeSys{
+      .changeSys {
         color: #fff;
         padding-left: 20px;
+        text-align: center;
+        img {
+          width: 12px;
+        }
+        span {
+          font-size: 18px;
+        }
       }
     }
   }

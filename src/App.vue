@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Home></Home>
-  </div>
+      </div>
 </template>
 
 <script>
@@ -9,7 +9,7 @@ import Home from "@/views/home.vue";
 export default {
   name: "App",
   components: {
-    Home,
+    Home
   },
 };
 </script>

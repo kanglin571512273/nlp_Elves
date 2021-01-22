@@ -64,7 +64,7 @@ export default {
 // 卡片
 .cartItem {
   width: 32%;
-  height: 162px;
+  height: 185px;
   border: 1px dotted #979797;
   border-radius: 2px;
   display: flex;
@@ -79,8 +79,8 @@ export default {
 
     .leftImg {
       img {
-        width: 108px;
-        height: 80px;
+        width: 142px;
+        height: 108px;
       }
     }
     .rightInfo {
@@ -89,13 +89,15 @@ export default {
       .title {
         display: flex;
         justify-content: space-between;
+        font-size: 14px;
+        color: #333;
       }
       .info {
         font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: #999999;
-        line-height: 30px;
+        line-height: 44px;
       }
     }
   }

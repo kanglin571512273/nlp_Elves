@@ -12,7 +12,7 @@ import "@/assets/css/zxfStyle.css";
 export default {
   name: "App",
   components: {
-    Home,
+    Home
   },
 };
 </script>

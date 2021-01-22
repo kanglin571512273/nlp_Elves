@@ -7,6 +7,12 @@ export default new Router({
   routes: [
     {
       path: '/',
+      name: 'login',
+      redirect: '/login',
+      component: () => import( /* webpackChunkName: 'login' */ "@/views/login")
+    },
+    {
+      path: '/home',
       name: 'home',
       redirect: '/robot',
       component: () => import( /* webpackChunkName: 'home' */ "@/views/home")
@@ -23,11 +29,22 @@ export default new Router({
       path: '/knowledge',
       name: 'knowledge',
       component: () => import( /* webpackChunkName: 'knowledge' */ "@/views/knowledgeBase"),
+      redirect: '/knowledge/myKnowledge',
       children: [
         {
-          path: 'addKnowledge',
-          name: 'addKnowledge',
-          component: () => import( /* webpackChunkName: 'knowledge' */ "@/views/knowledgeBase/addKnowledge"),
+          path: 'myKnowledge',//我的知识库
+          name: 'myKnowledge',
+          component: () => import( /* webpackChunkName: 'myKnowledge' */ "../views/knowledgeBase/myKnowledge.vue"),
+        },
+        {
+          path: 'thirdPartyKnowledge',//第三方知识库
+          name: 'thirdPartyKnowledge',
+          component: () => import( /* webpackChunkName: 'thirdPartyKnowledge' */ "../views/knowledgeBase/thirdPartyKnowledge.vue"),
+        },
+        {
+          path: 'officialKnowledge',//官方知识库
+          name: 'officialKnowledge',
+          component: () => import( /* webpackChunkName: 'officialKnowledge' */ "../views/knowledgeBase/officialKnowledge.vue"),
         }
       ]
     }

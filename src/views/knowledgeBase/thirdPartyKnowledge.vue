@@ -1,7 +1,5 @@
 <template>
-  <div class="addKnowledge">
-    <img src="@/assets/images/1.png" alt />
-  </div>
+  <div class="thirdPartyKnowledge">thirdPartyKnowledge</div>
 </template>
 
 <script>

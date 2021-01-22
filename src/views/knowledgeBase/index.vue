@@ -19,18 +19,19 @@
     </div>
     <!-- 展示区 -->
     <div class="belowMain">
-      <div class="btn">
-        <div class="myBtn myBtn_blue myBtn_middle" @click="$router.push('/addKnowledge')">创建知识库</div>
+      <router-view />
+
+      <!-- <div class="btn">
+        <div class="myBtn myBtn_blue myBtn_middle" @click="$router.push('addKnowledge')">创建知识库</div>
       </div>
       <div class="cartContain">
         <CartItem v-for="item in 4" :key="item"></CartItem>
-      </div>
+      </div>-->
     </div>
   </div>
 </template>
 
 <script>
-import "@/assets/css/zxfStyle.css";
 import Vue from "vue";
 import { Input, Select, Option } from "element-ui";
 Vue.use(Input);
@@ -50,6 +51,9 @@ export default {
   methods: {
     goOther(index) {
       this.activeId = index;
+      let arr = ["myKnowledge", "thirdPartyKnowledge", "officialKnowledge"];
+      // console.log();
+      this.$router.push(`/knowledge/${arr[index - 1]}`);
     },
   },
 };
@@ -90,12 +94,7 @@ export default {
     text-align: left;
     display: flex;
     flex-direction: column;
-    // 卡片容器
-    .cartContain {
-      margin-top: 10px;
-      flex: 1;
-      overflow: auto;
-    }
+    
   }
 }
 </style>

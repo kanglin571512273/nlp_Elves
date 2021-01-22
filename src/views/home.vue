@@ -38,7 +38,15 @@
 
 <script>
 import Vue from "vue";
-import { Button, Container, Header, Main, Menu, MenuItem } from "element-ui";
+import {
+  Button,
+  Container,
+  Header,
+  Main,
+  Menu,
+  MenuItem,
+} from "element-ui";
+// Vue.use(Inport);
 Vue.use(Button);
 Vue.use(Container);
 Vue.use(Header);

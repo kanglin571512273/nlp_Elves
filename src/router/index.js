@@ -22,7 +22,14 @@ export default new Router({
     }, {
       path: '/knowledge',
       name: 'knowledge',
-      component: () => import( /* webpackChunkName: 'knowledge' */ "@/views/knowledgeBase")
+      component: () => import( /* webpackChunkName: 'knowledge' */ "@/views/knowledgeBase"),
+      children: [
+        {
+          path: 'addKnowledge',
+          name: 'addKnowledge',
+          component: () => import( /* webpackChunkName: 'knowledge' */ "@/views/knowledgeBase/addKnowledge"),
+        }
+      ]
     }
   ]
 })

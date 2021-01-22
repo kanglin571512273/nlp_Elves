@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <!-- <Home></Home> -->
     <router-view></router-view>
   </div>
 </template>
@@ -11,6 +12,7 @@ import "@/assets/css/zxfStyle.css";
 export default {
   name: "App",
   components: {
+    Home,
   },
 };
 </script>

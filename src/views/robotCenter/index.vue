@@ -4,7 +4,7 @@
       <div class="create" @click="dialogFormVisible = true">创建机器人</div>
       <el-dialog
         title="创建机器人"
-        width="70%"
+        width="50%"
         :visible.sync="dialogFormVisible"
       >
         <el-card class="box-card">
@@ -106,6 +106,7 @@
 
 <script>
 import Vue from "vue";
+import Confirm from "element-ui";
 import {
   Table,
   TableColumn,
@@ -130,6 +131,8 @@ Vue.use(Upload);
 Vue.use(Form);
 Vue.use(FormItem);
 Vue.use(RadioGroup);
+Vue.use(Confirm);
+
 export default {
   data() {
     return {

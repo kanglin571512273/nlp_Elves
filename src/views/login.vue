@@ -1,34 +1,158 @@
 <template>
   <div class="login-box">
     <div class="bg-class">
-      <div class="bg-font">Welcome</div>
-      <div class="bg-font">Back</div>
-    </div>
-    <div class="login">
-      <div class="right-login">
-        <div class="login-font">登录</div>
-        <div class="login-input">
-         
-        </div>
-      </div>
+      <el-card class="card-class">
+        <div class="bgcenter">
+          <div class="bg-font">Welcome</div>
+          <div class="bg-form">
+            <el-form
+              label-position="top"
+              label-width="80px"
+              :model="formLabelAlign"
+              :rules="rules"
+              ref="formLabelAlign"
+            >
+              <el-form-item label="用户名：" prop="name">
+                <el-input clearable v-model="formLabelAlign.name"></el-input>
+              </el-form-item>
+              <el-form-item label="密码：" prop="password">
+                <el-input
+                  placeholder="请输入密码"
+                  v-model="formLabelAlign.password"
+                  show-password
+                ></el-input>
+              </el-form-item>
+            </el-form>
+          </div>
+          <button class="bg-login" @click="login('formLabelAlign')">
+            登录
+          </button>
+        </div></el-card
+      >
     </div>
   </div>
 </template>
 
 <script>
+import Vue from "vue";
+import {
+  Table,
+  TableColumn,
+  Card,
+  Pagination,
+  Dialog,
+  Input,
+  Radio,
+  Upload,
+  FormItem,
+  RadioGroup,
+  Form
+} from "element-ui";
+Vue.use(Table);
+Vue.use(TableColumn);
+Vue.use(Card);
+Vue.use(Pagination);
+Vue.use(Dialog);
+Vue.use(Input);
+Vue.use(Radio);
+Vue.use(Upload);
+Vue.use(Form);
+Vue.use(FormItem);
+Vue.use(RadioGroup);
 export default {
   data() {
     return {
-      name: "admin",
+      formLabelAlign: {
+        name: "admin",
+        password: ""
+      },
+      rules: {
+        name: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
+        ],
+        password: [{ required: true, message: "请输入密码", trigger: "change" }]
+      }
     };
   },
 
   methods: {
-   
-  },
+    login(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$router.push(`/`);
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    }
+  }
 };
 </script>
 
 <style lang="less" scoped>
+.login-box {
+  width: 100%;
+  height: 100%;
+  background: url(../assets/images/background.png) no-repeat;
+  background-size: cover;
+  .bg-class {
+    width: 50%;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .card-class {
+      width: 40%;
+      height: 44%;
+    }
+    .bgcenter {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      .bg-form {
+        width: 350px;
+      }
+      .bg-font {
+        color: #2d3291;
+        font-weight: bold;
+        font-size: 36px;
+        margin-bottom: 40px;
+      }
+    }
+  }
+}
+.bg-login {
+  width: 350px;
+  height: 55px;
+  line-height: 55px;
+  margin-top: 30px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: bold;
+  background: #2d3291;
+  box-shadow: 0px 0px 5px 0px rgba(15, 33, 108, 0.38);
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+button:focus {
+  border: 0 none;
+  outline: none;
+}
+</style>
 
+<style lang="less">
+.bg-form {
+  .el-form-item__label {
+    width: 100%;
+    font-weight: bold;
+  }
+  .el-form-item__label:before{
+    display:none
+  }
+}
 </style>

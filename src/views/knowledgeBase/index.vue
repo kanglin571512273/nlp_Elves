@@ -94,16 +94,17 @@ export default {
     text-align: left;
     display: flex;
     flex-direction: column;
-    
   }
 }
 </style>
 <style lang="less">
 // 修改element样式
-.el-select .el-input {
-  width: 110px;
-}
-.input-with-select .el-input-group__prepend {
-  background-color: #fff;
+.knowledge {
+  .el-select .el-input {
+    width: 110px;
+  }
+  .input-with-select .el-input-group__prepend {
+    background-color: #fff;
+  }
 }
 </style>

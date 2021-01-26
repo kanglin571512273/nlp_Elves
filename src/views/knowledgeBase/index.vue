@@ -9,6 +9,7 @@
       </div>
       <div class="rightSearch">
         <el-input size="mini" placeholder="请输入内容..." v-model="keyword" class="input-with-select">
+          <img class="search" src="@/assets/images/search.png" alt slot="suffix" />
           <el-select size="mini" v-model="select" slot="prepend" placeholder="请选择内容">
             <el-option label="餐厅名" value="1"></el-option>
             <el-option label="订单号" value="2"></el-option>
@@ -20,23 +21,12 @@
     <!-- 展示区 -->
     <div class="belowMain">
       <router-view />
-
-      <!-- <div class="btn">
-        <div class="myBtn myBtn_blue myBtn_middle" @click="$router.push('addKnowledge')">创建知识库</div>
-      </div>
-      <div class="cartContain">
-        <CartItem v-for="item in 4" :key="item"></CartItem>
-      </div>-->
     </div>
   </div>
 </template>
 
 <script>
-import Vue from "vue";
-import { Input, Select, Option } from "element-ui";
-Vue.use(Input);
-Vue.use(Select);
-Vue.use(Option);
+// import "@/utils/importFile";
 import CartItem from "./components/CartItem";
 
 export default {
@@ -50,9 +40,9 @@ export default {
   },
   methods: {
     goOther(index) {
+      let arr = ["myKnowledge", "officialKnowledge", "thirdPartyKnowledge"];
+      if (this.$route.name == arr[index - 1]) return false;
       this.activeId = index;
-      let arr = ["myKnowledge", "thirdPartyKnowledge", "officialKnowledge"];
-      // console.log();
       this.$router.push(`/knowledge/${arr[index - 1]}`);
     },
   },
@@ -84,6 +74,13 @@ export default {
         }
       }
     }
+    .rightSearch {
+      margin-bottom: 5px;
+      .search {
+        width: 13px;
+        margin: 7px;
+      }
+    }
   }
   // 展示区
   .belowMain {
@@ -99,7 +96,7 @@ export default {
 </style>
 <style lang="less">
 // 修改element样式
-.knowledge {
+.knowleknowledgeBasedge {
   .el-select .el-input {
     width: 110px;
   }

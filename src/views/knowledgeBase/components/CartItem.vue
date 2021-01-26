@@ -7,7 +7,7 @@
       <div class="rightInfo">
         <div class="title">
           <span>农行知识库</span>
-          <div class="myBtn myBtn_success myBtn_plain">已使用</div>
+          <div v-show="$route.name == 'myKnowledge'" class="myBtn myBtn_success myBtn_plain">已使用</div>
         </div>
         <div class="info">
           <div class="infoItem ellipsis">
@@ -22,7 +22,7 @@
       </div>
     </div>
     <div class="belowBtn">
-      <div class="btnContain">
+      <div class="btnContain" v-show="$route.name == 'myKnowledge'">
         <div class="littleBtn myBtn_primary">创建内容</div>
         <div class="littleBtn myBtn_waring">发布</div>
         <div class="littleBtn myBtn_info">取消发布</div>
@@ -30,7 +30,8 @@
       <div class="rightIcon">
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            <i class="el-icon-menu"></i>
+            <!-- <i class="el-icon-menu"></i> -->
+            <img class="more" src="@/assets/images/more.png" alt />
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="1">体验</el-dropdown-item>
@@ -45,11 +46,8 @@
 
 <script>
 import "@/assets/css/zxfStyle.css";
-import Vue from "vue";
-import { Dropdown, DropdownItem, DropdownMenu } from "element-ui";
-Vue.use(Dropdown);
-Vue.use(DropdownMenu);
-Vue.use(DropdownItem);
+// import "@/utils/importFile";
+
 export default {
   methods: {
     // 右下角的体验  删除  编辑
@@ -63,7 +61,7 @@ export default {
 <style lang="less" scoped>
 // 卡片
 .cartItem {
-  width: 32%;
+  width: 32.5%;
   height: 185px;
   border: 1px dotted #979797;
   border-radius: 2px;
@@ -106,11 +104,28 @@ export default {
     height: 42px;
     padding: 0 15px;
     box-sizing: border-box;
-    display: flex;
     justify-content: space-between;
     align-items: center;
     .btnContain {
+      margin-top: 11px;
+      float: left;
+    }
+    .rightIcon {
+      margin-top: 11px;
+      float: right;
+      .more {
+        width: 16px;
+      }
     }
   }
+}
+</style>
+<style lang="less">
+.el-dropdown-menu {
+  padding: 0;
+}
+.el-dropdown-menu__item:not(.is-disabled):hover {
+  background-color: #d8d8d8;
+  color: #333333;
 }
 </style>

@@ -8,6 +8,7 @@
 <script>
 import Home from "@/views/home.vue";
 import "@/assets/css/zxfStyle.css";
+import "@/utils/importFile";
 
 export default {
   name: "App",

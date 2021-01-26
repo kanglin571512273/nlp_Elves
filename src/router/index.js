@@ -35,20 +35,26 @@ export default new Router({
             {
               path: 'myKnowledge',//我的知识库
               name: 'myKnowledge',
-              component: () => import( /* webpackChunkName: 'myKnowledge' */ "../views/knowledgeBase/myKnowledge.vue"),
+              component: () => import( /* webpackChunkName: 'myKnowledge' */ "@/views/knowledgeBase/myKnowledge.vue"),
             },
             {
               path: 'thirdPartyKnowledge',//第三方知识库
               name: 'thirdPartyKnowledge',
-              component: () => import( /* webpackChunkName: 'thirdPartyKnowledge' */ "../views/knowledgeBase/thirdPartyKnowledge.vue"),
+              component: () => import( /* webpackChunkName: 'thirdPartyKnowledge' */ "@/views/knowledgeBase/thirdPartyKnowledge.vue"),
             },
             {
               path: 'officialKnowledge',//官方知识库
               name: 'officialKnowledge',
-              component: () => import( /* webpackChunkName: 'officialKnowledge' */ "../views/knowledgeBase/officialKnowledge.vue"),
-            }
+              component: () => import( /* webpackChunkName: 'officialKnowledge' */ "@/views/knowledgeBase/officialKnowledge.vue"),
+            },
+
           ]
-        }
+        },
+        {
+          path: '/createContent',//创建知识库
+          name: 'createContent',
+          component: () => import( /* webpackChunkName: 'officialKnowledge' */ "@/views/knowledgeBase/createContent.vue"),
+        },
       ]
     },
   ]

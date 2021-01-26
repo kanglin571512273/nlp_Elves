@@ -15,9 +15,9 @@
           active-text-color="#fff"
           router
         >
-          <el-menu-item route="/robot" index="1">机器人中心</el-menu-item>
-          <el-menu-item route="/product" index="2">产品库</el-menu-item>
-          <el-menu-item route="/knowledge" index="3">知识库</el-menu-item>
+          <el-menu-item route="/robot" index="robot">机器人中心</el-menu-item>
+          <el-menu-item route="/product" index="product">产品库</el-menu-item>
+          <el-menu-item route="/knowledge" index="knowledge">知识库</el-menu-item>
         </el-menu>
         <div class="personInfo">
           <div class="headerImg">
@@ -25,7 +25,7 @@
           </div>
           <div class="changeSys">
             <img src="@/assets/images/manage.png" alt />
-            <span>系统管理</span>
+            <span @click="goOther()">系统管理</span>
           </div>
         </div>
       </el-header>
@@ -37,32 +37,16 @@
 </template>
 
 <script>
-import Vue from "vue";
-import {
-  Button,
-  Container,
-  Header,
-  Main,
-  Menu,
-  MenuItem,
-} from "element-ui";
-// Vue.use(Inport);
-Vue.use(Button);
-Vue.use(Container);
-Vue.use(Header);
-Vue.use(Main);
-Vue.use(Menu);
-Vue.use(MenuItem);
 export default {
   name: "home",
   data() {
     return {
-      activeIndex: "1",
+      activeIndex: "robot",
     };
   },
   methods: {
     handleSelect(key, keyPath) {
-      console.log(key, keyPath);
+      this.activeIndex = key;
     },
   },
 };

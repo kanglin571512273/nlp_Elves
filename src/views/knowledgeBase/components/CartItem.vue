@@ -34,9 +34,9 @@
             <img class="more" src="@/assets/images/more.png" alt />
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="1">体验</el-dropdown-item>
-            <el-dropdown-item command="2">编辑</el-dropdown-item>
-            <el-dropdown-item command="3">删除</el-dropdown-item>
+            <el-dropdown-item command="1-11">体验</el-dropdown-item>
+            <el-dropdown-item command="2-11">编辑</el-dropdown-item>
+            <el-dropdown-item command="3-11">删除</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import "@/assets/css/zxfStyle.css";
+// import "@/assets/css/zxfStyle.css";
 // import "@/utils/importFile";
 
 export default {
@@ -53,6 +53,15 @@ export default {
     // 右下角的体验  删除  编辑
     handleCommand(index) {
       console.log(index);
+      let first = index.split("-")[0];
+      switch (+first) {
+        case 1:
+          this.$router.push("/chartRoom");
+          break;
+
+        default:
+          break;
+      }
     },
   },
 };
@@ -61,10 +70,10 @@ export default {
 <style lang="less" scoped>
 // 卡片
 .cartItem {
-  width: 32.5%;
+  width: 32%;
   height: 185px;
   border: 1px dotted #979797;
-  border-radius: 2px;
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
   float: left;
@@ -109,6 +118,9 @@ export default {
     .btnContain {
       margin-top: 11px;
       float: left;
+      > div {
+        margin-right: 8px;
+      }
     }
     .rightIcon {
       margin-top: 11px;

@@ -25,7 +25,7 @@
           </div>
           <div class="changeSys">
             <img src="@/assets/images/manage.png" alt />
-            <span @click="goOther()">系统管理</span>
+            <span @click="goOther">系统管理</span>
           </div>
         </div>
       </el-header>
@@ -47,6 +47,9 @@ export default {
   methods: {
     handleSelect(key, keyPath) {
       this.activeIndex = key;
+    },
+    goOther() {
+      this.$router.push("/systemManage");
     },
   },
 };

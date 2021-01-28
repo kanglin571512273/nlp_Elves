@@ -7,52 +7,66 @@
       <CartItem v-for="item in 19" :key="item"></CartItem>
     </div>
     <!-- 添加知识狂弹窗 -->
-    <el-dialog title="创建知识库" :visible.sync="dialogFormVisible">
-      <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="ruleForm"
-        label-width="100px"
-        class="demo-ruleForm"
-      >
-        <el-form-item label="知识库名称" prop="name">
-          <el-input v-model="ruleForm.name" maxlength="20" show-word-limit placeholder="请输入知识库名称"></el-input>
-        </el-form-item>
-        <el-form-item label="知识库说明">
-          <el-input
-            type="textarea"
-            v-model="ruleForm.textarea"
-            maxlength="120"
-            show-word-limit
-            placeholder="请输入知识库名称"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="上传图片">
-          <el-upload
-            class="upload-demo"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :before-remove="beforeRemove"
-            multiple
-            :limit="1"
-            :on-exceed="handleExceed"
-            :file-list="fileList"
-          >
-            <div class="myBtn myBtn_blue" v-show="!fileList.length">上传图片</div>
-          </el-upload>
-        </el-form-item>
-      </el-form>
+    <el-dialog :visible.sync="dialogFormVisible">
+      <div class="diaContainer">
+        <el-form
+          :model="ruleForm"
+          :rules="rules"
+          ref="ruleForm"
+          label-width="100px"
+          class="demo-ruleForm"
+        >
+          <span class="header">创建知识库</span>
+          <el-form-item label="知识库名称" prop="name">
+            <el-input
+              v-model="ruleForm.name"
+              maxlength="20"
+              size="mini"
+              show-word-limit
+              placeholder="请输入知识库名称"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="知识库说明">
+            <el-input
+              type="textarea"
+              size="mini"
+              v-model="ruleForm.textarea"
+              maxlength="120"
+              show-word-limit
+              placeholder="请输入知识库名称"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="上传图片">
+            <el-upload
+              size="mini"
+              class="upload-demo"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :before-remove="beforeRemove"
+              multiple
+              :limit="1"
+              :on-exceed="handleExceed"
+              :file-list="fileList"
+            >
+              <div class="myBtn myBtn_blue" v-show="!fileList.length">上传图片</div>
+            </el-upload>
+          </el-form-item>
+        </el-form>
 
-      <div slot="footer" class="dialog-footer">
-        <div class="myBtn littleBtn myBtn_info" @click="resetForm('ruleForm')">取 消</div>
-        <div class="myBtn littleBtn myBtn_blue" @click="submitForm('ruleForm')">立即创建</div>
+        <div slot="footer" class="dialog-footer">
+          <div class="myBtn littleBtn myBtn_info myBtn_middle" @click="resetForm('ruleForm')">取 消</div>
+          <div class="myBtn littleBtn myBtn_blue myBtn_middle" @click="submitForm('ruleForm')">立即创建</div>
+        </div>
       </div>
     </el-dialog>
+    <!-- 聊天框弹框 -->
+    
   </div>
 </template>
 
 <script>
+import "@/assets/css/editElementStyle.css";
 import CartItem from "./components/CartItem";
 import { MessageBox } from "@/utils/importFile";
 export default {
@@ -79,6 +93,7 @@ export default {
           { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
         ],
       },
+      dialogFormVisible1: true,
     };
   },
   methods: {
@@ -132,14 +147,45 @@ export default {
     flex: 1;
     overflow: auto;
     height: 520px;
+    box-shadow: 0px 0px 4px 0px rgba(45, 50, 145, 0.15);
+    border-radius: 6px;
+  }
+  .diaContainer {
+    text-align: left;
+    box-shadow: 0px 0px 4px 0px rgba(45, 50, 145, 0.15);
+    border-radius: 6px;
+    min-height: 475px;
+    padding: 15px;
+    position: relative;
+    .header {
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    .dialog-footer {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+    }
   }
 }
 </style>
 <style  lang="less" >
 .myKnowledge {
-  .el-input .el-input__count,
-  .el-textarea .el-input__count {
-    color: #ff4a00;
+  .el-dialog__header {
+    padding: 0 20px 0px;
+  }
+  .el-dialog__headerbtn {
+    top: 8px;
+  }
+  .el-dialog {
+    margin-top: 9vh !important;
+    width: 85%;
+    .el-form {
+      width: 50%;
+      height: 92%;
+    }
   }
 }
 </style>

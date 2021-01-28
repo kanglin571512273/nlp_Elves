@@ -26,7 +26,7 @@ export default new Router({
           children: [
             {
 
-              path: "overview", //我的知识库
+              path: "overview",
               name: "overview",
               component: () =>
                 import(
@@ -34,7 +34,7 @@ export default new Router({
                 )
             },
             {
-              path: "custom", //我的知识库
+              path: "custom",
               name: "custom",
               component: () =>
                 import(
@@ -78,12 +78,41 @@ export default new Router({
           name: 'createContent',
           component: () => import( /* webpackChunkName: 'officialKnowledge' */ "@/views/knowledgeBase/createContent.vue"),
         },
+        {
+          path: "/systemManage",//系统管理
+          name: "systemManage",
+          component: () =>
+            import(/* webpackChunkName: 'systemManage' */ "@/views/systemManage"),
+          redirect: '/userManage',
+          children: [
+            {
+              path: '/userManage',//用户管理
+              name: 'userManage',
+              component: () => import( /* webpackChunkName: 'userManage' */ "@/views/systemManage/userManage.vue"),
+            },
+            {
+              path: '/joleManage',//角色管理
+              name: 'joleManage',
+              component: () => import( /* webpackChunkName: 'joleManage' */ "@/views/systemManage/joleManage.vue"),
+            },
+            {
+              path: '/authorityManage',//权限管理
+              name: 'authorityManage',
+              component: () => import( /* webpackChunkName: 'authorityManage' */ "@/views/systemManage/authorityManage.vue"),
+            },
+          ]
+        },
+        {
+          path: '/chatRoom',//聊天室
+          name: 'chatRoom',
+          component: () => import( /* webpackChunkName: 'chatRoom' */ "@/components/ChatRoom.vue"),
+        },
       ]
     },
     {
       path: "/login",
       name: "login",
-      component: () => import(/* webpackChunkName: 'login' */ "@/views/login")
+      userManage: () => import(/* webpackChunkName: 'login' */ "@/views/login")
     }
   ]
 });

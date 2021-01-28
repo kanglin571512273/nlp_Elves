@@ -75,7 +75,6 @@ export default {
       }
     }
     .rightSearch {
-      margin-bottom: 5px;
       .search {
         width: 13px;
         margin: 7px;
@@ -84,9 +83,10 @@ export default {
   }
   // 展示区
   .belowMain {
-    border: 1px solid #f0f2f5;
+    // border: 1px solid #f0f2f5;
+    box-shadow: 0px 0px 4px 0px rgba(45, 50, 145, 0.15);
     flex: 1;
-    border-radius: 2px;
+    border-radius: 6px;
     padding: 15px;
     text-align: left;
     display: flex;
@@ -96,12 +96,12 @@ export default {
 </style>
 <style lang="less">
 // 修改element样式
-.knowleknowledgeBasedge {
-  .el-select .el-input {
-    width: 110px;
-  }
-  .input-with-select .el-input-group__prepend {
-    background-color: #fff;
-  }
+// .knowledge {
+.knowledge .el-select .el-input {
+  width: 110px;
 }
+.knowledge .input-with-select .el-input-group__prepend {
+  background-color: #fff;
+}
+// }
 </style>

@@ -2,7 +2,7 @@
   <div class="createContent">
     <!-- 表单操作 -->
     <div class="formContainer">
-      <div class="myBtn myBtn_blue myBtn_plain">
+      <div class="myBtn myBtn_blue myBtn_plain myBtn_plain_blue">
         <img src="@/assets/images/arrow.png" alt />
         返回
       </div>
@@ -61,6 +61,7 @@
           label-position="left"
           :model="basicAttrForm"
           label-width="120px"
+          align="left"
         >
           <el-form-item label="活动名称：">
             <el-input
@@ -90,7 +91,7 @@
             ></el-color-picker>
           </el-form-item>
           <el-form-item label="节点半径：">
-            <el-slider v-model="basicAttrForm.slider" :min="5" :max="10"></el-slider>
+            <el-slider v-model="basicAttrForm.slider" :min="0" :max="100"></el-slider>
           </el-form-item>
         </el-form>
         <!-- 高级属性  -->
@@ -98,6 +99,7 @@
           v-show="activeNav == 2"
           label-position="left"
           :model="advancePropForm"
+          align="left"
           label-width="120px"
         >
           <el-form-item label="关联产品：">
@@ -160,9 +162,12 @@
           >新增</div>
         </div>
         <div slot="footer" class="dialog-footer">
-          <div class="myBtn littleBtn myBtn_info" @click="dialogFormVisible = false">取 消</div>
           <div
-            class="myBtn littleBtn myBtn_blue"
+            class="myBtn littleBtn myBtn_info myBtn_middle"
+            @click="dialogFormVisible = false"
+          >取 消</div>
+          <div
+            class="myBtn littleBtn myBtn_blue myBtn_middle"
             type="primary"
             @click="dialogFormVisible = false"
           >确 定</div>
@@ -174,6 +179,8 @@
 
 <script>
 // import "@/utils/importFile";
+import "@/assets/css/editElementStyle.css";
+
 export default {
   data() {
     return {
@@ -614,8 +621,8 @@ export default {
       }
     }
     .diaContainer {
-      border-radius: 2px;
-      border: 1px solid #f0f2f5;
+      box-shadow: 0px 0px 4px 0px rgba(45, 50, 145, 0.15);
+      border-radius: 6px;
       padding: 15px;
       height: 410px;
       // 颜色选择
@@ -625,6 +632,7 @@ export default {
         width: 204px;
         // padding-top: 10px;
         margin-top: 10px;
+        margin-right: 30px;
         justify-content: space-between;
         .colorItem {
           width: 20px;
@@ -682,6 +690,9 @@ export default {
   }
 }
 .createContent {
+  .el-dialog__header {
+    padding: 0 20px 0px;
+  }
   .el-dialog {
     width: 85%;
     .el-form {

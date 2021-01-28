@@ -21,7 +21,9 @@ import {
     Select,
     Table,
     TableColumn,
+    Tree,
     Upload,
+    Pagination,
 } from "element-ui";
 Vue.use(Input);
 Vue.use(Dropdown);
@@ -44,4 +46,6 @@ Vue.use(Main);
 Vue.use(Menu);
 Vue.use(MenuItem);
 Vue.use(Container);
+Vue.use(Tree);
+Vue.use(Pagination);
 export { MessageBox }

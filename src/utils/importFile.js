@@ -1,29 +1,35 @@
 import Vue from "vue";
 import {
-    Button,
-    ColorPicker,
-    Cascader,
-    Container,
-    Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    Dialog,
-    Form,
-    FormItem,
-    Header,
-    Input,
-    MessageBox,
-    Main,
-    Menu,
-    MenuItem,
-    Slider,
-    Option,
-    Select,
-    Table,
-    TableColumn,
-    Tree,
-    Upload,
-    Pagination,
+  Button,
+  ColorPicker,
+  Cascader,
+  Card,
+  Confirm,
+  Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  Dialog,
+  Form,
+  FormItem,
+  Header,
+  InputNumber,
+  Input,
+  MessageBox,
+  Main,
+  Menu,
+  MenuItem,
+  Option,
+  RadioGroup,
+  Radio,
+  Slider,
+  Select,
+  Switch,
+  Table,
+  TableColumn,
+  Tree,
+  Upload,
+  Pagination,
 } from "element-ui";
 Vue.use(Input);
 Vue.use(Dropdown);
@@ -47,5 +53,10 @@ Vue.use(Menu);
 Vue.use(MenuItem);
 Vue.use(Container);
 Vue.use(Tree);
+Vue.use(Switch);
+Vue.use(Card);
 Vue.use(Pagination);
-export { MessageBox }
+Vue.use(RadioGroup);
+Vue.use(Radio);
+Vue.use(InputNumber);
+export { MessageBox, Confirm };

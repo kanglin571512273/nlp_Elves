@@ -33,6 +33,7 @@
   }
   .digitalID {
     span {
+      color: #333;
       margin-right: 70px;
     }
   }
@@ -44,6 +45,9 @@
   border-radius: 6px;
   img {
     width: 100%;
+    border: 0;
+    display: block;
+    border-radius: 6px;
   }
 }
 </style>

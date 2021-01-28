@@ -50,6 +50,12 @@ export default new Router({
             import(/* webpackChunkName: 'product' */ "@/views/productLibrary")
         },
         {
+          path: "/productcontent",
+          name: "productcontent",
+          component: () =>
+            import(/* webpackChunkName: 'product' */ "@/views/productLibrary/productcontent.vue")
+        },
+        {
           path: "/knowledge",
           name: "knowledge",
           component: () =>
@@ -57,20 +63,29 @@ export default new Router({
           redirect: "/knowledge/myKnowledge",
           children: [
             {
-              path: 'myKnowledge',//我的知识库
-              name: 'myKnowledge',
-              component: () => import( /* webpackChunkName: 'myKnowledge' */ "@/views/knowledgeBase/myKnowledge.vue"),
+              path: "myKnowledge", //我的知识库
+              name: "myKnowledge",
+              component: () =>
+                import(
+                  /* webpackChunkName: 'myKnowledge' */ "@/views/knowledgeBase/myKnowledge.vue"
+                )
             },
             {
-              path: 'thirdPartyKnowledge',//第三方知识库
-              name: 'thirdPartyKnowledge',
-              component: () => import( /* webpackChunkName: 'thirdPartyKnowledge' */ "@/views/knowledgeBase/thirdPartyKnowledge.vue"),
+              path: "thirdPartyKnowledge", //第三方知识库
+              name: "thirdPartyKnowledge",
+              component: () =>
+                import(
+                  /* webpackChunkName: 'thirdPartyKnowledge' */ "@/views/knowledgeBase/thirdPartyKnowledge.vue"
+                )
             },
             {
-              path: 'officialKnowledge',//官方知识库
-              name: 'officialKnowledge',
-              component: () => import( /* webpackChunkName: 'officialKnowledge' */ "@/views/knowledgeBase/officialKnowledge.vue"),
-            },
+              path: "officialKnowledge", //官方知识库
+              name: "officialKnowledge",
+              component: () =>
+                import(
+                  /* webpackChunkName: 'officialKnowledge' */ "@/views/knowledgeBase/officialKnowledge.vue"
+                )
+            }
           ]
         },
         {

@@ -3,11 +3,10 @@
     <div>
       <div class="create" @click="dialogFormVisible = true">创建机器人</div>
       <el-dialog
-        title="创建机器人"
-        width="50%"
+        width="80%"
         :visible.sync="dialogFormVisible"
       >
-        <el-card class="box-card">
+        <el-card class="suffix">
           <div class="input-suffix">
             <el-form
               :model="ruleForm"
@@ -21,6 +20,8 @@
                 <el-input
                   v-model="ruleForm.name"
                   placeholder="请输入机器人名称"
+                  maxlength="20"
+                  show-word-limit
                   clearable
                 ></el-input>
               </el-form-item>
@@ -33,6 +34,7 @@
                   <el-radio v-model="radio" label="2">通用模式</el-radio>
                 </el-radio-group>
               </el-form-item>
+
               <div class="input-suffix">
                 <div class="robotname">上传图片：</div>
                 <div class="radio-box">
@@ -48,9 +50,6 @@
                     :file-list="fileList"
                   >
                     <el-button size="small" type="primary">点击上传</el-button>
-                    <div slot="tip" class="el-upload__tip">
-                      只能上传jpg/png文件，且不超过500kb
-                    </div>
                   </el-upload>
                 </div>
               </div>
@@ -58,10 +57,14 @@
           </div>
         </el-card>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="submitForm('ruleForm')"
-            >确 定</el-button
-          >
+          <div class="submit-box">
+            <div class="create cancel" @click="dialogFormVisible = false">
+              取 消
+            </div>
+            <div class="create " @click="submitForm('ruleForm')">
+              确 定
+            </div>
+          </div>
         </div>
       </el-dialog>
 
@@ -69,7 +72,13 @@
         <el-table :data="tableData" border style="width: 100%">
           <el-table-column prop="serial" label="序号" width="80">
           </el-table-column>
-          <el-table-column prop="name" label="类型"> </el-table-column>
+          <el-table-column prop="name" label="类型">
+            <template slot-scope="scope">
+              <el-button type="text" @click="informationClick">{{
+                scope.row.name
+              }}</el-button>
+            </template>
+          </el-table-column>
           <el-table-column prop="id" label="ID"> </el-table-column>
           <el-table-column prop="date" label="日期"> </el-table-column>
           <el-table-column prop="address" label="地址"> </el-table-column>
@@ -88,51 +97,23 @@
             </template>
           </el-table-column>
         </el-table>
-        <div class="pagination">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="currentPage1"
-            :page-size="100"
-            layout="total, prev, pager, next"
-            :total="1000"
-          >
-          </el-pagination>
-        </div>
       </el-card>
+      <div class="pagination">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page.sync="currentPage1"
+          :page-size="100"
+          layout="total, prev, pager, next"
+          :total="1000"
+        >
+        </el-pagination>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import Vue from "vue";
-import Confirm from "element-ui";
-import {
-  Table,
-  TableColumn,
-  Card,
-  Pagination,
-  Dialog,
-  Input,
-  Radio,
-  Upload,
-  FormItem,
-  RadioGroup,
-  Form
-} from "element-ui";
-Vue.use(Table);
-Vue.use(TableColumn);
-Vue.use(Card);
-Vue.use(Pagination);
-Vue.use(Dialog);
-Vue.use(Input);
-Vue.use(Radio);
-Vue.use(Upload);
-Vue.use(Form);
-Vue.use(FormItem);
-Vue.use(RadioGroup);
-Vue.use(Confirm);
-
 export default {
   data() {
     return {
@@ -155,16 +136,7 @@ export default {
       },
       formLabelWidth: "120px",
       fileList: [
-        {
-          name: "food.jpeg",
-          url:
-            "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
-        },
-        {
-          name: "food2.jpeg",
-          url:
-            "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
-        }
+       
       ],
       tableData: [
         {
@@ -252,6 +224,9 @@ export default {
           return false;
         }
       });
+    },
+    informationClick() {
+      this.$router.push(`/information`);
     }
   }
 };
@@ -267,18 +242,24 @@ export default {
   margin-bottom: 20px;
   border-radius: 4px;
   cursor: pointer;
+  text-align: center;
+}
+.suffix{
+  height:400px
 }
 .edit {
   color: #2d3291;
+  margin: 0 25px;
+  font-weight: 400;
+  font-size: 14px;
 }
 .delete {
   color: #ff4a00;
+  font-weight: 400;
+  margin: 0;
+  font-size: 14px;
 }
-.pagination {
-  width: 500px;
-  float: right;
-  margin: 20px 0;
-}
+
 .input-suffix {
   width: 600px;
   display: flex;
@@ -290,10 +271,34 @@ export default {
   }
   .robotname {
     width: 150px;
-    margin-right: 50px;
+    line-height: 20px;
+    text-align: left;
+    margin-left: 8px;
+    font-size: 14px;
+    color: #606266;
+  }
+  .upload-demo{
     text-align: left;
   }
 }
+.submit-box {
+  display: flex;
+  justify-content: flex-end;
+  .cancel {
+    background-color: #818181;
+    margin-right: 20px;
+  }
+}
+.box-card {
+  height: 530px;
+  position: relative;
+}
+.pagination {
+  width: 500px;
+  float: right;
+  margin: 20px 0;
+}
+
 .radio-box {
   width: 606px;
 }

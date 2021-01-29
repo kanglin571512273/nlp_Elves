@@ -156,20 +156,10 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.fullPath) {
-    // 判断该路由是否需要登录权限
-    next();
-
-    if (localStorage.getItem("token")) {
-      // 通过vuex state获取当前的token是否存在
-      console.log(localStorage.getItem("token"));
-      next();
-    } else {
-      next();
-      // "/login"
-    }
+  if (to.name == 'Login' || localStorage.getItem("token")) {
+    next()
   } else {
-    next();
+    next('/login')
   }
 });
 

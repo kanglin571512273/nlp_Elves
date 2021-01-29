@@ -6,6 +6,11 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
+      path: "/login",
+      name: "login",
+      userManage: () => import(/* webpackChunkName: 'login' */ "@/views/login")
+    },
+    {
       path: "/",
       name: "home",
       redirect: "/robot",
@@ -22,11 +27,11 @@ export default new Router({
           name: "information",
           component: () =>
             import(/* webpackChunkName: 'myKnowledge' */ "@/views/information"),
-          redirect: "/information/overview",
+          redirect: "/overview",
           children: [
             {
 
-              path: "overview",
+              path: "/overview",
               name: "overview",
               component: () =>
                 import(
@@ -34,7 +39,7 @@ export default new Router({
                 )
             },
             {
-              path: "custom",
+              path: "/custom",
               name: "custom",
               component: () =>
                 import(
@@ -60,10 +65,10 @@ export default new Router({
           name: "knowledge",
           component: () =>
             import(/* webpackChunkName: 'knowledge' */ "@/views/knowledgeBase"),
-          redirect: "/knowledge/myKnowledge",
+          redirect: "/myKnowledge",
           children: [
             {
-              path: "myKnowledge", //我的知识库
+              path: "/myKnowledge", //我的知识库
               name: "myKnowledge",
               component: () =>
                 import(
@@ -71,7 +76,7 @@ export default new Router({
                 )
             },
             {
-              path: "thirdPartyKnowledge", //第三方知识库
+              path: "/thirdPartyKnowledge", //第三方知识库
               name: "thirdPartyKnowledge",
               component: () =>
                 import(
@@ -79,7 +84,7 @@ export default new Router({
                 )
             },
             {
-              path: "officialKnowledge", //官方知识库
+              path: "/officialKnowledge", //官方知识库
               name: "officialKnowledge",
               component: () =>
                 import(
@@ -124,10 +129,6 @@ export default new Router({
         },
       ]
     },
-    {
-      path: "/login",
-      name: "login",
-      userManage: () => import(/* webpackChunkName: 'login' */ "@/views/login")
-    }
+
   ]
 });

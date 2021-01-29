@@ -38,12 +38,13 @@ export default {
       activeId: 1,
     };
   },
+
   methods: {
     goOther(index) {
       let arr = ["myKnowledge", "officialKnowledge", "thirdPartyKnowledge"];
       if (this.$route.name == arr[index - 1]) return false;
       this.activeId = index;
-      this.$router.push(`/knowledge/${arr[index - 1]}`);
+      this.$router.push(`/${arr[index - 1]}`);
     },
   },
 };

@@ -3,7 +3,7 @@
   <div class="authorityManage">
     <!-- 展示区  -->
     <div class="mainContainer">
-      <div class="myBtn littleBtn myBtn_blue" @click="dialogFormVisible = true">创建权限</div>
+      <div class="createBtn" @click="dialogFormVisible = true">创建权限</div>
       <el-table :data="tableData" border style="width: 100%" height="91%">
         <el-table-column label="序号" type="index" width="70"></el-table-column>
         <el-table-column prop="date" label="权限名称"></el-table-column>
@@ -40,7 +40,7 @@
           label-width="120px"
           :rules="rules"
           ref="ruleForm"
-          label-position="left"
+          label-position="right"
           align="left"
         >
           <el-form-item label="权限名称：" prop="nickName">
@@ -64,8 +64,8 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <div class="myBtn myBtn_info littleBtn myBtn_middle" @click="resetForm('ruleForm')">取 消</div>
-          <div class="myBtn myBtn_blue littleBtn myBtn_middle" @click="submitForm('ruleForm')">立即创建</div>
+          <div class="myBtn_info diaBtn" @click="resetForm('ruleForm')">取 消</div>
+          <div class="myBtn_blue diaBtn" @click="submitForm('ruleForm')">立即创建</div>
         </div>
       </div>
     </el-dialog>
@@ -73,7 +73,6 @@
 </template>
 
 <script>
-import "@/assets/css/editElementStyle.css";
 export default {
   data() {
     return {

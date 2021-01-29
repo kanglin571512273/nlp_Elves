@@ -15,17 +15,20 @@
           active-text-color="#fff"
           router
         >
-          <el-menu-item route="/robot" index="robot">机器人中心</el-menu-item>
-          <el-menu-item route="/product" index="product">产品库</el-menu-item>
-          <el-menu-item route="/knowledge" index="knowledge">知识库</el-menu-item>
+          <el-menu-item
+            v-for="item in nav"
+            :key="item.path"
+            :route="'/' + item.path"
+            :index="item.path"
+          >{{item.name}}</el-menu-item>
         </el-menu>
         <div class="personInfo">
           <div class="headerImg">
             <img src="@/assets/images/avtor.png" alt />
           </div>
           <div class="changeSys">
-            <img src="@/assets/images/manage.png" alt />
-            <span @click="goOther">系统管理</span>
+            <img :src="imgUrl[systemId]" alt />
+            <span @click="goOther">{{systemName[systemId]}}</span>
           </div>
         </div>
       </el-header>
@@ -42,14 +45,40 @@ export default {
   data() {
     return {
       activeIndex: "robot",
+      systemId: 0,
+      imgUrl: [
+        require("@/assets/images/manage.png"),
+        require("@/assets/images/home.png"),
+      ],
+      systemName: ["系统管理", "返回首页"],
+      nav: [
+        { name: "机器人中心", path: "robot" },
+        { name: "产品库", path: "product" },
+        { name: "知识库", path: "knowledge" },
+      ],
+      tempnav: [
+        { name: "机器人中心", path: "robot" },
+        { name: "产品库", path: "product" },
+        { name: "知识库", path: "knowledge" },
+      ],
+      system: [{ name: "系统管理", path: "systemManage" }],
     };
+  },
+  mounted() {
+    console.log("mounted--->", this.$route);
+    // this.activeIndex = tihs.$route.name;
+    // this.$router.push(this.$route.path);
   },
   methods: {
     handleSelect(key, keyPath) {
       this.activeIndex = key;
     },
     goOther() {
-      this.$router.push("/systemManage");
+      this.systemId = ++this.systemId % 2;
+      this.nav = this.systemId ? this.system : this.tempnav;
+      this.systemId
+        ? this.$router.push("/systemManage")
+        : this.$router.push("/");
     },
   },
 };

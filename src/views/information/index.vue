@@ -52,7 +52,7 @@ export default {
       this.activeId = index;
       let arr = ["", "custom"];
       // console.log();
-      this.$router.push(`/information/${arr[index - 1]}`);
+      this.$router.push(`/${arr[index - 1]}`);
     }
   }
 };

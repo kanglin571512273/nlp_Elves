@@ -191,6 +191,11 @@ export default {
     async editUserState(id, status) {
       const res = await editUserState({ userId: id, status: "1" });
       console.log(res);
+      // this.$axios
+      //   .put("/api/system/user/changeStatus", { userId: id, status: "1" })
+      //   .then((res) => {
+      //     console.log(res);
+      //   });
     },
     // 修改用户状态
     handleEnable(row) {

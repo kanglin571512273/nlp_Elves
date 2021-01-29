@@ -5,20 +5,13 @@
         <div class="adproblem" @click="addstatus = false">新增</div>
         <el-card class="adpros">
           <el-table :data="tableData" border style="width: 100%">
-            <el-table-column prop="serial" label="序号" width="80">
-            </el-table-column>
-            <el-table-column prop="name" label="问题"> </el-table-column>
-            <el-table-column prop="id" label="答案"> </el-table-column>
-            <el-table-column prop="date" label="日期" width="180">
-            </el-table-column>
+            <el-table-column prop="serial" label="序号" width="80"></el-table-column>
+            <el-table-column prop="name" label="问题"></el-table-column>
+            <el-table-column prop="id" label="答案"></el-table-column>
+            <el-table-column prop="date" label="日期" width="180"></el-table-column>
             <el-table-column fixed="right" label="操作" width="210">
               <template slot-scope="scope">
-                <el-button
-                  @click="handleClick(scope.row)"
-                  type="text"
-                  class="edit"
-                  >编辑</el-button
-                >
+                <el-button @click="handleClick(scope.row)" type="text" class="edit">编辑</el-button>
                 <el-button type="text" class="delete">删除</el-button>
               </template>
             </el-table-column>
@@ -61,17 +54,13 @@
                 }"
               >
                 <div class="input_box">
-                  <el-input v-model="domain.value"></el-input
-                  ><el-button @click.prevent="removeDomain(domain)"
-                    >删除</el-button
-                  >
+                  <el-input v-model="domain.value"></el-input>
+                  <el-button @click.prevent="removeDomain(domain)">删除</el-button>
                 </div>
               </el-form-item>
 
               <el-form-item>
-                <el-button @click="addDomain(problemForm.domains.length)"
-                  >新增</el-button
-                >
+                <el-button @click="addDomain(problemForm.domains.length)">新增</el-button>
                 <el-button @click="resetForm('problemForm')">重置</el-button>
               </el-form-item>
             </el-form>
@@ -110,56 +99,49 @@
                 }"
               >
                 <div class="input_box">
-                  <el-input v-model="domain.value"></el-input
-                  ><el-button @click.prevent="removeAnswer(domain)"
-                    >删除</el-button
-                  >
+                  <el-input v-model="domain.value"></el-input>
+                  <el-button @click.prevent="removeAnswer(domain)">删除</el-button>
                 </div>
               </el-form-item>
 
               <el-form-item>
-                <el-button @click="addanswer(answerForm.domains.length)"
-                  >新增</el-button
-                >
-                <el-button @click="resetanswerForm('answerForm')"
-                  >重置</el-button
-                >
+                <el-button @click="addanswer(answerForm.domains.length)">新增</el-button>
+                <el-button @click="resetanswerForm('answerForm')">重置</el-button>
               </el-form-item>
             </el-form>
           </div>
           <div class="placeholder"></div>
           <div class="serve">
             <div class="submit-box">
-              <div class="create cancel" @click="addstatus = true">
-                返回
-              </div>
-              <div class="create " @click="submitForm('problemForm')">
-                提交
-              </div>
+              <div class="create cancel" @click="addstatus = true">返回</div>
+              <div class="create" @click="submitForm('problemForm')">提交</div>
             </div>
             <!-- <el-button type="primary" @click="addstatus = true">返回</el-button>
             <el-button type="primary" @click="submitForm('problemForm')"
               >提交</el-button
-            > -->
+            >-->
           </div>
         </el-card>
       </div>
     </el-dialog>
     <div class="digital-box">
       <div class="title">
-        对话设置 <i class="el-icon-question" style="color:#2D3291;"></i>
+        对话设置
+        <i class="el-icon-question" style="color:#2D3291;"></i>
       </div>
       <div class="types">
         <span class="sapanel">类型：</span>
         <div class="type">
-          <span>自定义回答：</span> <el-switch v-model="reply"></el-switch>
+          <span>自定义回答：</span>
+          <el-switch v-model="reply"></el-switch>
           <div class="setup" @click="setup">设置</div>
         </div>
       </div>
     </div>
     <div class="digital-box">
       <div class="title">
-        推荐反问配置 <i class="el-icon-question" style="color:#2D3291;"></i>
+        推荐反问配置
+        <i class="el-icon-question" style="color:#2D3291;"></i>
       </div>
       <div>
         <span>推荐反问状态：</span>
@@ -167,15 +149,11 @@
       </div>
     </div>
     <div class="digital-box">
-      <div class="title">
-        知识库设置
-      </div>
+      <div class="title">知识库设置</div>
       <div class="configuration" @click="knowledgebase = true">知识库配置</div>
       <div class="card-box">
         <div class="card_items card_list">
-          <span>
-            为机器人添加知识库吧，让它可以更加智能～
-          </span>
+          <span>为机器人添加知识库吧，让它可以更加智能～</span>
         </div>
         <div class="card_items">
           <div class="card_item">
@@ -212,33 +190,16 @@
       <!-- <div class="basefont">知识库配置</div> -->
       <el-card>
         <div class="dialogNav">
-          <div
-            :class="{ navItem: true, active: activeNav == 1 }"
-            @click="changeNav(1)"
-          >
-            我的知识库
-          </div>
-          <div
-            :class="{ navItem: true, active: activeNav == 2 }"
-            @click="changeNav(2)"
-          >
-            官方知识库
-          </div>
-          <div
-            :class="{ navItem: true, active: activeNav == 3 }"
-            @click="changeNav(3)"
-          >
-            第三方知识库
-          </div>
+          <div :class="{ navItem: true, active: activeNav == 1 }" @click="changeNav(1)">我的知识库</div>
+          <div :class="{ navItem: true, active: activeNav == 2 }" @click="changeNav(2)">官方知识库</div>
+          <div :class="{ navItem: true, active: activeNav == 3 }" @click="changeNav(3)">第三方知识库</div>
         </div>
         <div class="diaContainer">
           <!-- 我的知识库  -->
           <div v-show="activeNav == 1">
             <div class="card-box">
               <div class="card_items card_list">
-                <span>
-                  为机器人添加知识库吧，让它可以更加智能～
-                </span>
+                <span>为机器人添加知识库吧，让它可以更加智能～</span>
               </div>
               <div
                 class="card_bases"
@@ -249,10 +210,7 @@
               >
                 <div class="card_item">
                   <div class="round-box">
-                    <div
-                      class="round"
-                      :class="{ roundts: spanIndex.indexOf(item.id) > -1 }"
-                    ></div>
+                    <div class="round" :class="{ roundts: spanIndex.indexOf(item.id) > -1 }"></div>
                   </div>
                   <div class="card_img">
                     <img :src="item.img" alt="img" />
@@ -270,9 +228,7 @@
           <div v-show="activeNav == 2">
             <div class="card-box">
               <div class="card_items card_list">
-                <span>
-                  为机器人添加知识库吧，让它可以更加智能～
-                </span>
+                <span>为机器人添加知识库吧，让它可以更加智能～</span>
               </div>
               <div
                 class="card_bases"
@@ -283,10 +239,7 @@
               >
                 <div class="card_item">
                   <div class="round-box">
-                    <div
-                      class="round"
-                      :class="{ roundts: spanIndex.indexOf(item.id) > -1 }"
-                    ></div>
+                    <div class="round" :class="{ roundts: spanIndex.indexOf(item.id) > -1 }"></div>
                   </div>
                   <div class="card_img">
                     <img :src="item.img" alt="img" />
@@ -304,9 +257,7 @@
           <div class="ruleEditForm scrollbar" v-show="activeNav == 3">
             <div class="card-box">
               <div class="card_items card_list">
-                <span>
-                  为机器人添加知识库吧，让它可以更加智能～
-                </span>
+                <span>为机器人添加知识库吧，让它可以更加智能～</span>
               </div>
               <div
                 class="card_bases"
@@ -317,10 +268,7 @@
               >
                 <div class="card_item">
                   <div class="round-box">
-                    <div
-                      class="round"
-                      :class="{ roundts: spanIndex.indexOf(item.id) > -1 }"
-                    ></div>
+                    <div class="round" :class="{ roundts: spanIndex.indexOf(item.id) > -1 }"></div>
                   </div>
                   <div class="card_img">
                     <img :src="item.img" alt="img" />
@@ -349,25 +297,18 @@
           >
             确 定
           </div>
-        </div> -->
+          </div>-->
         </div>
         <div class="submit-box">
-          <div class="create cancel" @click="knowledgebase = false">
-            取 消
-          </div>
-          <div class="create " @click="know">
-            确 定
-          </div>
+          <div class="create cancel" @click="knowledgebase = false">取 消</div>
+          <div class="create" @click="know">确 定</div>
         </div>
       </el-card>
     </el-dialog>
   </div>
 </template>
 <script>
-import Vue from "vue";
-import { Message } from "element-ui";
-Vue.use(Message);
-Vue.prototype.$message = Message;
+import { Message } from "@/utils/importFile";
 export default {
   data() {
     return {
@@ -389,7 +330,7 @@ export default {
           province: "上海",
           city: "普陀区",
           address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
+          zip: 200333,
         },
         {
           serial: 2,
@@ -399,7 +340,7 @@ export default {
           province: "上海",
           city: "普陀区",
           address: "上海市普陀区金沙江路 1517 弄",
-          zip: 200333
+          zip: 200333,
         },
         {
           serial: 3,
@@ -409,7 +350,7 @@ export default {
           province: "上海",
           city: "普陀区",
           address: "上海市普陀区金沙江路 1519 弄",
-          zip: 200333
+          zip: 200333,
         },
         {
           serial: 4,
@@ -419,24 +360,24 @@ export default {
           id: 67907790,
           city: "普陀区",
           address: "上海市普陀区金沙江路 1516 弄",
-          zip: 200333
-        }
+          zip: 200333,
+        },
       ],
       problemForm: {
         domains: [
           {
-            value: ""
-          }
+            value: "",
+          },
         ],
-        question: ""
+        question: "",
       },
       answerForm: {
         domains: [
           {
-            value: ""
-          }
+            value: "",
+          },
         ],
-        answer: ""
+        answer: "",
       },
       knowledgedata: [
         {
@@ -445,7 +386,7 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png"
+            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png",
         },
         {
           id: 2,
@@ -453,7 +394,7 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2020/10/23/17/52/fox-5679446__340.png"
+            "https://cdn.pixabay.com/photo/2020/10/23/17/52/fox-5679446__340.png",
         },
         {
           id: 3,
@@ -461,7 +402,7 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2019/12/11/01/51/skating-4687221__340.png"
+            "https://cdn.pixabay.com/photo/2019/12/11/01/51/skating-4687221__340.png",
         },
         {
           id: 4,
@@ -469,8 +410,8 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2020/02/17/15/05/market-4856748__340.jpg"
-        }
+            "https://cdn.pixabay.com/photo/2020/02/17/15/05/market-4856748__340.jpg",
+        },
       ],
       officialdata: [
         {
@@ -479,7 +420,7 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png"
+            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png",
         },
         {
           id: 2,
@@ -487,7 +428,7 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2020/11/02/13/15/reindeer-5706627__340.png"
+            "https://cdn.pixabay.com/photo/2020/11/02/13/15/reindeer-5706627__340.png",
         },
         {
           id: 3,
@@ -495,7 +436,7 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png"
+            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png",
         },
         {
           id: 4,
@@ -503,8 +444,8 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2020/09/04/20/09/cartoon-5544856__340.jpg"
-        }
+            "https://cdn.pixabay.com/photo/2020/09/04/20/09/cartoon-5544856__340.jpg",
+        },
       ],
       partydata: [
         {
@@ -513,7 +454,7 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2020/05/04/23/06/plant-5131048__340.jpg"
+            "https://cdn.pixabay.com/photo/2020/05/04/23/06/plant-5131048__340.jpg",
         },
         {
           id: 2,
@@ -521,7 +462,7 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2020/06/26/00/25/summer-5341326__340.jpg"
+            "https://cdn.pixabay.com/photo/2020/06/26/00/25/summer-5341326__340.jpg",
         },
         {
           id: 3,
@@ -529,7 +470,7 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png"
+            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png",
         },
         {
           id: 4,
@@ -537,9 +478,9 @@ export default {
           description: "理财知识库",
           time: "2021-01-13 12:12:12",
           img:
-            "https://cdn.pixabay.com/photo/2020/10/04/09/27/halloween-5625737__340.png"
-        }
-      ]
+            "https://cdn.pixabay.com/photo/2020/10/04/09/27/halloween-5625737__340.png",
+        },
+      ],
     };
   },
   methods: {
@@ -548,7 +489,7 @@ export default {
       this.addstatus = true;
     },
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           alert("submit!");
         } else {
@@ -584,10 +525,10 @@ export default {
       if (e <= 9) {
         this.problemForm.domains.push({
           value: "",
-          key: Date.now()
+          key: Date.now(),
         });
       } else {
-        this.$message.error("最多添加十个问题~");
+        Message.error("最多添加十个问题~");
       }
     },
     // 新增答案
@@ -595,10 +536,10 @@ export default {
       if (e <= 9) {
         this.answerForm.domains.push({
           value: "",
-          key: Date.now()
+          key: Date.now(),
         });
       } else {
-        this.$message.error("最多添加十个答案~");
+        Message.error("最多添加十个答案~");
       }
     },
     changeNav(ind) {
@@ -615,8 +556,8 @@ export default {
     },
     know() {
       this.knowledgebase = false;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="less" scoped>

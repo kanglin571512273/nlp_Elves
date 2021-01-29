@@ -8,11 +8,10 @@ class HttpRequest {
   }
 
   getInsideConfig() {
-    const token = localStorage.getItem('token')
     const config = {
       baseURL: this.baseUrl,
       headers: {
-        Authorization: token
+        Authorization: ''
       }
     }
     return config
@@ -66,24 +65,10 @@ class HttpRequest {
   }
   request(options) {
     const instance = axios.create()
-    const token = localStorage.getItem('token')
-    if (options.url == 'put') {
-      return axios({
-        ...options,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: token
-        }
-      })
-    } else if (options.url == 'delete') {
-
-    } else {
-
-      options = Object.assign(this.getInsideConfig(), options)
-      /*  options = { baseUrl, header, url, methods, data}  */
-      this.interceptors(instance, options.url)
-      return instance(options)
-    }
+    options = Object.assign(this.getInsideConfig(), options)
+    /*  options = { baseUrl, header, url, methods, data}  */
+    this.interceptors(instance, options.url)
+    return instance(options)
   }
 
 }

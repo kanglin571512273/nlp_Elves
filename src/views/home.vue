@@ -64,11 +64,6 @@ export default {
       system: [{ name: "系统管理", path: "systemManage" }],
     };
   },
-  mounted() {
-    console.log("mounted--->", this.$route);
-    // this.activeIndex = tihs.$route.name;
-    // this.$router.push(this.$route.path);
-  },
   methods: {
     handleSelect(key, keyPath) {
       this.activeIndex = key;

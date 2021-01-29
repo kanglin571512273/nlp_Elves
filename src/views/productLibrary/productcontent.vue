@@ -5,11 +5,7 @@
         <div class="create return" @click="returns">返回</div>
         <div class="create" @click="dialogFormVisible = true">添加产品内容</div>
       </div>
-      <el-dialog
-        title="创建产品库"
-        width="80%"
-        :visible.sync="dialogFormVisible"
-      >
+      <el-dialog width="80%" :visible.sync="dialogFormVisible">
         <el-card>
           <div class="input-fix">
             <el-form
@@ -32,6 +28,8 @@
               <el-form-item label="产品库内容说明：">
                 <el-input
                   v-model="ruleForm.description"
+                  type="textarea"
+                  :rows="2"
                   placeholder="请输入产品库说明"
                   maxlength="120"
                   show-word-limit
@@ -61,7 +59,8 @@
                   :on-change="handleChange"
                   :file-list="fileList"
                 >
-                  <el-button size="small" type="primary">点击上传</el-button>
+                  <!-- <el-button size="small" type="primary">点击上传</el-button> -->
+                  <div class="upload">点击上传</div>
                   <div slot="tip" class="el-upload__tip">
                     只能上传jpg/png文件，且不超过500kb
                   </div>
@@ -69,8 +68,6 @@
               </el-form-item>
             </el-form>
           </div>
-        </el-card>
-        <div slot="footer" class="dialog-footer">
           <div class="submit-box">
             <div class="create cancel" @click="dialogFormVisible = false">
               取 消
@@ -79,7 +76,7 @@
               确 定
             </div>
           </div>
-        </div>
+        </el-card>
       </el-dialog>
 
       <el-card class="box-card">
@@ -262,6 +259,14 @@ export default {
   margin-right: 30px;
   text-align: center;
 }
+.upload {
+  width: 102px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 4px;
+  background: #2d3291;
+  color: #fff;
+}
 .return {
   border: 1px solid #2d3291;
   background: #fff;
@@ -317,6 +322,9 @@ export default {
     background-color: #818181;
     margin-right: 20px;
   }
+  .create {
+    margin-bottom: 0;
+  }
 }
 .radio-box {
   width: 606px;
@@ -339,6 +347,16 @@ export default {
   }
   .el-form-item__content {
     margin-left: 155px !important;
+  }
+  .el-radio__input.is-checked + .el-radio__label {
+    color: #2d3291;
+  }
+  .el-radio__input.is-checked .el-radio__inner {
+    border-color: #2d3291;
+    background: #2d3291;
+  }
+  .el-form-item__content {
+    text-align: left;
   }
 }
 </style>

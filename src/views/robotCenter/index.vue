@@ -2,10 +2,7 @@
   <div class="robot">
     <div>
       <div class="create" @click="dialogFormVisible = true">创建机器人</div>
-      <el-dialog
-        width="80%"
-        :visible.sync="dialogFormVisible"
-      >
+      <el-dialog width="80%" :visible.sync="dialogFormVisible">
         <el-card class="suffix">
           <div class="input-suffix">
             <el-form
@@ -14,7 +11,7 @@
               ref="ruleForm"
               label-width="110px"
               class="demo-ruleForm"
-              label-position="left"
+              label-position="right"
             >
               <el-form-item label="机器人名称：" prop="name">
                 <el-input
@@ -34,8 +31,21 @@
                   <el-radio v-model="radio" label="2">通用模式</el-radio>
                 </el-radio-group>
               </el-form-item>
-
-              <div class="input-suffix">
+              <el-form-item label="导入文件：" prop="import">
+                <el-upload
+                  class="upload-demo"
+                  action="https://jsonplaceholder.typicode.com/posts/"
+                  :on-change="handleChange"
+                  :file-list="fileList"
+                >
+                  <!-- <el-button size="small" type="primary">点击上传</el-button> -->
+                  <div class="upload">点击上传</div>
+                  <div slot="tip" class="el-upload__tip">
+                    只能上传jpg/png文件，且不超过500kb
+                  </div>
+                </el-upload>
+              </el-form-item>
+              <!-- <div class="input-suffix">
                 <div class="robotname">上传图片：</div>
                 <div class="radio-box">
                   <el-upload
@@ -52,11 +62,9 @@
                     <el-button size="small" type="primary">点击上传</el-button>
                   </el-upload>
                 </div>
-              </div>
+              </div> -->
             </el-form>
           </div>
-        </el-card>
-        <div slot="footer" class="dialog-footer">
           <div class="submit-box">
             <div class="create cancel" @click="dialogFormVisible = false">
               取 消
@@ -65,9 +73,8 @@
               确 定
             </div>
           </div>
-        </div>
+        </el-card>
       </el-dialog>
-
       <el-card class="box-card">
         <el-table :data="tableData" border style="width: 100%">
           <el-table-column prop="serial" label="序号" width="80">
@@ -80,8 +87,8 @@
             </template>
           </el-table-column>
           <el-table-column prop="id" label="ID"> </el-table-column>
-          <el-table-column prop="date" label="日期"> </el-table-column>
-          <el-table-column prop="address" label="地址"> </el-table-column>
+          <el-table-column prop="address" label="类型"> </el-table-column>
+          <el-table-column prop="date" label="创建时间"> </el-table-column>
           <el-table-column fixed="right" label="操作" width="210">
             <template slot-scope="scope">
               <el-button
@@ -135,9 +142,7 @@ export default {
         ]
       },
       formLabelWidth: "120px",
-      fileList: [
-       
-      ],
+      fileList: [],
       tableData: [
         {
           serial: 1,
@@ -216,6 +221,25 @@ export default {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
     submitForm(formName) {
+      var url = "http://192.168.0.195:8089/system/user/changeStatus";
+      var data = {
+        userId: "2",
+        status: "1"
+      };
+      fetch(url, {
+        method: "put", //(GET), POST, PUT, DELETE, etc
+        mode: "cors", // (same-origin), no-cors, cors
+        cache: "no-cache", // (default), no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", //(same-origin), include, omit
+        headers: {
+          "Content-Type": "application/json"
+          // "Content-Type": "application/x-www-form-urlencoded",
+        },
+        redirect: "follow", //(follow), manual, error
+        referrer: "no-referrer", //(client), no-referrer
+        body: JSON.stringify(data) // 这里格式要与 "Content-Type" 同步
+      }).then(response => response.json());
+
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.dialogFormVisible = false;
@@ -227,6 +251,9 @@ export default {
     },
     informationClick() {
       this.$router.push(`/information`);
+    },
+    handleChange(file, fileList) {
+      this.fileList = fileList.slice(-3);
     }
   }
 };
@@ -244,8 +271,28 @@ export default {
   cursor: pointer;
   text-align: center;
 }
-.suffix{
-  height:400px
+.suffix {
+  height: 400px;
+  .submit-box {
+    margin-top: 105px;
+    display: flex;
+    justify-content: flex-end;
+    .cancel {
+      background-color: #818181;
+      margin-right: 20px;
+    }
+    .create {
+      margin-bottom: 0;
+    }
+  }
+}
+.upload {
+  width: 102px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 4px;
+  background: #2d3291;
+  color: #fff;
 }
 .edit {
   color: #2d3291;
@@ -277,18 +324,11 @@ export default {
     font-size: 14px;
     color: #606266;
   }
-  .upload-demo{
+  .upload-demo {
     text-align: left;
   }
 }
-.submit-box {
-  display: flex;
-  justify-content: flex-end;
-  .cancel {
-    background-color: #818181;
-    margin-right: 20px;
-  }
-}
+
 .box-card {
   height: 530px;
   position: relative;
@@ -307,5 +347,24 @@ export default {
 }
 .el-dialog__header {
   text-align: left !important;
+}
+</style>
+
+<style lang="less">
+.input-suffix {
+  .el-form {
+    width: 100%;
+  }
+
+  .el-radio__input.is-checked + .el-radio__label {
+    color: #2d3291;
+  }
+  .el-radio__input.is-checked .el-radio__inner {
+    border-color: #2d3291;
+    background: #2d3291;
+  }
+  .el-form-item__content {
+    text-align: left;
+  }
 }
 </style>

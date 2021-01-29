@@ -69,7 +69,9 @@
               </el-form-item>
 
               <el-form-item>
-                <el-button @click="addDomain">新增</el-button>
+                <el-button @click="addDomain(problemForm.domains.length)"
+                  >新增</el-button
+                >
                 <el-button @click="resetForm('problemForm')">重置</el-button>
               </el-form-item>
             </el-form>
@@ -103,7 +105,7 @@
                 :prop="'domains.' + index + '.value'"
                 :rules="{
                   required: true,
-                  message: '域名不能为空',
+                  message: '答案不能为空',
                   trigger: 'blur'
                 }"
               >
@@ -116,18 +118,29 @@
               </el-form-item>
 
               <el-form-item>
-                <el-button @click="addanswer">新增</el-button>
+                <el-button @click="addanswer(answerForm.domains.length)"
+                  >新增</el-button
+                >
                 <el-button @click="resetanswerForm('answerForm')"
                   >重置</el-button
                 >
               </el-form-item>
             </el-form>
           </div>
+          <div class="placeholder"></div>
           <div class="serve">
-            <el-button type="primary" @click="addstatus = true">返回</el-button>
+            <div class="submit-box">
+              <div class="create cancel" @click="addstatus = true">
+                返回
+              </div>
+              <div class="create " @click="submitForm('problemForm')">
+                提交
+              </div>
+            </div>
+            <!-- <el-button type="primary" @click="addstatus = true">返回</el-button>
             <el-button type="primary" @click="submitForm('problemForm')"
               >提交</el-button
-            >
+            > -->
           </div>
         </el-card>
       </div>
@@ -195,7 +208,7 @@
     </div>
     <!-- 弹框区 -->
 
-    <el-dialog width="90%" title="知识库配置" :visible.sync="knowledgebase">
+    <el-dialog width="80%" title="知识库配置" :visible.sync="knowledgebase">
       <!-- <div class="basefont">知识库配置</div> -->
       <el-card>
         <div class="dialogNav">
@@ -261,30 +274,20 @@
                   为机器人添加知识库吧，让它可以更加智能～
                 </span>
               </div>
-              <div class="card_bases base_items">
-                <div class="card_item">
-                  <div class="round-box">
-                    <div class="round"></div>
-                  </div>
-                  <div class="card_img">
-                    <img
-                      src="https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png"
-                      alt="img"
-                    />
-                  </div>
-                  <div class="card_fonts">
-                    <div class="card_title">农行知识库</div>
-                    <div>说明：理财知识库</div>
-                    <div>时间：2021-01-13 12:12:12</div>
-                  </div>
-                </div>
-              </div>
               <div
                 class="card_bases"
+                :class="{ base_items: spanIndex.indexOf(item.id) > -1 }"
                 v-for="item in officialdata"
                 :key="item.id"
+                @click="knowledge(item.id)"
               >
                 <div class="card_item">
+                  <div class="round-box">
+                    <div
+                      class="round"
+                      :class="{ roundts: spanIndex.indexOf(item.id) > -1 }"
+                    ></div>
+                  </div>
                   <div class="card_img">
                     <img :src="item.img" alt="img" />
                   </div>
@@ -305,26 +308,20 @@
                   为机器人添加知识库吧，让它可以更加智能～
                 </span>
               </div>
-              <div class="card_bases base_items">
+              <div
+                class="card_bases"
+                :class="{ base_items: spanIndex.indexOf(item.id) > -1 }"
+                v-for="item in partydata"
+                :key="item.id"
+                @click="knowledge(item.id)"
+              >
                 <div class="card_item">
                   <div class="round-box">
-                    <div class="round"></div>
+                    <div
+                      class="round"
+                      :class="{ roundts: spanIndex.indexOf(item.id) > -1 }"
+                    ></div>
                   </div>
-                  <div class="card_img">
-                    <img
-                      src="https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png"
-                      alt="img"
-                    />
-                  </div>
-                  <div class="card_fonts">
-                    <div class="card_title">农行知识库</div>
-                    <div>说明：理财知识库</div>
-                    <div>时间：2021-01-13 12:12:12</div>
-                  </div>
-                </div>
-              </div>
-              <div class="card_bases" v-for="item in partydata" :key="item.id">
-                <div class="card_item">
                   <div class="card_img">
                     <img :src="item.img" alt="img" />
                   </div>
@@ -367,9 +364,14 @@
   </div>
 </template>
 <script>
+import Vue from "vue";
+import { Message } from "element-ui";
+Vue.use(Message);
+Vue.prototype.$message = Message;
 export default {
   data() {
     return {
+      num: 1,
       delivery: true,
       reply: false,
       dialogFormVisible: false,
@@ -578,18 +580,26 @@ export default {
       }
     },
     // 新增问题
-    addDomain() {
-      this.problemForm.domains.push({
-        value: "",
-        key: Date.now()
-      });
+    addDomain(e) {
+      if (e <= 9) {
+        this.problemForm.domains.push({
+          value: "",
+          key: Date.now()
+        });
+      } else {
+        this.$message.error("最多添加十个问题~");
+      }
     },
     // 新增答案
-    addanswer() {
-      this.answerForm.domains.push({
-        value: "",
-        key: Date.now()
-      });
+    addanswer(e) {
+      if (e <= 9) {
+        this.answerForm.domains.push({
+          value: "",
+          key: Date.now()
+        });
+      } else {
+        this.$message.error("最多添加十个答案~");
+      }
     },
     changeNav(ind) {
       this.activeNav = ind;
@@ -621,6 +631,9 @@ export default {
   cursor: pointer;
   text-align: center;
 }
+.placeholder {
+  height: 60px;
+}
 .adpros {
   height: 400px;
 }
@@ -630,6 +643,9 @@ export default {
   .cancel {
     background-color: #818181;
     margin-right: 20px;
+  }
+  .create {
+    margin-bottom: 0;
   }
 }
 .edit {
@@ -695,7 +711,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   .card_items {
-    width: 31%;
+    width: 30%;
     height: 120px;
     margin-top: 20px;
     border-radius: 4px;
@@ -742,7 +758,7 @@ export default {
     }
   }
   .card_bases {
-    width: 31%;
+    width: 30%;
     height: 120px;
     margin-top: 20px;
     border-radius: 4px;
@@ -820,6 +836,7 @@ export default {
 .answer_box {
   height: 650px;
   overflow: auto;
+  position: relative;
 }
 .el-dialog {
   .basefont {
@@ -855,11 +872,22 @@ export default {
 <style lang="less">
 .serve {
   text-align: right;
-  margin-top: 37px;
   .el-button {
     background: #2d3291;
     border: 1px solid #2d3291;
     width: 102px;
   }
+}
+.digital-box {
+  .el-switch.is-checked .el-switch__core {
+    border-color: #2d3291;
+    background-color: #2d3291;
+  }
+}
+.el-dialog__body {
+  padding: 20px;
+}
+.el-form-item__content {
+  text-align: left;
 }
 </style>

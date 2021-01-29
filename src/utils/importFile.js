@@ -3,8 +3,6 @@ import {
   Button,
   ColorPicker,
   Cascader,
-  Card,
-  Confirm,
   Container,
   Dropdown,
   DropdownItem,
@@ -13,23 +11,25 @@ import {
   Form,
   FormItem,
   Header,
-  InputNumber,
   Input,
   MessageBox,
+  Message,
   Main,
   Menu,
   MenuItem,
-  Option,
-  RadioGroup,
-  Radio,
   Slider,
+  Option,
   Select,
-  Switch,
   Table,
   TableColumn,
-  Tree,
   Upload,
+  Switch,
+  Card,
+  Confirm,
   Pagination,
+  RadioGroup,
+  Radio,
+  InputNumber
 } from "element-ui";
 Vue.use(Input);
 Vue.use(Dropdown);
@@ -52,11 +52,10 @@ Vue.use(Main);
 Vue.use(Menu);
 Vue.use(MenuItem);
 Vue.use(Container);
-Vue.use(Tree);
 Vue.use(Switch);
 Vue.use(Card);
 Vue.use(Pagination);
 Vue.use(RadioGroup);
 Vue.use(Radio);
 Vue.use(InputNumber);
-export { MessageBox, Confirm };
+export { MessageBox, Confirm,Message };

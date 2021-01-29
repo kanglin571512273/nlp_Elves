@@ -3,12 +3,11 @@ import Router from "vue-router";
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
     {
-      path: "/login",
-      name: "login",
-      userManage: () => import(/* webpackChunkName: 'login' */ "@/views/login")
+      path: "*",
+      component: () => import("@/views/404not_found")
     },
     {
       path: "/",
@@ -58,7 +57,9 @@ export default new Router({
           path: "/productcontent",
           name: "productcontent",
           component: () =>
-            import(/* webpackChunkName: 'product' */ "@/views/productLibrary/productcontent.vue")
+            import(
+              /* webpackChunkName: 'product' */ "@/views/productLibrary/productcontent.vue"
+            )
         },
         {
           path: "/knowledge",
@@ -94,41 +95,82 @@ export default new Router({
           ]
         },
         {
-          path: '/createContent',//创建知识库
-          name: 'createContent',
-          component: () => import( /* webpackChunkName: 'officialKnowledge' */ "@/views/knowledgeBase/createContent.vue"),
+          path: "/createContent", //创建知识库
+          name: "createContent",
+          component: () =>
+            import(
+              /* webpackChunkName: 'officialKnowledge' */ "@/views/knowledgeBase/createContent.vue"
+            )
         },
         {
-          path: "/systemManage",//系统管理
+          path: "/systemManage", //系统管理
           name: "systemManage",
           component: () =>
-            import(/* webpackChunkName: 'systemManage' */ "@/views/systemManage"),
-          redirect: '/userManage',
+            import(
+              /* webpackChunkName: 'systemManage' */ "@/views/systemManage"
+            ),
+          redirect: "/userManage",
           children: [
             {
-              path: '/userManage',//用户管理
-              name: 'userManage',
-              component: () => import( /* webpackChunkName: 'userManage' */ "@/views/systemManage/userManage.vue"),
+              path: "/userManage", //用户管理
+              name: "userManage",
+              component: () =>
+                import(
+                  /* webpackChunkName: 'userManage' */ "@/views/systemManage/userManage.vue"
+                )
             },
             {
-              path: '/joleManage',//角色管理
-              name: 'joleManage',
-              component: () => import( /* webpackChunkName: 'joleManage' */ "@/views/systemManage/joleManage.vue"),
+              path: "/joleManage", //角色管理
+              name: "joleManage",
+              component: () =>
+                import(
+                  /* webpackChunkName: 'joleManage' */ "@/views/systemManage/joleManage.vue"
+                )
             },
             {
-              path: '/authorityManage',//权限管理
-              name: 'authorityManage',
-              component: () => import( /* webpackChunkName: 'authorityManage' */ "@/views/systemManage/authorityManage.vue"),
-            },
+              path: "/authorityManage", //权限管理
+              name: "authorityManage",
+              component: () =>
+                import(
+                  /* webpackChunkName: 'authorityManage' */ "@/views/systemManage/authorityManage.vue"
+                )
+            }
           ]
         },
         {
-          path: '/chatRoom',//聊天室
-          name: 'chatRoom',
-          component: () => import( /* webpackChunkName: 'chatRoom' */ "@/components/ChatRoom.vue"),
-        },
+          path: "/chatRoom", //聊天室
+          name: "chatRoom",
+          component: () =>
+            import(
+              /* webpackChunkName: 'chatRoom' */ "@/components/ChatRoom.vue"
+            )
+        }
       ]
     },
-
+    {
+      path: "/login",
+      name: "Login",
+      component: () => import(/* webpackChunkName: 'login' */ "@/views/login")
+    }
   ]
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.fullPath) {
+    // 判断该路由是否需要登录权限
+    next();
+
+    if (localStorage.getItem("token")) {
+      // 通过vuex state获取当前的token是否存在
+      console.log(localStorage.getItem("token"));
+      next();
+    } else {
+      next();
+      // "/login"
+    }
+  } else {
+    next();
+  }
+});
+
+export default router;

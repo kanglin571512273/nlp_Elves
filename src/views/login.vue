@@ -3,7 +3,7 @@
     <div class="bg-class">
       <el-card class="card-class">
         <div class="bgcenter">
-          <div class="bg-font">Welcome</div>
+          <div class="bg-font"><div>Welcome</div></div>
           <div class="bg-form">
             <el-form
               label-position="top"
@@ -34,31 +34,6 @@
 </template>
 
 <script>
-import Vue from "vue";
-import {
-  Table,
-  TableColumn,
-  Card,
-  Pagination,
-  Dialog,
-  Input,
-  Radio,
-  Upload,
-  FormItem,
-  RadioGroup,
-  Form
-} from "element-ui";
-Vue.use(Table);
-Vue.use(TableColumn);
-Vue.use(Card);
-Vue.use(Pagination);
-Vue.use(Dialog);
-Vue.use(Input);
-Vue.use(Radio);
-Vue.use(Upload);
-Vue.use(Form);
-Vue.use(FormItem);
-Vue.use(RadioGroup);
 export default {
   data() {
     return {
@@ -105,11 +80,12 @@ export default {
     justify-content: center;
     align-items: center;
     .card-class {
-      width: 40%;
-      height: 44%;
+      width: 520px;
+      height: 700px;
     }
     .bgcenter {
       width: 100%;
+      height: 650px;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -117,10 +93,13 @@ export default {
         width: 350px;
       }
       .bg-font {
+        width: 100%;
         color: #2d3291;
         font-weight: bold;
         font-size: 36px;
-        margin-bottom: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
   }
@@ -151,8 +130,8 @@ button:focus {
     width: 100%;
     font-weight: bold;
   }
-  .el-form-item__label:before{
-    display:none
+  .el-form-item__label:before {
+    display: none;
   }
 }
 </style>

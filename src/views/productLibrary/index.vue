@@ -2,11 +2,7 @@
   <div class="robot">
     <div>
       <div class="create" @click="dialogFormVisible = true">创建产品库</div>
-      <el-dialog
-        title="创建产品库"
-        width="50%"
-        :visible.sync="dialogFormVisible"
-      >
+      <el-dialog width="80%" :visible.sync="dialogFormVisible">
         <el-card>
           <div class="input-fix">
             <el-form
@@ -29,6 +25,8 @@
               <el-form-item label="产品库说明：" prop="description">
                 <el-input
                   v-model="ruleForm.description"
+                  type="textarea"
+                  :rows="2"
                   placeholder="请输入产品库说明"
                   maxlength="120"
                   show-word-limit
@@ -37,8 +35,6 @@
               </el-form-item>
             </el-form>
           </div>
-        </el-card>
-        <div slot="footer" class="dialog-footer">
           <div class="submit-box">
             <div class="create cancel" @click="dialogFormVisible = false">
               取 消
@@ -47,7 +43,7 @@
               确 定
             </div>
           </div>
-        </div>
+        </el-card>
       </el-dialog>
 
       <el-card class="box-card">
@@ -256,7 +252,7 @@ export default {
   float: right;
   margin: 20px 0;
 }
-input-fix {
+.input-fix {
   width: 600px;
   display: flex;
   justify-content: center;
@@ -275,11 +271,15 @@ input-fix {
   }
 }
 .submit-box {
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
   .cancel {
     background-color: #818181;
     margin-right: 20px;
+  }
+  .create {
+    margin-bottom: 0;
   }
 }
 .radio-box {

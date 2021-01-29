@@ -1,10 +1,10 @@
 <template>
   <div class="myKnowledge">
     <div class="btn">
-      <div class="myBtn myBtn_blue myBtn_middle" @click="dialogFormVisible = true">创建知识库</div>
+      <div class="createBtn" @click="dialogFormVisible = true">创建知识库</div>
     </div>
     <div class="cartContain scrollbar">
-      <CartItem v-for="item in 19" :key="item"></CartItem>
+      <CartItem v-for="item in 2" :key="item"></CartItem>
     </div>
     <!-- 添加知识狂弹窗 -->
     <el-dialog :visible.sync="dialogFormVisible">
@@ -15,9 +15,10 @@
           ref="ruleForm"
           label-width="100px"
           class="demo-ruleForm"
+          label-position="right"
         >
           <span class="header">创建知识库</span>
-          <el-form-item label="知识库名称" prop="name">
+          <el-form-item label="知识库名称:" prop="name">
             <el-input
               v-model="ruleForm.name"
               maxlength="20"
@@ -26,7 +27,7 @@
               placeholder="请输入知识库名称"
             ></el-input>
           </el-form-item>
-          <el-form-item label="知识库说明">
+          <el-form-item label="知识库说明:">
             <el-input
               type="textarea"
               size="mini"
@@ -36,7 +37,7 @@
               placeholder="请输入知识库名称"
             ></el-input>
           </el-form-item>
-          <el-form-item label="上传图片">
+          <el-form-item label="上传图片:">
             <el-upload
               size="mini"
               class="upload-demo"
@@ -55,23 +56,24 @@
         </el-form>
 
         <div slot="footer" class="dialog-footer">
-          <div class="myBtn littleBtn myBtn_info myBtn_middle" @click="resetForm('ruleForm')">取 消</div>
-          <div class="myBtn littleBtn myBtn_blue myBtn_middle" @click="submitForm('ruleForm')">立即创建</div>
+          <div class="myBtn_info diaBtn" @click="resetForm('ruleForm')">取 消</div>
+          <div class="myBtn_blue diaBtn" @click="submitForm('ruleForm')">立即创建</div>
         </div>
       </div>
     </el-dialog>
     <!-- 聊天框弹框 -->
-    
   </div>
 </template>
 
 <script>
-import "@/assets/css/editElementStyle.css";
 import CartItem from "./components/CartItem";
 import { MessageBox } from "@/utils/importFile";
 export default {
   components: { CartItem },
-
+  // beforeRouteEnter(to, from, next) {
+  //   console.log(to, from);
+  //   next();
+  // },
   data() {
     return {
       fileList: [
@@ -168,6 +170,13 @@ export default {
       bottom: 10px;
       right: 10px;
     }
+  }
+  .myBtn {
+    width: 80px;
+    height: 31px;
+    padding: 0;
+    text-align: center;
+    line-height: 31px;
   }
 }
 </style>

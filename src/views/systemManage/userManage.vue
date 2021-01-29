@@ -2,19 +2,22 @@
   <div class="userManage">
     <!-- 展示区  -->
     <div class="mainContainer">
-      <div class="myBtn littleBtn myBtn_blue" @click="dialogFormVisible = true">创建用户</div>
+      <div class="createBtn" @click="dialogFormVisible = true">创建用户</div>
       <el-table :data="tableData" border style="width: 100%" height="91%">
         <el-table-column label="序号" type="index" width="70"></el-table-column>
-        <el-table-column prop="date" label="用户名"></el-table-column>
+        <el-table-column prop="userName" label="用户名"></el-table-column>
         <el-table-column prop="name" label="姓名"></el-table-column>
-        <el-table-column prop="address" label="角色"></el-table-column>
-        <el-table-column prop="address" label="手机号"></el-table-column>
+        <el-table-column prop="roleName" label="角色"></el-table-column>
+        <el-table-column prop="phonenumber" label="手机号"></el-table-column>
         <el-table-column label="操作" class="operationTable">
           <template slot-scope="scope">
             <div class="operationCon">
-              <div @click="handleEdit(scope.$index, scope.row)" class="operation">启用</div>
-              <div @click="handleEdit(scope.$index, scope.row)" class="operation">编辑</div>
-              <div @click="handleEdit(scope.$index, scope.row)" class="operation">删除</div>
+              <div
+                @click="handleEnable(scope.row)"
+                class="operation"
+              >{{scope.row.status == '0' ? '已启用':'启用'}}</div>
+              <div @click="handleEdit(scope.row)" class="operation">编辑</div>
+              <div @click="handleDelete(scope.row)" class="operation">删除</div>
             </div>
           </template>
         </el-table-column>
@@ -42,12 +45,12 @@
           label-width="120px"
           :rules="rules"
           ref="ruleForm"
-          label-position="left"
+          label-position="right"
           align="left"
         >
-          <el-form-item label="用户名称：" prop="nickName">
+          <el-form-item label="用户名称：" prop="userName">
             <el-input
-              v-model="form.nickName"
+              v-model="form.userName"
               placeholder="请输入用户名称"
               size="mini"
               maxlength="20"
@@ -55,7 +58,7 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="角色：" prop="jole">
-            <el-select v-model="form.jole" size="mini" placeholder="请选择">
+            <el-select v-model="form.jole" multiple size="mini" placeholder="请选择">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -73,13 +76,13 @@
               show-word-limit
             ></el-input>
           </el-form-item>
-          <el-form-item label="手机号：" prop="tel">
-            <el-input v-model="form.tel" placeholder="请输入手机号" size="mini"></el-input>
+          <el-form-item label="手机号：" prop="phonenumber">
+            <el-input v-model="form.phonenumber" placeholder="请输入手机号" size="mini"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <div class="myBtn myBtn_info littleBtn myBtn_middle" @click="resetForm('ruleForm')">取 消</div>
-          <div class="myBtn myBtn_blue littleBtn myBtn_middle" @click="submitForm('ruleForm')">立即创建</div>
+          <div class="myBtn_info diaBtn" @click="resetForm('ruleForm')">取 消</div>
+          <div class="myBtn_blue diaBtn" @click="submitForm('ruleForm')">立即创建</div>
         </div>
       </div>
     </el-dialog>
@@ -87,14 +90,15 @@
 </template>
 
 <script>
-import "@/assets/css/editElementStyle.css";
+import { getUserList, deleteUser, getUserInfo, editUserState } from "@/api/api";
+import { MessageBox } from "@/utils/importFile";
 export default {
   data() {
     var checkTel = (rule, value, callback) => {
       var reg = /^(((13[0-9]{1})|(15[0-9]{1})|(16[0-9]{1})|(17[3-8]{1})|(18[0-9]{1})|(19[0-9]{1})|(14[5-7]{1}))+\d{8})$/;
-      if (this.form.tel == "" || this.form.tel == undefined) {
+      if (this.form.phonenumber == "" || this.form.phonenumber == undefined) {
         callback();
-      } else if (!reg.test(this.form.tel)) {
+      } else if (!reg.test(this.form.phonenumber)) {
         callback(new Error("手机号码格式不正确"));
       } else {
         callback();
@@ -103,72 +107,21 @@ export default {
     return {
       currPage: 1,
       pageSize: 10,
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-      ],
+      tableData: [],
       //   弹框
       dialogFormVisible: false,
       form: {
-        nickName: "",
+        userName: "",
         jole: "",
         name: "",
-        tel: "",
+        phonenumber: "",
       },
       rules: {
-        nickName: [
+        userName: [
           { required: true, message: "请输入用户名称", trigger: "blur" },
         ],
         jole: [{ required: true, message: "请选择角色", trigger: "blur" }],
-        tel: [{ validator: checkTel, trigger: "blur" }],
+        phonenumber: [{ validator: checkTel, trigger: "blur" }],
       },
       options: [
         {
@@ -182,7 +135,102 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.getList();
+  },
   methods: {
+    // 获取列表
+    async getList() {
+      try {
+        const res = await getUserList({
+          pageSize: 10,
+          pageNum: 1,
+        });
+        if (res.code == 200) {
+          res.rows.map((item) => {
+            let roleName = [];
+            item.roles.map((child) => {
+              roleName.push(child.roleName);
+            });
+            item.roleName = roleName.join(" / ");
+          });
+          this.tableData = res.rows;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 删除用户
+    async deleteUser(id) {
+      try {
+        const res = await deleteUser(id);
+        if (res.code == 200) {
+          MessageBox({
+            type: "success",
+            message: "删除成功!",
+          });
+          this.getList();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 获取个人信息
+    async getUserInfo(id) {
+      try {
+        const res = await getUserInfo(id);
+        console.log(res);
+        if (res.code == 200) {
+          const { name, userName, phonenumber, roles } = res.data;
+          this.form = { name, userName, phonenumber, roles };
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async editUserState(id, status) {
+      const res = await editUserState({ userId: id, status: "1" });
+      console.log(res);
+    },
+    // 修改用户状态
+    handleEnable(row) {
+      MessageBox.confirm("此操作将修改用户状态, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.editUserState(row.userId);
+        })
+        .catch(() => {
+          MessageBox({
+            type: "info",
+            message: "已取消修改",
+          });
+        });
+    },
+    // 编辑
+    handleEdit(row) {
+      this.dialogFormVisible = true;
+      this.getUserInfo(row.userId);
+    },
+    // 删除
+    handleDelete(row) {
+      MessageBox.confirm("此操作将删除该用户, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.deleteUser(row.userId);
+        })
+        .catch(() => {
+          MessageBox({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -224,6 +272,7 @@ export default {
 
     .operationCon {
       display: flex;
+      cursor: pointer;
       .operation {
         flex: 1;
         &:nth-child(1) {

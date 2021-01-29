@@ -42,8 +42,8 @@
     <div class="showcontainer"></div>
     <!-- 按钮 -->
     <div class="btnContainer">
-      <div class="myBtn littleBtn myBtn_info">取 消</div>
-      <div class="myBtn littleBtn myBtn_blue">立即创建</div>
+      <div class="myBtn_info diaBtn">取 消</div>
+      <div class="myBtn_blue diaBtn">立即创建</div>
     </div>
 
     <!-- 弹框区 -->
@@ -58,7 +58,7 @@
         <!-- 基本属性  -->
         <el-form
           v-show="activeNav == 1"
-          label-position="left"
+          label-position="right"
           :model="basicAttrForm"
           label-width="120px"
           align="left"
@@ -97,10 +97,10 @@
         <!-- 高级属性  -->
         <el-form
           v-show="activeNav == 2"
-          label-position="left"
           :model="advancePropForm"
           align="left"
           label-width="120px"
+          label-position="right"
         >
           <el-form-item label="关联产品：">
             <el-cascader
@@ -155,22 +155,11 @@
               <img src="@/assets/images/delete.png" @click="deleteItem(item.id)" alt />
             </div>
           </div>
-          <div
-            v-show="ruleEditForm.length < 10"
-            class="myBtn myBtn_blue littleBtn"
-            @click="addForm"
-          >新增</div>
+          <div v-show="ruleEditForm.length < 10" class="myBtn_plain_blue blue" @click="addForm">新增</div>
         </div>
         <div slot="footer" class="dialog-footer">
-          <div
-            class="myBtn littleBtn myBtn_info myBtn_middle"
-            @click="dialogFormVisible = false"
-          >取 消</div>
-          <div
-            class="myBtn littleBtn myBtn_blue myBtn_middle"
-            type="primary"
-            @click="dialogFormVisible = false"
-          >确 定</div>
+          <div class="myBtn_info diaBtn" @click="dialogFormVisible = false">取 消</div>
+          <div class="myBtn_blue diaBtn" type="primary" @click="dialogFormVisible = false">确 定</div>
         </div>
       </div>
     </el-dialog>
@@ -179,7 +168,6 @@
 
 <script>
 // import "@/utils/importFile";
-import "@/assets/css/editElementStyle.css";
 
 export default {
   data() {

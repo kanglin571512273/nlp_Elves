@@ -26,10 +26,11 @@ const router = new Router({
           name: "information",
           component: () =>
             import(/* webpackChunkName: 'myKnowledge' */ "@/views/information"),
-          redirect: "/information/overview",
+          redirect: "/overview",
           children: [
             {
-              path: "overview",
+
+              path: "/overview",
               name: "overview",
               component: () =>
                 import(
@@ -37,7 +38,7 @@ const router = new Router({
                 )
             },
             {
-              path: "custom",
+              path: "/custom",
               name: "custom",
               component: () =>
                 import(
@@ -65,10 +66,10 @@ const router = new Router({
           name: "knowledge",
           component: () =>
             import(/* webpackChunkName: 'knowledge' */ "@/views/knowledgeBase"),
-          redirect: "/knowledge/myKnowledge",
+          redirect: "/myKnowledge",
           children: [
             {
-              path: "myKnowledge", //我的知识库
+              path: "/myKnowledge", //我的知识库
               name: "myKnowledge",
               component: () =>
                 import(
@@ -76,7 +77,7 @@ const router = new Router({
                 )
             },
             {
-              path: "thirdPartyKnowledge", //第三方知识库
+              path: "/thirdPartyKnowledge", //第三方知识库
               name: "thirdPartyKnowledge",
               component: () =>
                 import(
@@ -84,7 +85,7 @@ const router = new Router({
                 )
             },
             {
-              path: "officialKnowledge", //官方知识库
+              path: "/officialKnowledge", //官方知识库
               name: "officialKnowledge",
               component: () =>
                 import(

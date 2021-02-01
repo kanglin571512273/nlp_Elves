@@ -55,6 +55,7 @@ export default {
     login(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          localStorage.setItem("token", true);
           this.$router.push(`/`);
         } else {
           console.log("error submit!!");

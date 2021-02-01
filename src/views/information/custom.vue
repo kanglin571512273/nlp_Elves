@@ -623,7 +623,7 @@ export default {
   height: 60px;
 }
 .adpros {
-  height: 400px;
+  height: 475px;
 }
 .submit-box {
   display: flex;
@@ -826,7 +826,7 @@ export default {
   display: flex;
 }
 .answer_box {
-  height: 650px;
+  height: 475px;
   overflow: auto;
   position: relative;
 }

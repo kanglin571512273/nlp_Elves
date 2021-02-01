@@ -25,7 +25,6 @@ import {
   Upload,
   Switch,
   Card,
-  Confirm,
   Pagination,
   RadioGroup,
   Radio,
@@ -58,4 +57,4 @@ Vue.use(Pagination);
 Vue.use(RadioGroup);
 Vue.use(Radio);
 Vue.use(InputNumber);
-export { MessageBox, Confirm, Message };
+export { MessageBox, Message };

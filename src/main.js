@@ -7,6 +7,12 @@ import router from "./router";
 import "./assets/css/reset.css";
 // 引入UI组件样式
 import "element-ui/lib/theme-chalk/index.css";
+// 引用公共方法
+import { selectDictLabel } from "@/utils/public";
+
+// 全局方法挂载
+Vue.prototype.selectDictLabel = selectDictLabel;
+
 // import axios from 'axios'
 // axios.baseURL = 'http://192.168.0.195:8089/'
 // Vue.prototype.$axios = axios
@@ -19,3 +25,5 @@ new Vue({
   components: { App },
   template: "<App/>"
 });
+
+export default { selectDictLabel };

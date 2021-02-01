@@ -3,7 +3,7 @@
     <div>
       <div class="create" @click="dialogFormVisible = true">创建产品库</div>
       <el-dialog width="80%" :visible.sync="dialogFormVisible">
-        <el-card>
+        <el-card class="productfix">
           <div class="input-fix">
             <el-form
               :model="ruleForm"
@@ -252,6 +252,9 @@ export default {
   float: right;
   margin: 20px 0;
 }
+.productfix {
+  height: 475px;
+}
 .input-fix {
   width: 600px;
   display: flex;
@@ -271,7 +274,7 @@ export default {
   }
 }
 .submit-box {
-  margin-top: 20px;
+  margin-top: 270px;
   display: flex;
   justify-content: flex-end;
   .cancel {

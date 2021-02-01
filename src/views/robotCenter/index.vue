@@ -1,7 +1,7 @@
 <template>
   <div class="robot">
     <div>
-      <div class="create" @click="dialogFormVisible = true">创建机器人</div>
+      <div class="create" @click="addrobot">创建机器人</div>
       <el-dialog width="80%" :visible.sync="dialogFormVisible">
         <el-card class="suffix">
           <div class="input-suffix">
@@ -13,9 +13,9 @@
               class="demo-ruleForm"
               label-position="right"
             >
-              <el-form-item label="机器人名称：" prop="name">
+              <el-form-item label="机器人名称：" prop="robotName">
                 <el-input
-                  v-model="ruleForm.name"
+                  v-model="ruleForm.robotName"
                   placeholder="请输入机器人名称"
                   maxlength="20"
                   show-word-limit
@@ -25,18 +25,27 @@
               <!-- <el-form-item label="机器人名称：" prop="name">
               <el-input clearable v-model="ruleForm.name"></el-input>
             </el-form-item> -->
-              <el-form-item label="类型：" prop="resource">
-                <el-radio-group v-model="ruleForm.resource">
-                  <el-radio v-model="radio" label="1">API接入</el-radio>
-                  <el-radio v-model="radio" label="2">通用模式</el-radio>
+              <el-form-item label="类型：" prop="type">
+                <el-radio-group v-model="ruleForm.type">
+                  <el-radio
+                    :label="item.value"
+                    v-for="item in dictionary"
+                    :key="item.id"
+                    >{{ item.label }}</el-radio
+                  >
                 </el-radio-group>
               </el-form-item>
-              <el-form-item label="导入文件：" prop="import">
+              <el-form-item label="上传图片：" prop="import">
+                <!-- :on-success="handleAvatarSuccess" -->
                 <el-upload
                   class="upload-demo"
-                  action="https://jsonplaceholder.typicode.com/posts/"
+                  action="http://192.168.0.195:8089/img/upload"
+                  :http-request="uploadSectionFile"
                   :on-change="handleChange"
+                  :before-remove="beforeRemove"
                   :file-list="fileList"
+                  list-type="picture"
+                  :limit="1"
                 >
                   <!-- <el-button size="small" type="primary">点击上传</el-button> -->
                   <div class="upload">点击上传</div>
@@ -77,18 +86,20 @@
       </el-dialog>
       <el-card class="box-card">
         <el-table :data="tableData" border style="width: 100%">
-          <el-table-column prop="serial" label="序号" width="80">
+          <el-table-column type="index" label="序号" width="80">
           </el-table-column>
-          <el-table-column prop="name" label="类型">
+          <el-table-column prop="robotName" label="名称">
             <template slot-scope="scope">
               <el-button type="text" @click="informationClick">{{
-                scope.row.name
+                scope.row.robotName
               }}</el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="id" label="ID"> </el-table-column>
-          <el-table-column prop="address" label="类型"> </el-table-column>
-          <el-table-column prop="date" label="创建时间"> </el-table-column>
+          <el-table-column prop="seriesId" label="ID"> </el-table-column>
+          <el-table-column prop="type" :formatter="statusFormat" label="类型">
+          </el-table-column>
+          <el-table-column prop="createTime" label="创建时间">
+          </el-table-column>
           <el-table-column fixed="right" label="操作" width="210">
             <template slot-scope="scope">
               <el-button
@@ -98,7 +109,11 @@
                 class="edit"
                 >编辑</el-button
               >
-              <el-button type="text" size="small" class="delete"
+              <el-button
+                type="text"
+                size="small"
+                class="delete"
+                @click="deleteClick(scope.row)"
                 >删除</el-button
               >
             </template>
@@ -121,74 +136,101 @@
 </template>
 
 <script>
+import {
+  getList,
+  getdictionary,
+  upload,
+  addrobotts,
+  deleteList
+} from "@/api/robotCenter";
+import { Message, MessageBox } from "@/utils/importFile";
 export default {
   data() {
     return {
       currentPage1: 5,
       dialogFormVisible: false,
       robotname: null,
-      radio: "1",
+      dictionary: [],
       ruleForm: {
-        name: "",
-        resource: "1"
+        robotName: "",
+        type: "",
+        pictureUrl: ""
       },
       rules: {
         name: [
           { required: true, message: "请输入机器人名称", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
+          { min: 3, max: 20, message: "长度在 3 到 5 个字符", trigger: "blur" }
         ],
-        resource: [
-          { required: true, message: "请选择活动资源", trigger: "change" }
-        ]
+        type: [{ required: true, message: "请选择活动资源", trigger: "change" }]
       },
       formLabelWidth: "120px",
       fileList: [],
-      tableData: [
-        {
-          serial: 1,
-          date: "2016-05-02",
-          name: "王小虎",
-          id: 67907790,
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
-        },
-        {
-          serial: 2,
-          date: "2016-05-04",
-          id: 67907790,
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1517 弄",
-          zip: 200333
-        },
-        {
-          serial: 3,
-          date: "2016-05-01",
-          id: 67907790,
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1519 弄",
-          zip: 200333
-        },
-        {
-          serial: 4,
-          date: "2016-05-03",
-          name: "王小虎",
-          province: "上海",
-          id: 67907790,
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1516 弄",
-          zip: 200333
-        }
-      ]
+      tableData: []
     };
   },
+  mounted() {
+    this.getdictionary();
+  },
   methods: {
+    // 获取列表
+    async getList() {
+      try {
+        const res = await getList({
+          pageSize: 10,
+          pageNum: 1
+        });
+        if (res.code == 200) {
+          this.tableData = res.rows;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getdictionary() {
+      try {
+        const res = await getdictionary({});
+        if (res.code == 200) {
+          this.dictionary = res.data;
+          this.getList();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 岗位状态字典翻译
+    statusFormat(row, column) {
+      return this.selectDictLabel(this.dictionary, row.type);
+    },
+    // 创建机器人
+    addrobot() {
+      this.dialogFormVisible = true;
+      this.ruleForm = {
+        robotName: "",
+        type: "api",
+        pictureUrl: " "
+      };
+    },
+    async uploadSectionFile(param) {
+      var fileObj = param.file;
+      var form = new FormData();
+      // 文件对象
+      form.append("file", fileObj);
+      try {
+        const res = await upload(form);
+        if (res.code == 200) {
+          this.ruleForm.pictureUrl = res.data[0].onlineUrl;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     handleClick(row) {
+      this.dialogFormVisible = true;
+      this.ruleForm.robotName = row.robotName;
+      this.ruleForm.type = row.type;
+    },
+    deleteClick(row) {
       console.log(row);
     },
     handleSizeChange(val) {
@@ -218,30 +260,21 @@ export default {
       );
     },
     beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
+      console.log(file, fileList);
+      // return MessageBox.confirm(`确定移除 ${file.name}？`);
     },
     submitForm(formName) {
-      var url = "http://192.168.0.195:8089/system/user/changeStatus";
-      var data = {
-        userId: "2",
-        status: "1"
-      };
-      fetch(url, {
-        method: "put", //(GET), POST, PUT, DELETE, etc
-        mode: "cors", // (same-origin), no-cors, cors
-        cache: "no-cache", // (default), no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", //(same-origin), include, omit
-        headers: {
-          "Content-Type": "application/json"
-          // "Content-Type": "application/x-www-form-urlencoded",
-        },
-        redirect: "follow", //(follow), manual, error
-        referrer: "no-referrer", //(client), no-referrer
-        body: JSON.stringify(data) // 这里格式要与 "Content-Type" 同步
-      }).then(response => response.json());
-
       this.$refs[formName].validate(valid => {
         if (valid) {
+          console.log(this.ruleForm);
+          addrobotts(this.ruleForm).then(response => {
+            if (response.code === 200) {
+              Message.success("新增成功");
+              this.dialogFormVisible = false;
+              this.getList();
+              // this.getList();
+            }
+          });
           this.dialogFormVisible = false;
         } else {
           console.log("error submit!!");
@@ -272,9 +305,12 @@ export default {
   text-align: center;
 }
 .suffix {
-  height: 400px;
+  height: 475px;
+  position: relative;
   .submit-box {
-    margin-top: 105px;
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
     display: flex;
     justify-content: flex-end;
     .cancel {

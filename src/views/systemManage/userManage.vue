@@ -2,12 +2,11 @@
   <div class="userManage">
     <!-- 展示区  -->
     <div class="mainContainer">
-      <div class="createBtn" @click="dialogFormVisible = true">创建用户</div>
+      <div class="createBtn" @click="createUser">创建用户</div>
       <el-table :data="tableData" border style="width: 100%" height="91%">
-        <el-table-column label="序号" type="index" width="70"></el-table-column>
+        <el-table-column label="序号" type="index" :index="indexMethod" width="70"></el-table-column>
         <el-table-column prop="userName" label="用户名"></el-table-column>
         <el-table-column prop="name" label="姓名"></el-table-column>
-        <el-table-column prop="roleName" label="角色"></el-table-column>
         <el-table-column prop="phonenumber" label="手机号"></el-table-column>
         <el-table-column label="操作" class="operationTable">
           <template slot-scope="scope">
@@ -26,20 +25,18 @@
     <!-- 分页 -->
     <div class="pagination">
       <el-pagination
-        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currPage"
+        :current-page="pages.pageNum"
         :page-sizes="[100, 200, 300, 400]"
-        :page-size="pageSize"
+        :page-size="pages.pageSize"
         layout="total, prev, pager, next"
-        :total="400"
+        :total="pages.total"
       ></el-pagination>
     </div>
     <!-- 弹框 -->
-    <el-dialog :visible.sync="dialogFormVisible">
+    <el-dialog :visible.sync="dialogFormVisible" @close="resetForm">
       <div class="diaContainer">
-        <span class="header">创建用户</span>
-
+        <span class="header">{{creatOrEdit[creatOrEditId].title}}</span>
         <el-form
           :model="form"
           label-width="120px"
@@ -57,13 +54,20 @@
               show-word-limit
             ></el-input>
           </el-form-item>
-          <el-form-item label="角色：" prop="jole">
-            <el-select v-model="form.jole" multiple size="mini" placeholder="请选择">
+          <el-form-item label="角色：" prop="roleIds">
+            <el-select
+              v-model="form['roleIds']"
+              multiple
+              size="mini"
+              value-key="roleId"
+              placeholder="请选择"
+              @change="$forceUpdate()"
+            >
               <el-option
                 v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.roleId"
+                :label="item.roleName"
+                :value="item.roleId"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -82,7 +86,10 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <div class="myBtn_info diaBtn" @click="resetForm('ruleForm')">取 消</div>
-          <div class="myBtn_blue diaBtn" @click="submitForm('ruleForm')">立即创建</div>
+          <div
+            class="myBtn_blue diaBtn"
+            @click="submitForm('ruleForm')"
+          >{{creatOrEdit[creatOrEditId].btn}}</div>
         </div>
       </div>
     </el-dialog>
@@ -90,8 +97,17 @@
 </template>
 
 <script>
-import { getUserList, deleteUser, getUserInfo, editUserState } from "@/api/api";
-import { MessageBox } from "@/utils/importFile";
+import {
+  getUserList,
+  deleteUser,
+  getUserInfo,
+  editUserState,
+  getUserRoleSelect,
+  editUserInfo,
+  addUser,
+  getAllRoleList,
+} from "@/api/api";
+import { MessageBox, Message } from "@/utils/importFile";
 export default {
   data() {
     var checkTel = (rule, value, callback) => {
@@ -105,14 +121,28 @@ export default {
       }
     };
     return {
-      currPage: 1,
-      pageSize: 10,
+      pages: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
       tableData: [],
+      creatOrEditId: 0,
+      creatOrEdit: [
+        {
+          title: "创建用户",
+          btn: "立即创建",
+        },
+        {
+          title: "修改用户信息",
+          btn: "立即修改",
+        },
+      ],
       //   弹框
       dialogFormVisible: false,
       form: {
         userName: "",
-        jole: "",
+        roleIds: "",
         name: "",
         phonenumber: "",
       },
@@ -120,19 +150,10 @@ export default {
         userName: [
           { required: true, message: "请输入用户名称", trigger: "blur" },
         ],
-        jole: [{ required: true, message: "请选择角色", trigger: "blur" }],
+        roleIds: [{ required: true, message: "请选择角色", trigger: "blur" }],
         phonenumber: [{ validator: checkTel, trigger: "blur" }],
       },
-      options: [
-        {
-          value: "1",
-          label: "管理员",
-        },
-        {
-          value: "2",
-          label: "普通用户",
-        },
-      ],
+      options: [],
     };
   },
   mounted() {
@@ -142,20 +163,18 @@ export default {
     // 获取列表
     async getList() {
       try {
-        const res = await getUserList({
-          pageSize: 10,
-          pageNum: 1,
-        });
-        if (res.code == 200) {
-          res.rows.map((item) => {
-            let roleName = [];
-            item.roles.map((child) => {
-              roleName.push(child.roleName);
-            });
-            item.roleName = roleName.join(" / ");
+        const { pageNum, pageSize } = this.pages;
+        const res = await getUserList({ pageSize, pageNum });
+        if (res.code !== 200) return Message.error(res.msg);
+        this.tableData = res.rows;
+        this.pages.total = res.total;
+        /*    res.rows.map((item) => {
+          let roleName = [];
+          item.roles.map((child) => {
+            roleName.push(child.roleName);
           });
-          this.tableData = res.rows;
-        }
+          item.roleName = roleName.join(" / ");
+        }); */
       } catch (error) {
         console.log(error);
       }
@@ -164,13 +183,9 @@ export default {
     async deleteUser(id) {
       try {
         const res = await deleteUser(id);
-        if (res.code == 200) {
-          MessageBox({
-            type: "success",
-            message: "删除成功!",
-          });
-          this.getList();
-        }
+        if (res.code !== 200) return Message.error(res.msg);
+        Message.success("删除成功");
+        this.getList();
       } catch (error) {
         console.log(error);
       }
@@ -179,25 +194,71 @@ export default {
     async getUserInfo(id) {
       try {
         const res = await getUserInfo(id);
-        console.log(res);
-        if (res.code == 200) {
-          const { name, userName, phonenumber, roles } = res.data;
-          this.form = { name, userName, phonenumber, roles };
-        }
+        if (res.code !== 200) return Message.error(res.msg);
+        const { name, userName, phonenumber, userId } = res.data;
+        this.form = { name, userName, phonenumber, userId };
       } catch (error) {
         console.log(error);
       }
     },
-    async editUserState(id, status) {
-      const res = await editUserState({ userId: id, status: "1" });
-      console.log(res);
-      // this.$axios
-      //   .put("/api/system/user/changeStatus", { userId: id, status: "1" })
-      //   .then((res) => {
-      //     console.log(res);
-      //   });
-    },
     // 修改用户状态
+    async editUserState(id, status) {
+      try {
+        const res = await editUserState({ userId: id, status });
+        if (res.code !== 200) return Message.error(res.msg);
+        Message.success("修改成功");
+        this.getList();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 获取用户可选角色
+    async getUserRoleSelect(id) {
+      try {
+        const res = await getUserRoleSelect(id);
+        if (res.code !== 200) Message.error(res.msg);
+        this.options = res.roles;
+        this.form.roleIds = res.checkedRoles;
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // 创建用户 // 修改用户信息
+    async addUser(form) {
+      try {
+        // creatOrEditId :  0 创建 1 修改
+        const res = this.creatOrEditId
+          ? await editUserInfo(form)
+          : await addUser(form);
+        if (res.code !== 200) return Message.error(res.msg);
+        let message = this.creatOrEditId ? "修改成功" : "添加成功";
+        Message.success(message);
+        this.dialogFormVisible = false;
+        this.getList();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 获取所有角色列表
+    async getAllRoleList() {
+      try {
+        const res = await getAllRoleList();
+        if (res.code !== 200) return Message.error(res.msg);
+        this.options = res.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // 创建用户
+    createUser() {
+      this.dialogFormVisible = true;
+      this.creatOrEditId = 0;
+      this.getAllRoleList();
+    },
+    // 启用
     handleEnable(row) {
       MessageBox.confirm("此操作将修改用户状态, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -205,7 +266,9 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.editUserState(row.userId);
+          console.log(row);
+          let status = row.status == "0" ? "1" : "0";
+          this.editUserState(row.userId, status);
         })
         .catch(() => {
           MessageBox({
@@ -216,8 +279,10 @@ export default {
     },
     // 编辑
     handleEdit(row) {
+      this.creatOrEditId = 1;
       this.dialogFormVisible = true;
       this.getUserInfo(row.userId);
+      this.getUserRoleSelect(row.userId);
     },
     // 删除
     handleDelete(row) {
@@ -230,31 +295,40 @@ export default {
           this.deleteUser(row.userId);
         })
         .catch(() => {
-          MessageBox({
-            type: "info",
-            message: "已取消删除",
-          });
+          Message.info("已取消删除");
         });
     },
+    // 重置表单
+    resetForm() {
+      this.dialogFormVisible = false;
+      this.form = {
+        userName: "",
+        role: "",
+        name: "",
+        phonenumber: "",
+      };
+      this.$refs.ruleForm.resetFields();
+    },
+    // 提交表单
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert("submit!");
+          this.addUser(this.form);
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
+    // 表格序号
+    indexMethod(index) {
+      const { pageNum, pageSize } = this.pages;
+      return index + 1 + (pageNum - 1) * pageSize; // 返回表格序号
     },
     //   分页
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-    },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.pages.pageNum = val;
+      this.getList();
     },
   },
 };

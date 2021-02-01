@@ -22,6 +22,7 @@ import {
   Select,
   Table,
   TableColumn,
+  Tree,
   Upload,
   Switch,
   Card,
@@ -57,5 +58,6 @@ Vue.use(Card);
 Vue.use(Pagination);
 Vue.use(RadioGroup);
 Vue.use(Radio);
+Vue.use(Tree);
 Vue.use(InputNumber);
 export { MessageBox, Confirm, Message };

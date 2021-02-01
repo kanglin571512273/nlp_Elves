@@ -11,14 +11,14 @@ module.exports = {
     assetsPublicPath: "/",
     proxyTable: {
       // 配置跨域
-      '/api': {
-        target: 'http://192.168.0.195:8089/',
-        ws: true,
-        changOrigin: true,
-        pathRewrite: {
-          '^/api': '/api1'
-        }
-      },
+      // '/api': {
+      //   target: 'http://192.168.0.195:8089/',
+      //   // ws: true,
+      //   changOrigin: true,
+      //   pathRewrite: {
+      //     '^/api': ''
+      //   }
+      // },
     },
 
     // Various Dev Server settings

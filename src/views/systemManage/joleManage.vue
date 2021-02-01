@@ -11,8 +11,8 @@
         <el-table-column label="操作" class="operationTable">
           <template slot-scope="scope">
             <div class="operationCon">
-              <div @click="handleEdit(scope.$index, scope.row)" class="operation">编辑</div>
-              <div @click="handleEdit(scope.$index, scope.row)" class="operation">删除</div>
+              <div @click="handleEdit(scope.row)" class="operation">编辑</div>
+              <div @click="handleEelete(scope.row)" class="operation">删除</div>
             </div>
           </template>
         </el-table-column>
@@ -21,13 +21,12 @@
     <!-- 分页 -->
     <div class="pagination">
       <el-pagination
-        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currPage"
+        :current-page="pages.currPage"
         :page-sizes="[100, 200, 300, 400]"
-        :page-size="pageSize"
+        :page-size="pages.pageSize"
         layout="total, prev, pager, next"
-        :total="400"
+        :total="pages.total"
       ></el-pagination>
     </div>
     <!-- 弹框 -->
@@ -92,63 +91,17 @@
 </template>
 
 <script>
+import { getRoleList } from "@/api/api";
+import { deleteItem } from "./handle";
 export default {
   data() {
     return {
-      currPage: 1,
-      pageSize: 10,
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-      ],
+      pages: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      tableData: [],
       //   弹框
       dialogFormVisible: false,
       form: {
@@ -216,7 +169,23 @@ export default {
       },
     };
   },
+  mounted() {
+    this.getList();
+  },
   methods: {
+    // 获取角色列表
+    async getList() {
+      try {
+        const { pageNum, pageSize } = this.pages;
+        const res = await getRoleList({ pageSize, pageNum });
+        if (res.code !== 200) return Message.error(res.msg);
+        // this.tableData = res.rows;
+        console.log(res);
+        // this.pages.total = res.total;
+      } catch (error) {
+        console.log(error);
+      }
+    },
     setCheckedNodes() {
       console.log(this.$refs);
       this.$refs.tree.setCheckedNodes([
@@ -230,6 +199,7 @@ export default {
         },
       ]);
     },
+    // 提交
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -240,15 +210,31 @@ export default {
         }
       });
     },
+    // 编辑
+    handleEdit() {},
+    // 删除
+    handleEelete() {
+      deleteItem(()=>{ this.deleteUser(row.userId);})
+      // MessageBox.confirm("此操作将删除该用户, 是否继续?", "提示", {
+      //   confirmButtonText: "确定",
+      //   cancelButtonText: "取消",
+      //   type: "warning",
+      // })
+      //   .then(() => {
+      //     this.deleteUser(row.userId);
+      //   })
+      //   .catch(() => {
+      //     Message.info("已取消删除");
+      //   });
+    },
+    // 重置表单
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
     //   分页
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-    },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.pages.pageNum = val;
+      this.getList();
     },
   },
 };

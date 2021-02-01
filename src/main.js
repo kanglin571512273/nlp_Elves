@@ -7,9 +7,6 @@ import router from "./router";
 import "./assets/css/reset.css";
 // 引入UI组件样式
 import "element-ui/lib/theme-chalk/index.css";
-// import axios from 'axios'
-// axios.baseURL = 'http://192.168.0.195:8089/'
-// Vue.prototype.$axios = axios
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */

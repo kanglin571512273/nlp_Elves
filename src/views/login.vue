@@ -3,7 +3,9 @@
     <div class="bg-class">
       <el-card class="card-class">
         <div class="bgcenter">
-          <div class="bg-font"><div>Welcome</div></div>
+          <div class="bg-font">
+            <div>Welcome</div>
+          </div>
           <div class="bg-form">
             <el-form
               label-position="top"
@@ -13,25 +15,16 @@
               ref="formLabelAlign"
             >
               <el-form-item label="用户名：" prop="username">
-                <el-input
-                  clearable
-                  v-model="formLabelAlign.username"
-                ></el-input>
+                <el-input clearable v-model="formLabelAlign.username"></el-input>
               </el-form-item>
               <el-form-item label="密码：" prop="password">
-                <el-input
-                  placeholder="请输入密码"
-                  v-model="formLabelAlign.password"
-                  show-password
-                ></el-input>
+                <el-input placeholder="请输入密码" v-model="formLabelAlign.password" show-password></el-input>
               </el-form-item>
             </el-form>
           </div>
-          <button class="bg-login" @click="login('formLabelAlign')">
-            登录
-          </button>
-        </div></el-card
-      >
+          <button class="bg-login" @click="login('formLabelAlign')">登录</button>
+        </div>
+      </el-card>
     </div>
   </div>
 </template>
@@ -44,25 +37,28 @@ export default {
     return {
       formLabelAlign: {
         username: "admin",
-        password: ""
+        password: "",
       },
       rules: {
         username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
         ],
-        password: [{ required: true, message: "请输入密码", trigger: "change" }]
-      }
+        password: [
+          { required: true, message: "请输入密码", trigger: "change" },
+        ],
+      },
     };
   },
 
   methods: {
     login(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
-          postlogin(this.formLabelAlign).then(res => {
+          postlogin(this.formLabelAlign).then((res) => {
             if (res.code == 200) {
               localStorage.setItem("token", res.token);
+              localStorage.setItem("effectToken", true);
               this.$router.push(`/`);
               Message.success("登录成功~");
             } else if (res.code == 500) {
@@ -74,8 +70,8 @@ export default {
           return false;
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

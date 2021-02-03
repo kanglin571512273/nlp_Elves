@@ -26,7 +26,7 @@ const router = new Router({
         },
         {
           path: "/information", //机器人概览
-          name: "Information",
+          name: "information",
           component: () =>
             import(/* webpackChunkName: 'myKnowledge' */ "@/views/information"),
           redirect: "/overview",
@@ -184,10 +184,21 @@ const router = new Router({
   ]
 });
 
+// router.beforeEach((to, from, next) => {
+//   if (to.name == 'Login' || localStorage.getItem("token")) {
+//     next()
+//   } else {
+//     next('/login')
+//   }
+// });
 router.beforeEach((to, from, next) => {
-  if (to.name == 'Login' || (localStorage.getItem("token") && localStorage.getItem('effectToken'))) {
+  if (to.name == 'Login') {
+    next()
+  } else if (localStorage.getItem("token") && localStorage.getItem('effectToken')) {
+    console.log('token存在并有效');
     next()
   } else {
+    console.log('token 失效');
     next('/login')
   }
 });

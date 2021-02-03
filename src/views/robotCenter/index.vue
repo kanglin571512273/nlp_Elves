@@ -90,7 +90,7 @@
           </el-table-column>
           <el-table-column prop="robotName" label="名称">
             <template slot-scope="scope">
-              <el-button type="text" @click="informationClick">{{
+              <el-button type="text" @click="informationClick(scope.row)">{{
                 scope.row.robotName
               }}</el-button>
             </template>
@@ -125,9 +125,9 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page.sync="currentPage1"
-          :page-size="100"
+          :page-size="10"
           layout="total, prev, pager, next"
-          :total="1000"
+          :total="total"
         >
         </el-pagination>
       </div>
@@ -141,20 +141,23 @@ import {
   getdictionary,
   upload,
   addrobotts,
-  deleteList
+  deleteList,
+  editList
 } from "@/api/robotCenter";
 import { Message, MessageBox } from "@/utils/importFile";
 export default {
   data() {
     return {
-      currentPage1: 5,
+      currentPage1: 1,
       dialogFormVisible: false,
       robotname: null,
       dictionary: [],
+      total: 1,
       ruleForm: {
         robotName: "",
         type: "",
-        pictureUrl: ""
+        pictureUrl: "",
+        id: ""
       },
       rules: {
         name: [
@@ -173,25 +176,27 @@ export default {
   },
   methods: {
     // 获取列表
-    async getList() {
+    async getList(pageNum, pageSize) {
       try {
         const res = await getList({
-          pageSize: 10,
-          pageNum: 1
+          pageSize: pageSize,
+          pageNum: pageNum
         });
         if (res.code == 200) {
           this.tableData = res.rows;
+          this.total = res.total;
         }
       } catch (error) {
         console.log(error);
       }
     },
+    // 查询字典库
     async getdictionary() {
       try {
         const res = await getdictionary({});
         if (res.code == 200) {
           this.dictionary = res.data;
-          this.getList();
+          this.getList(1, 10);
         }
       } catch (error) {
         console.log(error);
@@ -207,8 +212,10 @@ export default {
       this.ruleForm = {
         robotName: "",
         type: "api",
-        pictureUrl: " "
+        pictureUrl: " ",
+        id: ""
       };
+      this.fileList = [];
     },
     async uploadSectionFile(param) {
       var fileObj = param.file;
@@ -226,17 +233,30 @@ export default {
     },
 
     handleClick(row) {
+      this.fileList = [];
       this.dialogFormVisible = true;
       this.ruleForm.robotName = row.robotName;
       this.ruleForm.type = row.type;
+      this.ruleForm.pictureUrl = row.pictureUrl;
+      console.log(this.ruleForm.pictureUrl);
+      this.fileList.push({ name: row.seriesId, url: this.ruleForm.pictureUrl });
+      this.ruleForm.id = row.id;
     },
+    // 删除
     deleteClick(row) {
-      console.log(row);
+      deleteList(row.id).then(response => {
+        if (response.code === 200) {
+          Message.success("删除成功");
+          this.getList(1, 10);
+          // this.getList();
+        }
+      });
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
+      this.getList(val, 10);
       console.log(`当前页: ${val}`);
     },
     handleClose(done) {
@@ -264,17 +284,28 @@ export default {
       // return MessageBox.confirm(`确定移除 ${file.name}？`);
     },
     submitForm(formName) {
+      console.log(this.ruleForm);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log(this.ruleForm);
-          addrobotts(this.ruleForm).then(response => {
-            if (response.code === 200) {
-              Message.success("新增成功");
-              this.dialogFormVisible = false;
-              this.getList();
-              // this.getList();
-            }
-          });
+          if (this.ruleForm.id == "") {
+            addrobotts(this.ruleForm).then(response => {
+              if (response.code === 200) {
+                Message.success("新增成功");
+                this.dialogFormVisible = false;
+                this.getList(1, 10);
+                // this.getList();
+              }
+            });
+          } else {
+            editList(this.ruleForm).then(response => {
+              if (response.code === 200) {
+                Message.success("编辑成功");
+                this.dialogFormVisible = false;
+                this.getList(1, 10);
+                // this.getList();
+              }
+            });
+          }
           this.dialogFormVisible = false;
         } else {
           console.log("error submit!!");
@@ -282,11 +313,14 @@ export default {
         }
       });
     },
-    informationClick() {
-      this.$router.push(`/information`);
+    informationClick(row) {
+      this.$router.push({
+        name: "overview",
+      });
+      localStorage.setItem("seriesId",row.id) 
     },
     handleChange(file, fileList) {
-      this.fileList = fileList.slice(-3);
+      this.fileList = fileList.slice(-1);
     }
   }
 };
@@ -366,7 +400,7 @@ export default {
 }
 
 .box-card {
-  height: 530px;
+  height: 710px;
   position: relative;
 }
 .pagination {

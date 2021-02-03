@@ -1,21 +1,67 @@
 <template>
   <div>
     <div class="digital-box">
-      <div class="title">数字迎宾机器人</div>
+      <div class="title">{{ robotData.robotName }}</div>
       <div class="digitalID">
-        <span>ID：4567890987654</span>
-        <span>产品类型：通用模式</span>
-        <span>创建时间：2021-1-1 12:00:02</span>
+        <span>ID：{{ robotData.seriesId }}</span>
+        <span>产品类型：{{ type }}</span>
+        <span>创建时间：{{ robotData.createTime }}</span>
       </div>
     </div>
-    <div class="img-box">
-      <img
-        src="https://cdn.pixabay.com/photo/2020/01/04/18/40/trees-4741364__340.png"
-        alt="img"
-      />
+    <div class="img-box" v-show="robotData.pictureUrl != ' '">
+      <img :src="robotData.pictureUrl" alt="img" />
     </div>
   </div>
 </template>
+
+<script>
+import { getdictionary, detailsList } from "@/api/robotCenter";
+export default {
+  data() {
+    return {
+      robotData: {},
+      dictionary: [],
+      type: "",
+      seriesId: ""
+    };
+  },
+  mounted() {
+    this.seriesId = localStorage.getItem("seriesId");
+    this.detailsList(this.seriesId);
+    this.getdictionary();
+  },
+  methods: {
+    // 查询字典库
+    async getdictionary() {
+      try {
+        const res = await getdictionary();
+        if (res.code == 200) {
+          this.dictionary = res.data;
+          this.statusFormat(this.robotData.type);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 查询详情
+    async detailsList(id) {
+      try {
+        const res = await detailsList(id);
+        if (res.code == 200) {
+          this.robotData = res.data;
+          console.log(this.robotData);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 岗位状态字典翻译
+    statusFormat(row) {
+      this.type = this.selectDictLabel(this.dictionary, row);
+    }
+  }
+};
+</script>
 
 <style lang="less" scoped>
 .digital-box {

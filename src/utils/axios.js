@@ -63,12 +63,12 @@ class HttpRequest {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
             callback: () => {
-              localStorage.getItem("effectToken", false);
+              localStorage.setItem("effectToken", false);
               this.$router.push(`/login`);
             }
           });
         } else {
-          localStorage.getItem("effectToken", true);
+          localStorage.setItem("effectToken", true);
         }
         return data;
       },

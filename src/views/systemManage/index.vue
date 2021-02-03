@@ -2,9 +2,9 @@
 <template>
   <div class="systemManage">
     <div class="toptNav">
-      <div :class="{btnItem:true,active:activeId == 1}" @click="goOther(1)">用户管理</div>
-      <div :class="{btnItem:true,active:activeId == 2}" @click="goOther(2)">角色管理</div>
-      <div :class="{btnItem:true,active:activeId == 3}" @click="goOther(3)">权限管理</div>
+      <div :class="{btnItem:true,active:activeId == 'userManage'}" @click="goOther(1)">用户管理</div>
+      <div :class="{btnItem:true,active:activeId == 'joleManage'}" @click="goOther(2)">角色管理</div>
+      <div :class="{btnItem:true,active:activeId == 'authorityManage'}" @click="goOther(3)">权限管理</div>
     </div>
     <div class="container">
       <router-view></router-view>
@@ -17,17 +17,18 @@ export default {
   data() {
     return {
       activeId: 1,
-     
     };
+  },
+  mounted() {
+    this.activeId = this.$route.name;
   },
   methods: {
     goOther(index) {
       let arr = ["userManage", "joleManage", "authorityManage"];
       if (this.$route.name == arr[index - 1]) return false;
-      this.activeId = index;
+      this.activeId = arr[index - 1];
       this.$router.push(`${arr[index - 1]}`);
     },
- 
   },
 };
 </script>

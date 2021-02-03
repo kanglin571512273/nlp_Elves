@@ -2,7 +2,7 @@
   <div class="createContent">
     <!-- 表单操作 -->
     <div class="formContainer">
-      <div class="myBtn myBtn_blue myBtn_plain myBtn_plain_blue">
+      <div class="myBtn myBtn_blue myBtn_plain myBtn_plain_blue" @click="$router.go(-1)">
         <img src="@/assets/images/arrow.png" alt />
         返回
       </div>
@@ -172,6 +172,7 @@
 export default {
   data() {
     return {
+      id: null,
       keyword: "", //搜索关键字
       nodeNum: 1, //节点个数
       dialogFormVisible: true, //弹框显示
@@ -471,6 +472,9 @@ export default {
       ],
       activeNav: 1,
     };
+  },
+  mounted() {
+    this.id = this.$route.params.id;
   },
   methods: {
     // 展示几个节点

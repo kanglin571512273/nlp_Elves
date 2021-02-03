@@ -97,6 +97,7 @@
 </template>
 
 <script>
+import { deleteItem } from "@/utils/public";
 import {
   getUserList,
   deleteUser,
@@ -185,6 +186,7 @@ export default {
         const res = await deleteUser(id);
         if (res.code !== 200) return Message.error(res.msg);
         Message.success("删除成功");
+        this.pages.pageNum = 1;
         this.getList();
       } catch (error) {
         console.log(error);
@@ -271,10 +273,7 @@ export default {
           this.editUserState(row.userId, status);
         })
         .catch(() => {
-          MessageBox({
-            type: "info",
-            message: "已取消修改",
-          });
+          Message.info("已取消修改");
         });
     },
     // 编辑
@@ -286,17 +285,9 @@ export default {
     },
     // 删除
     handleDelete(row) {
-      MessageBox.confirm("此操作将删除该用户, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.deleteUser(row.userId);
-        })
-        .catch(() => {
-          Message.info("已取消删除");
-        });
+      deleteItem(() => {
+        this.deleteUser(row.userId);
+      });
     },
     // 重置表单
     resetForm() {

@@ -31,7 +31,7 @@ class HttpRequest {
       config => {
         //只针对get方式进行序列化
         if (config.method === "get") {
-          config.paramsSerializer = function(params) {
+          config.paramsSerializer = function (params) {
             return qs.stringify(params, { arrayFormat: "repeat" });
           };
         }
@@ -42,7 +42,7 @@ class HttpRequest {
         this.queue[url] = true;
         // 发送请求头token
         const token = localStorage.getItem("token");
-        token && (config.headers.Authorization = "");
+        token && (config.headers.Authorization = token);
         return config;
       },
       error => {
@@ -53,20 +53,15 @@ class HttpRequest {
     // 响应拦截
     instance.interceptors.response.use(
       res => {
+        console.log(res, '======>');
         this.destroy(url);
         const { data } = res;
         if (typeof data === "object") {
           // 自己处理
         }
         if (data.code === 401) {
-          MessageBox.confirm("用户信息已过期，请重新登录~", "超时", {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            callback: () => {
-              localStorage.setItem("effectToken", false);
-              this.$router.push(`/login`);
-            }
-          });
+          Message.error('用户信息已过期，请重新登录~')
+          localStorage.setItem("effectToken", false);
         } else {
           localStorage.setItem("effectToken", true);
         }

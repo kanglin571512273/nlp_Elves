@@ -1,7 +1,7 @@
 <template>
   <div class="chatRoom">
     <div class="btnContainer">
-      <div class="myBtn myBtn_blue myBtn_plain myBtn_plain_blue">
+      <div class="myBtn myBtn_blue myBtn_plain myBtn_plain_blue" @click="$router.go(-1)">
         <img src="@/assets/images/arrow.png" alt />
         返回
       </div>
@@ -9,12 +9,17 @@
     <div class="contentContainer">
       <!-- 知识库列表 -->
       <div class="libraryList">
-        <div class="libraryItem active" v-for="item in 5" :key="item">
+        <div
+          :class="{libraryItem:true, active: activeId == item.id}"
+          v-for="item in ruleForm"
+          :key="item.id"
+          @click="activeId = item.id"
+        >
           <img src="@/assets/images/1.png" alt />
           <div class="info">
-            <div class="title">中信知识库</div>
-            <div class="explain">说明： 333333</div>
-            <div class="time">时间：20-11-11 12:12:12</div>
+            <div class="title">{{item.name}}</div>
+            <div class="explain">说明：{{item.remark}}</div>
+            <div class="time">时间：{{item.createTime}}</div>
           </div>
         </div>
       </div>
@@ -39,21 +44,52 @@
 </template>
 
 <script>
+import { getKnowInfo, chatTest } from "@/api/api";
+import { Message } from "element-ui";
 export default {
   data() {
     return {
       messageList: [],
+      ruleForm: [],
+      id: null,
+      activeId: null,
     };
   },
+  mounted() {
+    if (this.$route.params.id) {
+      this.id = this.$route.params.id;
+      this.getKnowInfo(this.id);
+    } else {
+      this.$router.go(-1);
+    }
+  },
   methods: {
+    // 查询知识库详情
+    async getKnowInfo(domainId) {
+      try {
+        const res = await getKnowInfo({ domainId });
+        if (res.code !== 200) return Message.error(res.msg);
+        this.ruleForm = [res.data];
+        this.activeId = this.ruleForm[0].id;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async sendMsg(msg) {
+      try {
+        const res = await chatTest({ libraryId: this.activeId, question: msg });
+        const { code, data } = res;
+        if (code !== 200) Message.error(res.msg);
+        this.messageList.push({ message: data, type: 2 });
+        this.$refs.chatDisplay.scrollTop = this.$refs.chatDisplay.scrollHeight;
+      } catch (error) {}
+    },
     send(e) {
       if (e.keyCode !== 13 || e.target.value.trim() == "") return false;
-      //   if (e.target.value.trim() == "") return false;
-      if (this.messageList.length > 2) {
-        this.messageList.push({ message: e.target.value, type: 2 });
-      } else {
-        this.messageList.push({ message: e.target.value, type: 1 });
-      }
+      let msg = e.target.value;
+      if (msg.trim() == "") return false;
+      this.messageList.push({ message: msg, type: 1 });
+      this.sendMsg(msg);
       e.target.value = "";
       this.$refs.chatDisplay.scrollTop = this.$refs.chatDisplay.scrollHeight;
     },

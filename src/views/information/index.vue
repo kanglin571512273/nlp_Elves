@@ -22,7 +22,7 @@
     <!-- 展示区 -->
     <div class="belowMain">
       <router-view />
-     
+
       <!-- <div class="btn">
         <div class="myBtn myBtn_blue myBtn_middle" @click="$router.push('addKnowledge')">创建知识库</div>
       </div>
@@ -47,10 +47,11 @@ export default {
       activeId: 1
     };
   },
+  mounted() {},
   methods: {
     goOther(index) {
       this.activeId = index;
-      let arr = ["", "custom"];
+      let arr = ["overview", "custom"];
       // console.log();
       this.$router.push(`/${arr[index - 1]}`);
     }
@@ -107,5 +108,4 @@ export default {
 .default {
   cursor: pointer;
 }
-
 </style>

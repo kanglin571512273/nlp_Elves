@@ -92,6 +92,7 @@
 </template>
 
 <script>
+import { getList } from "@/api/productLibrary";
 export default {
   data() {
     return {
@@ -169,7 +170,23 @@ export default {
       ]
     };
   },
+  mounted() {
+    this.getlists();
+    console.log(12313);
+  },
   methods: {
+    // 获取产品库列表
+    async getlists() {
+      try {
+        const res = await getList({});
+        if (res.code == 200) {
+          console.log(res);
+          this.tableData = res.rows;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
     handleClick(row) {
       console.log(row);
     },

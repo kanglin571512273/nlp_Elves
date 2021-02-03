@@ -12,8 +12,11 @@
               :rules="rules"
               ref="formLabelAlign"
             >
-              <el-form-item label="用户名：" prop="name">
-                <el-input clearable v-model="formLabelAlign.name"></el-input>
+              <el-form-item label="用户名：" prop="username">
+                <el-input
+                  clearable
+                  v-model="formLabelAlign.username"
+                ></el-input>
               </el-form-item>
               <el-form-item label="密码：" prop="password">
                 <el-input
@@ -34,15 +37,17 @@
 </template>
 
 <script>
+import { Message } from "@/utils/importFile";
+import { postlogin } from "@/api/robotCenter";
 export default {
   data() {
     return {
       formLabelAlign: {
-        name: "admin",
+        username: "admin",
         password: ""
       },
       rules: {
-        name: [
+        username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
           { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
         ],
@@ -55,8 +60,15 @@ export default {
     login(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          localStorage.setItem("token", true);
-          this.$router.push(`/`);
+          postlogin(this.formLabelAlign).then(res => {
+            if (res.code == 200) {
+              localStorage.setItem("token", res.token);
+              this.$router.push(`/`);
+              Message.success("登录成功~");
+            } else if (res.code == 500) {
+              Message.error(res.msg);
+            }
+          });
         } else {
           console.log("error submit!!");
           return false;

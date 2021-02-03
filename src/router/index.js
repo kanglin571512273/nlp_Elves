@@ -23,7 +23,7 @@ const router = new Router({
         },
         {
           path: "/information", //机器人概览
-          name: "information",
+          name: "Information",
           component: () =>
             import(/* webpackChunkName: 'myKnowledge' */ "@/views/information"),
           redirect: "/overview",

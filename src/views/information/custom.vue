@@ -2,30 +2,38 @@
   <div>
     <el-dialog title="个性化配置" width="80%" :visible.sync="dialogFormVisible">
       <div v-show="addstatus">
-        <div class="adproblem" @click="addstatus = false">新增</div>
+        <div class="adproblem" @click="addquest">新增</div>
         <el-card class="adpros">
-          <el-table :data="tableData" border style="width: 100%">
+          <el-table :data="problemListData" border style="width: 100%">
             <el-table-column
-              prop="serial"
+              type="index"
               label="序号"
               width="80"
             ></el-table-column>
-            <el-table-column prop="name" label="问题"></el-table-column>
-            <el-table-column prop="id" label="答案"></el-table-column>
+            <el-table-column prop="questionDesc" label="问题"></el-table-column>
             <el-table-column
-              prop="date"
-              label="日期"
+              prop="defaultAnswer"
+              label="答案"
+            ></el-table-column>
+            <el-table-column
+              prop="updateTime"
+              label="更新时间"
               width="180"
             ></el-table-column>
             <el-table-column fixed="right" label="操作" width="210">
               <template slot-scope="scope">
                 <el-button
-                  @click="handleClick(scope.row)"
+                  @click="handleClick(scope.row.id)"
                   type="text"
                   class="edit"
                   >编辑</el-button
                 >
-                <el-button type="text" class="delete">删除</el-button>
+                <el-button
+                  type="text"
+                  @click="deleteClick(scope.row)"
+                  class="delete"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -67,7 +75,7 @@
                 }"
               >
                 <div class="input_box">
-                  <el-input v-model="domain.value"></el-input>
+                  <el-input v-model="arr[index]"></el-input>
                   <el-button @click.prevent="removeDomain(domain)"
                     >删除</el-button
                   >
@@ -91,7 +99,7 @@
               class="demo-dynamic"
               label-position="left"
             >
-              <el-form-item
+              <!-- <el-form-item
                 prop="answer"
                 label="文本答案："
                 :rules="[
@@ -103,10 +111,10 @@
                 ]"
               >
                 <el-input v-model="answerForm.answer"></el-input>
-              </el-form-item>
+              </el-form-item> -->
               <el-form-item
                 v-for="(domain, index) in answerForm.domains"
-                :label="'相似答案' + (index + 1)"
+                :label="'文本答案' + (index + 1)"
                 :key="domain.key"
                 :prop="'domains.' + index + '.value'"
                 :rules="{
@@ -116,7 +124,7 @@
                 }"
               >
                 <div class="input_box">
-                  <el-input v-model="domain.value"></el-input>
+                  <el-input v-model="arrquestion[index]"></el-input>
                   <el-button @click.prevent="removeAnswer(domain)"
                     >删除</el-button
                   >
@@ -175,33 +183,18 @@
       <div class="title">知识库设置</div>
       <div class="configuration" @click="knowledgebase = true">知识库配置</div>
       <div class="card-box">
-        <div class="card_items card_list">
+        <div class="card_items card_list" v-if="configured.length == 0">
           <span>为机器人添加知识库吧，让它可以更加智能～</span>
         </div>
-        <div class="card_items">
+        <div class="card_items" v-for="item in configured" :key="item.id">
           <div class="card_item">
             <div class="card_img">
-              <img
-                src="https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png"
-                alt="img"
-              />
+              <img :src="item.iconUrl" alt="img" />
             </div>
             <div class="card_fonts">
-              <div class="card_title">农行知识库</div>
-              <div>说明：理财知识库</div>
-              <div>时间：2021-01-13 12:12:12</div>
-            </div>
-          </div>
-        </div>
-        <div class="card_items" v-for="item in knowledgedata" :key="item.id">
-          <div class="card_item">
-            <div class="card_img">
-              <img :src="item.img" alt="img" />
-            </div>
-            <div class="card_fonts">
-              <div class="card_title">{{ item.title }}</div>
-              <div>说明：{{ item.description }}</div>
-              <div>时间：{{ item.time }}</div>
+              <div class="card_title">{{ item.name }}</div>
+              <div>说明：{{ item.remark }}</div>
+              <div>时间：{{ item.createTime }}</div>
             </div>
           </div>
         </div>
@@ -236,7 +229,10 @@
           <!-- 我的知识库  -->
           <div v-show="activeNav == 1">
             <div class="card-box">
-              <div class="card_items card_list">
+              <div
+                class="card_items card_list"
+                v-if="knowledgedata.length == 0"
+              >
                 <span>为机器人添加知识库吧，让它可以更加智能～</span>
               </div>
               <div
@@ -254,12 +250,12 @@
                     ></div>
                   </div>
                   <div class="card_img">
-                    <img :src="item.img" alt="img" />
+                    <img :src="item.iconUrl" alt="img" />
                   </div>
                   <div class="card_fonts">
-                    <div class="card_title">{{ item.title }}</div>
-                    <div>说明：{{ item.description }}</div>
-                    <div>时间：{{ item.time }}</div>
+                    <div class="card_title">{{ item.name }}</div>
+                    <div>说明：{{ item.remark }}</div>
+                    <div>时间：{{ item.createTime }}</div>
                   </div>
                 </div>
               </div>
@@ -356,6 +352,15 @@
 </template>
 <script>
 import { Message } from "@/utils/importFile";
+import {
+  getrobotLibrary,
+  getconfiguredList,
+  addConfiguration,
+  problemList,
+  addquestion,
+  getquestion,
+  deleteQuestion
+} from "@/api/robotCenter";
 export default {
   data() {
     return {
@@ -366,100 +371,24 @@ export default {
       knowledgebase: false,
       addstatus: true,
       activeNav: 1,
+      value: "1231231",
+      total: "",
       activebase: null,
+      seriesId: "",
       spanIndex: [],
-      tableData: [
-        {
-          serial: 1,
-          date: "2016-05-02",
-          name: "王小虎",
-          id: 67907790,
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
-        },
-        {
-          serial: 2,
-          date: "2016-05-04",
-          id: 67907790,
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1517 弄",
-          zip: 200333
-        },
-        {
-          serial: 3,
-          date: "2016-05-01",
-          id: 67907790,
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1519 弄",
-          zip: 200333
-        },
-        {
-          serial: 4,
-          date: "2016-05-03",
-          name: "王小虎",
-          province: "上海",
-          id: 67907790,
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1516 弄",
-          zip: 200333
-        }
-      ],
+      problemListData: [],
+      arr: [],
+      arrquestion: [],
       problemForm: {
-        domains: [
-          {
-            value: ""
-          }
-        ],
+        domains: [],
         question: ""
       },
       answerForm: {
-        domains: [
-          {
-            value: ""
-          }
-        ],
+        domains: [],
         answer: ""
       },
-      knowledgedata: [
-        {
-          id: 1,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png"
-        },
-        {
-          id: 2,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2020/10/23/17/52/fox-5679446__340.png"
-        },
-        {
-          id: 3,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2019/12/11/01/51/skating-4687221__340.png"
-        },
-        {
-          id: 4,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2020/02/17/15/05/market-4856748__340.jpg"
-        }
-      ],
+      configured: [],
+      knowledgedata: [],
       officialdata: [
         {
           id: 1,
@@ -530,15 +459,129 @@ export default {
       ]
     };
   },
+  mounted() {
+    this.seriesId = localStorage.getItem("seriesId");
+    this.getlists();
+    this.getconfiguredLists();
+  },
   methods: {
+    // 新增问题按钮
+    addquest() {
+      this.arr = [];
+      this.arrquestion = [];
+      this.problemForm.domains = [];
+      this.problemForm.question = "";
+      this.answerForm.domains = [];
+      this.addstatus = false;
+    },
+    // 查询知识库列表
+    async getlists() {
+      try {
+        const res = await getrobotLibrary({
+          pageNum: 1,
+          pageSize: 999,
+          robotId: this.seriesId
+        });
+        if (res.code == 200) {
+          this.knowledgedata = res.rows;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 查询问题列表
+    async getproblemList() {
+      try {
+        const res = await problemList({
+          id: this.seriesId
+        });
+        if (res.code == 200) {
+          this.problemListData = res.rows;
+          this.total = res.total;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 查询已配知识库列表
+    async getconfiguredLists() {
+      try {
+        const res = await getconfiguredList({
+          pageNum: 1,
+          pageSize: 999,
+          robotId: this.seriesId
+        });
+        if (res.code == 200) {
+          this.configured = res.rows;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 新增问题
+    async getaddquestionLists() {
+      var similarQuestion = this.problemForm.domains.map(function(item) {
+        return item.value;
+      });
+      var answer = this.answerForm.domains.map(function(item) {
+        return item.value;
+      });
+      if (this.total <= 9) {
+        try {
+          const res = await addquestion({
+            robotId: this.seriesId,
+            question: this.problemForm.question,
+            similarQuestion: similarQuestion,
+            answer: answer
+          });
+          if (res.code == 200) {
+            Message.success("新增成功");
+            this.addstatus = true;
+            this.getproblemList();
+          } else if (res.code == 500) {
+            Message.error(res.msg);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        Message.error("最多新增十条记录");
+      }
+    },
+    // 编辑
+    handleClick(id) {
+      this.addstatus = false;
+      getquestion(id).then(res => {
+        if (res.code == 200) {
+          // this.problemForm.domains = res.data.similarQuestion
+          this.problemForm.domains = res.data.similarQuestion;
+          this.answerForm.domains = res.data.answer;
+          this.problemForm.question = res.data.question;
+          var arr1 = res.data.similarQuestion;
+          var arr2 = res.data.question;
+          this.arr = [].concat(arr1);
+          this.arrquestion = [].concat(arr2);
+        }
+      });
+    },
+    // 删除
+    deleteClick(row) {
+      deleteQuestion(row.id).then(response => {
+        if (response.code === 200) {
+          Message.success("删除成功");
+          this.getproblemList();
+        }
+      });
+    },
     setup() {
+      this.getproblemList();
       this.dialogFormVisible = true;
       this.addstatus = true;
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          alert("submit!");
+          this.getaddquestionLists();
         } else {
           console.log("error submit!!");
           return false;
@@ -602,6 +645,16 @@ export default {
       }
     },
     know() {
+      console.log(this.spanIndex, 54444);
+      var obj = {
+        libraryId: this.spanIndex.length == 0 ? [-1] : this.spanIndex,
+        robotId: this.seriesId
+      };
+      addConfiguration(obj).then(res => {
+        if (res.code == 200) {
+          this.getconfiguredLists();
+        }
+      });
       this.knowledgebase = false;
     }
   }
@@ -623,7 +676,7 @@ export default {
   height: 60px;
 }
 .adpros {
-  height: 475px;
+  height: 710px;
 }
 .submit-box {
   display: flex;

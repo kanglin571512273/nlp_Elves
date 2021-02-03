@@ -2,30 +2,41 @@
   <div class="cartItem">
     <div class="infoContain">
       <div class="leftImg">
-        <img src="@/assets/images/1.png" alt />
+        <img :src="data.iconUrl" alt />
       </div>
       <div class="rightInfo">
         <div class="title">
-          <span>农行知识库</span>
-          <div v-show="$route.name == 'myKnowledge'" class="myBtn myBtn_success myBtn_plain">已使用</div>
+          <span>{{data.name}}</span>
+          <div
+            v-show="$route.name == 'myKnowledge' && data.isUsed "
+            class="myBtn myBtn_success myBtn_plain"
+          >已使用</div>
         </div>
         <div class="info">
           <div class="infoItem ellipsis">
             <span>说明：</span>
-            <span>理财知识库</span>
+            <span>{{data.remark}}</span>
           </div>
           <div class="infoItem ellipsis">
             <span>时间：</span>
-            <span>2021-01-13 12:12:12</span>
+            <span>{{data.createTime}}</span>
           </div>
         </div>
       </div>
     </div>
     <div class="belowBtn">
       <div class="btnContain" v-show="$route.name == 'myKnowledge'">
-        <div class="littleBtn myBtn_primary">创建内容</div>
-        <div class="littleBtn myBtn_waring">发布</div>
-        <div class="littleBtn myBtn_info">取消发布</div>
+        <div class="littleBtn myBtn_primary" @click="createContent(data.id)">创建内容</div>
+        <div
+          v-show="!data.releaseStatus"
+          class="littleBtn myBtn_waring"
+          @click="editReleaseStatus(data.id,1)"
+        >发布</div>
+        <div
+          v-show="data.releaseStatus"
+          class="littleBtn myBtn_info"
+          @click="editReleaseStatus(data.id,0)"
+        >取消发布</div>
       </div>
       <div class="rightIcon">
         <el-dropdown @command="handleCommand">
@@ -34,9 +45,9 @@
             <img class="more" src="@/assets/images/more.png" alt />
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="1-11">体验</el-dropdown-item>
-            <el-dropdown-item command="2-11">编辑</el-dropdown-item>
-            <el-dropdown-item command="3-11">删除</el-dropdown-item>
+            <el-dropdown-item :command="'1-' + data.id">体验</el-dropdown-item>
+            <el-dropdown-item :command="'2-' + data.id">编辑</el-dropdown-item>
+            <el-dropdown-item :command="'3-' + data.id">删除</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -45,18 +56,43 @@
 </template>
 
 <script>
-// import "@/assets/css/zxfStyle.css";
-// import "@/utils/importFile";
-
 export default {
+  props: { data: { type: Object, default: () => {} } },
+  mounted() {
+    // console.log(this.data);
+  },
   methods: {
+    // 创建内容
+    createContent(id) {
+      this.$router.push({
+        path: "/createContent",
+        name: "createContent",
+        params: {
+          id,
+        },
+      });
+    },
+    // 修改发布状态
+    editReleaseStatus(id, index) {
+      this.$emit("editReleaseStatus", id, index);
+    },
     // 右下角的体验  删除  编辑
     handleCommand(index) {
-      console.log(index);
-      let first = index.split("-")[0];
-      switch (+first) {
+      let first = +index.split("-")[0];
+      let id = index.split("-")[1];
+      switch (first) {
         case 1:
-          this.$router.push("/chartRoom");
+          this.$router.push({
+            path: "/chatRoom",
+            name: "chatRoom",
+            params: { id },
+          });
+          break;
+        case 2:
+          this.$emit("editItem", id);
+          break;
+        case 3:
+          this.$emit("deleteItem", id);
           break;
 
         default:

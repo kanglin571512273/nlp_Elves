@@ -5,14 +5,14 @@
     <div class="mainContainer">
       <div class="createBtn" @click="dialogFormVisible = true">创建权限</div>
       <el-table :data="tableData" border style="width: 100%" height="91%">
-        <el-table-column label="序号" type="index" width="70"></el-table-column>
-        <el-table-column prop="date" label="权限名称"></el-table-column>
-        <el-table-column prop="name" label="权限描述"></el-table-column>
+        <el-table-column label="序号" :index="indexMethod" type="index" width="70"></el-table-column>
+        <el-table-column prop="menuName" label="权限名称"></el-table-column>
+        <el-table-column prop="menuDesc" label="权限描述"></el-table-column>
         <el-table-column label="操作" class="operationTable">
           <template slot-scope="scope">
             <div class="operationCon">
-              <div @click="handleEdit(scope.$index, scope.row)" class="operation">编辑</div>
-              <div @click="handleEdit(scope.$index, scope.row)" class="operation">删除</div>
+              <div @click="handleEdit(scope.row)" class="operation">编辑</div>
+              <div @click="handleDelete(scope.row)" class="operation">删除</div>
             </div>
           </template>
         </el-table-column>
@@ -21,20 +21,19 @@
     <!-- 分页 -->
     <div class="pagination">
       <el-pagination
-        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currPage"
+        :current-page="pages.pageNum"
         :page-sizes="[100, 200, 300, 400]"
-        :page-size="pageSize"
+        :page-size="pages.pageSize"
         layout="total, prev, pager, next"
-        :total="400"
+        :total="pages.total"
       ></el-pagination>
     </div>
     <!-- 弹框 -->
-    <el-dialog :visible.sync="dialogFormVisible">
+    <el-dialog :visible.sync="dialogFormVisible" @close="resetForm('ruleForm')">
       <!-- <span>创建用户</span> -->
       <div class="diaContainer">
-        <span class="header">创建权限</span>
+        <span class="header">{{creatOrEdit[creatOrEditId].title}}</span>
         <el-form
           :model="form"
           label-width="120px"
@@ -43,9 +42,9 @@
           label-position="right"
           align="left"
         >
-          <el-form-item label="权限名称：" prop="nickName">
+          <el-form-item label="权限名称：" prop="menuName">
             <el-input
-              v-model="form.nickName"
+              v-model="form.menuName"
               size="mini"
               placeholder="请输入权限名称"
               maxlength="20"
@@ -54,7 +53,7 @@
           </el-form-item>
           <el-form-item label="权限描述：">
             <el-input
-              v-model="form.name"
+              v-model="form.menuDesc"
               type="textarea"
               placeholder="请输入权限描述"
               size="mini"
@@ -65,7 +64,10 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <div class="myBtn_info diaBtn" @click="resetForm('ruleForm')">取 消</div>
-          <div class="myBtn_blue diaBtn" @click="submitForm('ruleForm')">立即创建</div>
+          <div
+            class="myBtn_blue diaBtn"
+            @click="submitForm('ruleForm')"
+          >{{creatOrEdit[creatOrEditId].btn}}</div>
         </div>
       </div>
     </el-dialog>
@@ -73,96 +75,150 @@
 </template>
 
 <script>
+import { deleteItem } from "@/utils/public";
+import { Message } from "@/utils/importFile";
+import {
+  getMenuList,
+  deleteMenuItem,
+  getMenuInfo,
+  addMenuInfo,
+  editMenuInfo,
+} from "@/api/api";
 export default {
   data() {
     return {
-      currPage: 1,
-      pageSize: 10,
-      tableData: [
+      pages: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      creatOrEditId: 0,
+      creatOrEdit: [
         {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
+          title: "创建权限",
+          btn: "立即创建",
         },
         {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
+          title: "修改权限信息",
+          btn: "立即修改",
         },
       ],
+      tableData: [],
       //   弹框
       dialogFormVisible: false,
       form: {
-        nickName: "",
-        name: "",
+        menuName: "",
+        menuDesc: "",
       },
       rules: {
-        nickName: [
+        menuName: [
           { required: true, message: "请输入用户名称", trigger: "blur" },
         ],
       },
     };
   },
+  mounted() {
+    this.getList();
+  },
   methods: {
+    // 获取权限列表
+    async getList() {
+      try {
+        const { pageNum, pageSize } = this.pages;
+        const res = await getMenuList({ pageSize, pageNum });
+        if (res.code !== 200) return Message.error(res.msg);
+        this.tableData = res.rows;
+        this.pages.total = res.total;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 删除权限
+    async deleteMenu(id) {
+      try {
+        const res = await deleteMenuItem(id);
+        if (res.code !== 200) return Message.error(res.msg);
+        Message.success("删除成功");
+        // Math.ceil(--this.pages.total / this.pages.pageSize)
+        this.pages.pageNum = 1;
+        this.getList();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 获取权限信息
+    async getMenuInfo(id) {
+      try {
+        const res = await getMenuInfo(id);
+        if (res.code !== 200) Message.error(res.msg);
+        this.form = res.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 添加  /  修改用户
+    async addMenu(form) {
+      try {
+        // creatOrEditId :  0 创建 1 修改
+        const res = this.creatOrEditId
+          ? await editMenuInfo(form)
+          : await addMenuInfo(form);
+        if (res.code !== 200) return Message.error(res.msg);
+        let message = this.creatOrEditId ? "修改成功" : "添加成功";
+        Message.success(message);
+        this.dialogFormVisible = false;
+        this.getList();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 创建权限
+    createRole() {
+      this.dialogFormVisible = true;
+      this.creatOrEditId = 0;
+    },
+    // 编辑
+    handleEdit(row) {
+      this.creatOrEditId = 1;
+      this.dialogFormVisible = true;
+      this.getMenuInfo(row.menuId);
+    },
+    // 删除
+    handleDelete(row) {
+      deleteItem(() => {
+        // console.log(row.menuId);
+        this.deleteMenu(row.menuId);
+      });
+    },
+    // 提交
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert("submit!");
+          this.addMenu(this.form);
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
+    // 重置表单
+    resetForm() {
+      this.dialogFormVisible = false;
+      this.form = {
+        menuName: "",
+        menuDesc: "",
+      };
+      this.$refs.ruleForm.resetFields(); //校验样式清空
+    },
+    // 表格序号
+    indexMethod(index) {
+      const { pageNum, pageSize } = this.pages;
+      return index + 1 + (pageNum - 1) * pageSize; // 返回表格序号
     },
     //   分页
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-    },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.pages.pageNum = val;
+      this.getList();
     },
   },
 };

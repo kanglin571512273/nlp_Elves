@@ -1,3 +1,4 @@
+import { MessageBox, Message } from '@/utils/importFile'
 /**
  * 通用js方法封装处理
  * Copyright (c) 2019 ruoyi
@@ -67,7 +68,7 @@ export function addDateRange(params, dateRange) {
 
 // 回显数据字典
 export function selectDictLabel(datas, value) {
-    var actions = [];
+	var actions = [];
 	Object.keys(datas).some((key) => {
 		if (datas[key].value == ('' + value)) {
 			actions.push(datas[key].label);
@@ -146,3 +147,17 @@ export function handleTree(data, id, parentId, children, rootId) {
 	});
 	return treeData != '' ? treeData : data;
 }
+export const deleteItem = function (callback) {
+	MessageBox.confirm("此操作将删除该条信息, 是否继续?", "提示", {
+		confirmButtonText: "确定",
+		cancelButtonText: "取消",
+		type: "warning",
+	})
+		.then(() => {
+			// this.deleteUser(row.userId);
+			callback()
+		})
+		.catch(() => {
+			Message.info("已取消删除");
+		});
+};

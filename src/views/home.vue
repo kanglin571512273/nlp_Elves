@@ -20,7 +20,7 @@
             :key="item.path"
             :route="'/' + item.path"
             :index="item.path"
-          >{{item.name}}</el-menu-item>
+          >{{item.menuName}}</el-menu-item>
         </el-menu>
         <div class="personInfo">
           <div class="headerImg">
@@ -40,40 +40,65 @@
 </template>
 
 <script>
+import { getRouteMenu } from "@/api/api";
+import { Message } from "element-ui";
 export default {
   name: "home",
   data() {
     return {
-      activeIndex: "robot",
+      activeIndex: "",
       systemId: 0,
       imgUrl: [
         require("@/assets/images/manage.png"),
         require("@/assets/images/home.png"),
       ],
       systemName: ["系统管理", "返回首页"],
-      nav: [
-        { name: "机器人中心", path: "robot" },
-        { name: "产品库", path: "product" },
-        { name: "知识库", path: "knowledge" },
-      ],
-      tempnav: [
-        { name: "机器人中心", path: "robot" },
-        { name: "产品库", path: "product" },
-        { name: "知识库", path: "knowledge" },
-      ],
-      system: [{ name: "系统管理", path: "systemManage" }],
+      nav: [],
+      tempnav: [],
+      system: [],
     };
   },
+  created() {
+    this.getRouteMenu();
+    console.log(this.$route);
+  },
   methods: {
+    // 路由
+    async getRouteMenu() {
+      try {
+        const res = await getRouteMenu();
+        if (res.code !== 200) Message.error(res.msg);
+        let nav = res.userMenus.filter((item) => {
+          return item.path !== "systemManage";
+        });
+        let system = res.userMenus.filter((item) => {
+          return item.path == "systemManage";
+        });
+        // 区分系统管理
+        this.nav = nav;
+        this.tempnav = nav;
+        this.system = system;
+        // 刷新时，当前路由还是高亮
+        this.activeIndex = this.$route.meta.parent;
+      } catch (error) {
+        console.log(error);
+      }
+    },
     handleSelect(key, keyPath) {
       this.activeIndex = key;
     },
     goOther() {
-      this.systemId = ++this.systemId % 2;
-      this.nav = this.systemId ? this.system : this.tempnav;
-      this.systemId
-        ? this.$router.push("/systemManage")
-        : this.$router.push("/");
+      console.log(this.$route.meta.parent);
+      let flag = this.$route.meta.parent == "systemManage";
+      if (flag) {
+        this.nav = this.system;
+        this.$router.push("/systemManage");
+        this.activeIndex = "systemManage";
+      } else {
+        this.nav = this.tempnav;
+        this.$router.push("/");
+        this.activeIndex = "robot";
+      }
     },
   },
 };

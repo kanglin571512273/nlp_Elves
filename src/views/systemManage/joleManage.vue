@@ -3,16 +3,17 @@
   <div class="joleManage">
     <!-- 展示区  -->
     <div class="mainContainer">
-      <div class="createBtn" @click="dialogFormVisible = true">创建角色</div>
+      <div class="createBtn" @click="createRole">创建角色</div>
       <el-table :data="tableData" border style="width: 100%" height="91%">
-        <el-table-column label="序号" type="index" width="70"></el-table-column>
-        <el-table-column prop="date" label="角色名称"></el-table-column>
-        <el-table-column prop="name" label="角色描述"></el-table-column>
+        <el-table-column label="序号" :index="indexMethod" type="index" width="70"></el-table-column>
+        <el-table-column prop="roleName" label="角色名称"></el-table-column>
+        <el-table-column prop="roleKey" label="权限字符"></el-table-column>
+        <el-table-column prop="roleDesc" label="角色描述"></el-table-column>
         <el-table-column label="操作" class="operationTable">
           <template slot-scope="scope">
             <div class="operationCon">
               <div @click="handleEdit(scope.row)" class="operation">编辑</div>
-              <div @click="handleEelete(scope.row)" class="operation">删除</div>
+              <div @click="handleDelete(scope.row)" class="operation">删除</div>
             </div>
           </template>
         </el-table-column>
@@ -30,9 +31,9 @@
       ></el-pagination>
     </div>
     <!-- 弹框 -->
-    <el-dialog :visible.sync="dialogFormVisible">
+    <el-dialog :visible.sync="dialogFormVisible" @close="resetForm">
       <div class="diaContainer">
-        <span class="header">创建用户</span>
+        <span class="header">{{ creatOrEdit[creatOrEditId].title}}</span>
         <el-form
           :model="form"
           label-width="120px"
@@ -41,9 +42,9 @@
           label-position="right"
           align="left"
         >
-          <el-form-item label="角色名称：" prop="nickName">
+          <el-form-item label="角色名称：" prop="roleName">
             <el-input
-              v-model="form.nickName"
+              v-model="form.roleName"
               size="mini"
               placeholder="请输入角色名称"
               maxlength="20"
@@ -52,7 +53,7 @@
           </el-form-item>
           <el-form-item label="角色描述：">
             <el-input
-              v-model="form.name"
+              v-model="form.roleDesc"
               type="textarea"
               placeholder="请输入角色描述"
               size="mini"
@@ -60,30 +61,34 @@
               show-word-limit
             ></el-input>
           </el-form-item>
-          <el-form-item label="权限字符：" prop="nickName">
+          <el-form-item label="权限字符：" prop="roleKey">
             <el-input
-              v-model="form.nickName"
+              v-model="form.roleKey"
               size="mini"
               placeholder="请输入权限字符"
               maxlength="30"
               show-word-limit
             ></el-input>
           </el-form-item>
-          <el-form-item label="权限配置：" prop="nickName">
+          <el-form-item label="权限配置：" prop="menuIds">
             <el-tree
               ref="tree"
               :data="data"
               show-checkbox
               default-expand-all
-              node-key="id"
+              node-key="menuId"
               highlight-current
               :props="defaultProps"
+              :default-checked-keys="defaultCheckedKey"
             ></el-tree>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <div class="myBtn_info diaBtn" @click="resetForm('ruleForm')">取 消</div>
-          <div class="myBtn_blue diaBtn" @click="submitForm('ruleForm')">立即创建</div>
+          <div
+            class="myBtn_blue diaBtn"
+            @click="submitForm('ruleForm')"
+          >{{creatOrEdit[creatOrEditId].btn}}</div>
         </div>
       </div>
     </el-dialog>
@@ -91,8 +96,17 @@
 </template>
 
 <script>
-import { getRoleList } from "@/api/api";
-import { deleteItem } from "./handle";
+import {
+  getRoleList,
+  deleteRole,
+  getAuthAndChoosed,
+  getRoleInfo,
+  addRoleInfo,
+  getAuthList,
+  editRoleInfo,
+} from "@/api/api";
+import { deleteItem } from "@/utils/public";
+import { Message } from "@/utils/importFile";
 export default {
   data() {
     return {
@@ -101,76 +115,44 @@ export default {
         pageSize: 10,
         total: 0,
       },
+      creatOrEditId: 0,
+      creatOrEdit: [
+        {
+          title: "创建角色",
+          btn: "立即创建",
+        },
+        {
+          title: "修改角色信息",
+          btn: "立即修改",
+        },
+      ],
       tableData: [],
       //   弹框
       dialogFormVisible: false,
       form: {
-        nickName: "",
-        name: "",
+        roleName: "",
+        roleDesc: "",
+        roleKey: "",
       },
       rules: {
-        nickName: [
-          { required: true, message: "请输入用户名称", trigger: "blur" },
+        roleName: [
+          { required: true, message: "请输入角色名称", trigger: "blur" },
+        ],
+        roleKey: [
+          { required: true, message: "请输入权限字符", trigger: "blur" },
         ],
       },
-      data: [
-        {
-          id: 1,
-          label: "一级 1",
-          children: [
-            {
-              id: 4,
-              label: "二级 1-1",
-              children: [
-                {
-                  id: 9,
-                  label: "三级 1-1-1",
-                },
-                {
-                  id: 10,
-                  label: "三级 1-1-2",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          id: 2,
-          label: "一级 2",
-          children: [
-            {
-              id: 5,
-              label: "二级 2-1",
-            },
-            {
-              id: 6,
-              label: "二级 2-2",
-            },
-          ],
-        },
-        {
-          id: 3,
-          label: "一级 3",
-          children: [
-            {
-              id: 7,
-              label: "二级 3-1",
-            },
-            {
-              id: 8,
-              label: "二级 3-2",
-            },
-          ],
-        },
-      ],
+      data: [],
+      defaultCheckedKey: [],
       defaultProps: {
         children: "children",
-        label: "label",
+        label: "menuName",
       },
     };
   },
   mounted() {
     this.getList();
+    this.getAuthList();
   },
   methods: {
     // 获取角色列表
@@ -179,57 +161,117 @@ export default {
         const { pageNum, pageSize } = this.pages;
         const res = await getRoleList({ pageSize, pageNum });
         if (res.code !== 200) return Message.error(res.msg);
-        // this.tableData = res.rows;
-        console.log(res);
-        // this.pages.total = res.total;
+        this.tableData = res.rows;
+        this.pages.total = res.total;
       } catch (error) {
         console.log(error);
       }
     },
-    setCheckedNodes() {
-      console.log(this.$refs);
-      this.$refs.tree.setCheckedNodes([
-        {
-          id: 5,
-          label: "二级 2-1",
-        },
-        {
-          id: 9,
-          label: "三级 1-1-1",
-        },
-      ]);
+    // 删除角色
+    async deleteRole(id) {
+      try {
+        const res = await deleteRole(id);
+        if (res.code !== 200) return Message.error(res.msg);
+        Message.success("删除成功");
+        this.pages.pageNum = 1;
+        this.getList();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 获取权限列表及选中权限
+    async getAuthAndChoosed(id) {
+      try {
+        const res = await getAuthAndChoosed(id);
+        if (res.code !== 200) Message.error(res.msg);
+        this.defaultCheckedKey = res.checkedMenus;
+        // this.data = res.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 获取权限列表
+    async getAuthList() {
+      try {
+        const res = await getAuthList();
+        if (res.code !== 200) Message.error(res.msg);
+        this.data = res.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 获取角色信息
+    async getRoleInfo(id) {
+      try {
+        const res = await getRoleInfo(id);
+        if (res.code !== 200) Message.error(res.msg);
+        this.form = res.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 添加  /  修改用户
+    async addRole(form) {
+      try {
+        let menuIds = this.$refs.tree.getCheckedKeys();
+        form = { ...form, menuIds };
+        // creatOrEditId :  0 创建 1 修改
+        const res = this.creatOrEditId
+          ? await editRoleInfo(form)
+          : await addRoleInfo(form);
+        if (res.code !== 200) return Message.error(res.msg);
+        let message = this.creatOrEditId ? "修改成功" : "添加成功";
+        Message.success(message);
+        this.dialogFormVisible = false;
+        this.getList();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 创建角色
+    createRole() {
+      this.dialogFormVisible = true;
+      this.creatOrEditId = 0;
+    },
+    // 编辑
+    handleEdit(row) {
+      this.creatOrEditId = 1;
+      this.dialogFormVisible = true;
+      this.getRoleInfo(row.roleId);
+      this.getAuthAndChoosed(row.roleId);
+    },
+    // 删除
+    handleDelete(row) {
+      deleteItem(() => {
+        this.deleteRole(row.roleId);
+      });
     },
     // 提交
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert("submit!");
+          this.addRole(this.form);
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
-    // 编辑
-    handleEdit() {},
-    // 删除
-    handleEelete() {
-      deleteItem(()=>{ this.deleteUser(row.userId);})
-      // MessageBox.confirm("此操作将删除该用户, 是否继续?", "提示", {
-      //   confirmButtonText: "确定",
-      //   cancelButtonText: "取消",
-      //   type: "warning",
-      // })
-      //   .then(() => {
-      //     this.deleteUser(row.userId);
-      //   })
-      //   .catch(() => {
-      //     Message.info("已取消删除");
-      //   });
-    },
     // 重置表单
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
+    resetForm() {
+      this.dialogFormVisible = false;
+      this.form = {
+        roleName: "",
+        roleDesc: "",
+        roleKey: "",
+      };
+      this.$refs.tree.setCheckedKeys([]); //树结构清空
+      this.$refs.ruleForm.resetFields(); //校验样式清空
+    },
+    // 表格序号
+    indexMethod(index) {
+      const { pageNum, pageSize } = this.pages;
+      return index + 1 + (pageNum - 1) * pageSize; // 返回表格序号
     },
     //   分页
     handleCurrentChange(val) {

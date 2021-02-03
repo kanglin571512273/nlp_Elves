@@ -3,24 +3,36 @@
     <!--  导航区 -->
     <div class="aboveNav">
       <div class="leftNav">
-        <div :class="{btnItem:true,active:activeId == 1}" @click="goOther(1)">我的知识库</div>
-        <div :class="{btnItem:true,active:activeId == 2}" @click="goOther(2)">官方知识库</div>
-        <div :class="{btnItem:true,active:activeId == 3}" @click="goOther(3)">第三方知识库</div>
+        <div :class="{btnItem:true,active:activeId == 'myKnowledge'}" @click="goOther(1)">我的知识库</div>
+        <div
+          :class="{btnItem:true,active:activeId == 'officialKnowledge'}"
+          @click="goOther(2)"
+        >官方知识库</div>
+        <div
+          :class="{btnItem:true,active:activeId == 'thirdPartyKnowledge'}"
+          @click="goOther(3)"
+        >第三方知识库</div>
       </div>
       <div class="rightSearch">
-        <el-input size="mini" placeholder="请输入内容..." v-model="keyword" class="input-with-select">
-          <img class="search" src="@/assets/images/search.png" alt slot="suffix" />
+        <el-input
+          size="mini"
+          placeholder="请输入内容..."
+          v-model="keyword"
+          @change="search"
+          class="input-with-select"
+        >
+          <img class="search" src="@/assets/images/search.png" alt slot="suffix" @click="search" />
           <el-select size="mini" v-model="select" slot="prepend" placeholder="请选择内容">
-            <el-option label="餐厅名" value="1"></el-option>
-            <el-option label="订单号" value="2"></el-option>
-            <el-option label="用户电话" value="3"></el-option>
+            <el-option label="知识库名称" value="1"></el-option>
+            <el-option label="发布状态" value="2"></el-option>
+            <el-option label="使用状态" value="3"></el-option>
           </el-select>
         </el-input>
       </div>
     </div>
     <!-- 展示区 -->
     <div class="belowMain">
-      <router-view />
+      <router-view ref="child" />
     </div>
   </div>
 </template>
@@ -34,17 +46,30 @@ export default {
   data() {
     return {
       keyword: "",
-      select: "",
-      activeId: 1,
+      select: "1",
+      activeId: "myKnowledge",
     };
+  },
+  mounted() {
+    this.activeId = this.$route.name;
   },
 
   methods: {
     goOther(index) {
       let arr = ["myKnowledge", "officialKnowledge", "thirdPartyKnowledge"];
       if (this.$route.name == arr[index - 1]) return false;
-      this.activeId = index;
+      this.activeId = arr[index - 1];
       this.$router.push(`/${arr[index - 1]}`);
+    },
+    search() {
+      const { activeId, select, keyword } = this;
+      let searchName =
+        +select === 1 ? "domain" : +select === 2 ? "releaseStatus" : "isUsed";
+      let data = {
+        [searchName]: keyword.trim(),
+      };
+      this.$refs.child.getList(data);
+      this.keyword = "";
     },
   },
 };

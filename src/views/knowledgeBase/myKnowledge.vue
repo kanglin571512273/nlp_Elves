@@ -1,13 +1,21 @@
 <template>
   <div class="myKnowledge">
     <div class="btn">
-      <div class="createBtn" @click="dialogFormVisible = true">创建知识库</div>
+      <div class="createBtn" @click="addKnowItem">创建知识库</div>
     </div>
     <div class="cartContain scrollbar">
-      <CartItem v-for="item in 2" :key="item"></CartItem>
+      <CartItem
+        v-for="item in listData"
+        :key="item.id"
+        :data="item"
+        @deleteItem="deleteItem"
+        @editItem="editItem"
+        @editReleaseStatus="editReleaseStatus"
+      ></CartItem>
+      <div v-show="!listData.length" class="hint">暂无内容...</div>
     </div>
     <!-- 添加知识狂弹窗 -->
-    <el-dialog :visible.sync="dialogFormVisible">
+    <el-dialog :visible.sync="dialogFormVisible" @close="resetForm('ruleForm')">
       <div class="diaContainer">
         <el-form
           :model="ruleForm"
@@ -17,7 +25,7 @@
           class="demo-ruleForm"
           label-position="right"
         >
-          <span class="header">创建知识库</span>
+          <span class="header">{{creatOrEdit[creatOrEditId].title}}</span>
           <el-form-item label="知识库名称:" prop="name">
             <el-input
               v-model="ruleForm.name"
@@ -31,7 +39,7 @@
             <el-input
               type="textarea"
               size="mini"
-              v-model="ruleForm.textarea"
+              v-model="ruleForm.remark"
               maxlength="120"
               show-word-limit
               placeholder="请输入知识库名称"
@@ -41,13 +49,13 @@
             <el-upload
               size="mini"
               class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-preview="handlePreview"
+              :action="action"
+              :headers="headers"
               :on-remove="handleRemove"
+              :on-success="handleSuccess"
               :before-remove="beforeRemove"
               multiple
               :limit="1"
-              :on-exceed="handleExceed"
               :file-list="fileList"
             >
               <div class="myBtn myBtn_blue" v-show="!fileList.length">上传图片</div>
@@ -57,54 +65,182 @@
 
         <div slot="footer" class="dialog-footer">
           <div class="myBtn_info diaBtn" @click="resetForm('ruleForm')">取 消</div>
-          <div class="myBtn_blue diaBtn" @click="submitForm('ruleForm')">立即创建</div>
+          <div
+            class="myBtn_blue diaBtn"
+            @click="submitForm('ruleForm')"
+          >{{creatOrEdit[creatOrEditId].btn}}</div>
         </div>
       </div>
     </el-dialog>
-    <!-- 聊天框弹框 -->
   </div>
 </template>
 
 <script>
+import axios from "@/utils/request";
+import {
+  getKnowList,
+  deleteKnowItem,
+  editReleaseStatus,
+  getKnowInfo,
+  addKnowInfo,
+  editKnowInfo,
+} from "@/api/api";
 import CartItem from "./components/CartItem";
-import { MessageBox } from "@/utils/importFile";
+import { deleteItem } from "@/utils/public";
+import { MessageBox, Message } from "@/utils/importFile";
 export default {
   components: { CartItem },
-  // beforeRouteEnter(to, from, next) {
-  //   console.log(to, from);
-  //   next();
-  // },
   data() {
     return {
-      fileList: [
-        //
+      pages: {
+        pageIndex: 1,
+        pageSize: 1000,
+        totalCount: 0,
+      },
+      creatOrEditId: 0,
+      creatOrEdit: [
         {
-          name: "food.jpeg",
-          url:
-            "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
+          title: "创建知识库",
+          btn: "立即创建",
+        },
+        {
+          title: "修改知识库信息",
+          btn: "立即修改",
         },
       ],
+      action: axios.baseUrl + "img/upload",
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+      fileList: [],
+      listData: [],
       dialogFormVisible: false,
       ruleForm: {
         name: "",
-        textarea: "",
+        remark: "",
       },
       rules: {
         name: [
           { required: true, message: "请输入活动名称", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+          {
+            min: 2,
+            max: 15,
+            message: "长度在 2 到 15 个字符",
+            trigger: "blur",
+          },
         ],
       },
-      dialogFormVisible1: true,
     };
   },
+  mounted() {
+    this.getList();
+  },
   methods: {
+    // 获取列表
+    async getList(search = {}) {
+      try {
+        let { pageIndex, pageSize } = this.pages;
+        let newData = Object.assign(
+          { dataSource: 1, pageIndex, pageSize },
+          search
+        );
+        const res = await getKnowList(newData);
+        if (res.code !== 200) Message.error(res.msg);
+        let { nodeList, totalCount } = res.data;
+        this.listData = nodeList;
+        this.pages.totalCount = totalCount;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 删除
+    async deleteKnowItem(id) {
+      try {
+        const res = await deleteKnowItem({ domainid: id });
+        if (res.code !== 200) return Message.error("删除失败");
+        Message.success("删除成功");
+        this.getList();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 修改发布状态
+    async editReleaseStatus(ids, status) {
+      try {
+        const res = await editReleaseStatus({ ids, status });
+        if (res.code !== 200) return Message.error(res.msg);
+        Message.success(res.msg);
+        this.getList();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 查询知识库详情
+    async getKnowInfo(domainId) {
+      try {
+        const res = await getKnowInfo({ domainId });
+        if (res.code !== 200) return Message.error(res.msg);
+        this.ruleForm = res.data;
+        this.fileList = [{ name: "iconImg.jpeg", url: res.data.iconUrl }];
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 创建  /  修改  知识库
+    async addKnowInfo(form) {
+      try {
+        // creatOrEditId :  0 创建 1 修改
+        const res = this.creatOrEditId
+          ? await editKnowInfo(form)
+          : await addKnowInfo(form);
+        if (res.code !== 200) return Message.error(res.msg);
+        let message = this.creatOrEditId ? "修改成功" : "添加成功";
+        Message.success(message);
+        this.dialogFormVisible = false;
+        this.getList();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 添加
+    addKnowItem() {
+      this.creatOrEditId = 0;
+      this.dialogFormVisible = true;
+    },
+    // 删除
+    deleteItem(id) {
+      deleteItem(() => {
+        // console.log(id);
+        this.deleteKnowItem(id);
+      });
+    },
+    // 编辑
+    editItem(id) {
+      console.log(id);
+      this.creatOrEditId = 1;
+      this.dialogFormVisible = true;
+      this.getKnowInfo(id);
+    },
     addKnowledge() {},
     // 提交表单
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.dialogFormVisible = false;
+          let form;
+          if (this.creatOrEditId) {
+            //修改
+            let newImg = { iconUrl: this.fileList[0].onlineUrl };
+            form = Object.assign(this.ruleForm, newImg);
+          } else {
+            // 添加
+            let { name, remark } = this.ruleForm;
+            form = {
+              domain: name,
+              remark,
+              url: this.fileList[0].onlineUrl,
+            };
+          }
+          this.addKnowInfo(form);
         } else {
           console.log("error submit!!");
           return false;
@@ -115,24 +251,22 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
       this.dialogFormVisible = false;
+      this.ruleForm = {
+        name: "",
+        remark: "",
+      };
+      this.fileList = [];
+    },
+    // 上传成功
+    handleSuccess(res) {
+      Message.success(res.msg);
+      this.fileList = res.data;
     },
     // 删除图片
     handleRemove(file, fileList) {
       this.fileList = [];
-      console.log(file, fileList);
     },
-    // 预览图片
-    handlePreview(file) {
-      console.log(file);
-    },
-    // 超出文件时
-    handleExceed(files, fileList) {
-      this.$message.warning(
-        `当前限制选择 1个文件，本次选择了 ${files.length} 个文件，共选择了 ${
-          files.length + fileList.length
-        } 个文件`
-      );
-    },
+
     // 删除之前
     beforeRemove(file, fileList) {
       return MessageBox.confirm(`确定移除 ${file.name}？`);
@@ -177,6 +311,11 @@ export default {
     padding: 0;
     text-align: center;
     line-height: 31px;
+  }
+  .hint {
+    text-align: center;
+    line-height: 200px;
+    color: #aaa;
   }
 }
 </style>

@@ -194,8 +194,7 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   if (to.name == 'Login') {
     next()
-  } else if (localStorage.getItem("token") && localStorage.getItem('effectToken')) {
-    console.log('token存在并有效');
+  } else if (localStorage.getItem("token") && (localStorage.getItem('effectToken') == 'true')) {
     next()
   } else {
     console.log('token 失效');

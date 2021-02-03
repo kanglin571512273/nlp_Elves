@@ -60,7 +60,6 @@ export default {
   },
   created() {
     this.getRouteMenu();
-    console.log(this.$route);
   },
   methods: {
     // 路由
@@ -88,16 +87,17 @@ export default {
       this.activeIndex = key;
     },
     goOther() {
-      console.log(this.$route.meta.parent);
       let flag = this.$route.meta.parent == "systemManage";
-      if (flag) {
+      if (!flag) {
         this.nav = this.system;
         this.$router.push("/systemManage");
         this.activeIndex = "systemManage";
+        this.systemId = 1;
       } else {
         this.nav = this.tempnav;
         this.$router.push("/");
         this.activeIndex = "robot";
+        this.systemId = 0;
       }
     },
   },

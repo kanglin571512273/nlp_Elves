@@ -193,7 +193,7 @@ export default {
     // 查询字典库
     async getdictionary() {
       try {
-        const res = await getdictionary({});
+        const res = await getdictionary('robot_type');
         if (res.code == 200) {
           this.dictionary = res.data;
           this.getList(1, 10);

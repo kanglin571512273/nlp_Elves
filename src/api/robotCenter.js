@@ -39,12 +39,11 @@ export const editList = data => {
     data
   });
 };
-// 获取机器人中心字典
+// 获取字典
 export const getdictionary = params => {
   return axios.request({
-    url: "/dict/getTreeDict/robot_type",
+    url: "/dict/getTreeDict/"+params,
     method: "get",
-    params
   });
 };
 // 获取知识库列表

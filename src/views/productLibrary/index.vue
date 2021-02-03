@@ -48,18 +48,20 @@
 
       <el-card class="box-card">
         <el-table :data="tableData" border style="width: 100%">
-          <el-table-column prop="serial" label="序号" width="80">
+          <el-table-column prop="serial" type="index" label="序号" width="80">
           </el-table-column>
-          <el-table-column prop="name" label="产品库类型"> </el-table-column>
-          <el-table-column prop="id" label="内容数量">
+          <el-table-column :formatter="statusFormat" label="产品库类型">
+          </el-table-column>
+          <el-table-column prop="productContentNum" label="内容数量">
             <template slot-scope="scope">
-              <el-button type="text" @click="contentClick">{{
-                scope.row.serial
+              <el-button type="text" @click="contentClick(scope.row)">{{
+                scope.row.productContentNum
               }}</el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="address" label="产品库说明"> </el-table-column>
-          <el-table-column prop="date" label="日期"> </el-table-column>
+          <el-table-column prop="productLibraryDesc" label="产品库说明">
+          </el-table-column>
+          <el-table-column prop="createTime" label="日期"> </el-table-column>
           <el-table-column fixed="right" label="操作" width="210">
             <template slot-scope="scope">
               <el-button
@@ -92,7 +94,7 @@
 </template>
 
 <script>
-import { getList } from "@/api/productLibrary";
+import { getList, getdictionary } from "@/api/productLibrary";
 export default {
   data() {
     return {
@@ -100,6 +102,7 @@ export default {
       dialogFormVisible: false,
       robotname: null,
       radio: "1",
+      dictionary: [],
       ruleForm: {
         name: "",
         description: ""
@@ -171,16 +174,30 @@ export default {
     };
   },
   mounted() {
-    this.getlists();
-    console.log(12313);
+    this.getdictionary();
   },
   methods: {
+    // 查询字典库
+    async getdictionary() {
+      try {
+        const res = await getdictionary("product_type");
+        if (res.code == 200) {
+          this.dictionary = res.data;
+          this.getlists();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 岗位状态字典翻译
+    statusFormat(row, column) {
+      return this.selectDictLabel(this.dictionary, row.productLibraryType);
+    },
     // 获取产品库列表
     async getlists() {
       try {
         const res = await getList({});
         if (res.code == 200) {
-          console.log(res);
           this.tableData = res.rows;
         }
       } catch (error) {
@@ -229,8 +246,11 @@ export default {
         }
       });
     },
-    contentClick() {
-      this.$router.push(`/productcontent`);
+    contentClick(row) {
+      this.$router.push({
+        name: "productcontent"
+      });
+      localStorage.setItem("productId", row.id);
     }
   }
 };

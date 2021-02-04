@@ -47,7 +47,7 @@
         >
           <el-form-item label="用户名称：" prop="userName">
             <el-input
-              v-model="form.userName"
+              v-model.trim="form.userName"
               placeholder="请输入用户名称"
               size="mini"
               maxlength="20"
@@ -73,7 +73,7 @@
           </el-form-item>
           <el-form-item label="姓名：">
             <el-input
-              v-model="form.name"
+              v-model.trim="form.name"
               size="mini"
               maxlength="20"
               placeholder="请输入姓名"
@@ -81,7 +81,10 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="手机号：" prop="phonenumber">
-            <el-input v-model="form.phonenumber" placeholder="请输入手机号" size="mini"></el-input>
+            <el-input v-model.trim.number="form.phonenumber" placeholder="请输入手机号" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="密码：" prop="password">
+            <el-input v-model.trim.number="form.password" placeholder="请输入密码" size="mini"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -121,6 +124,18 @@ export default {
         callback();
       }
     };
+    var checkPsw = (rule, value, callback) => {
+      var reg = /^[a-zA-Z]\w{6,18}$/;
+      if (this.form.password == "" || this.form.password == undefined) {
+        callback();
+      } else if (!reg.test(this.form.password)) {
+        callback(
+          new Error("以字母开头，长度在6-18之间，只能包含字符、数字和下划线")
+        );
+      } else {
+        callback();
+      }
+    };
     return {
       pages: {
         pageNum: 1,
@@ -146,6 +161,7 @@ export default {
         roleIds: "",
         name: "",
         phonenumber: "",
+        password: "",
       },
       rules: {
         userName: [
@@ -153,6 +169,13 @@ export default {
         ],
         roleIds: [{ required: true, message: "请选择角色", trigger: "blur" }],
         phonenumber: [{ validator: checkTel, trigger: "blur" }],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            validator: checkPsw,
+            trigger: "blur",
+          },
+        ],
       },
       options: [],
     };
@@ -197,8 +220,8 @@ export default {
       try {
         const res = await getUserInfo(id);
         if (res.code !== 200) return Message.error(res.msg);
-        const { name, userName, phonenumber, userId } = res.data;
-        this.form = { name, userName, phonenumber, userId };
+        const { name, userName, phonenumber, userId, password } = res.data;
+        this.form = { name, userName, phonenumber, userId, password };
       } catch (error) {
         console.log(error);
       }

@@ -44,7 +44,7 @@
         >
           <el-form-item label="角色名称：" prop="roleName">
             <el-input
-              v-model="form.roleName"
+              v-model.trim="form.roleName"
               size="mini"
               placeholder="请输入角色名称"
               maxlength="20"
@@ -53,7 +53,7 @@
           </el-form-item>
           <el-form-item label="角色描述：">
             <el-input
-              v-model="form.roleDesc"
+              v-model.trim="form.roleDesc"
               type="textarea"
               placeholder="请输入角色描述"
               size="mini"
@@ -63,7 +63,7 @@
           </el-form-item>
           <el-form-item label="权限字符：" prop="roleKey">
             <el-input
-              v-model="form.roleKey"
+              v-model.trim="form.roleKey"
               size="mini"
               placeholder="请输入权限字符"
               maxlength="30"
@@ -109,6 +109,19 @@ import { deleteItem } from "@/utils/public";
 import { Message } from "@/utils/importFile";
 export default {
   data() {
+    const checkRoleKey = (rule, value, callback) => {
+      var reg = /[\u4e00-\u9fa5]/;
+      var reg1 = /[0-9]/;
+      if (this.form.roleKey == "" || this.form.roleKey == undefined) {
+        callback();
+      } else if (reg.test(this.form.roleKey)) {
+        callback(new Error("请不要输入文字"));
+      } else if (reg1.test(this.form.roleKey)) {
+        callback(new Error("请不要输入数字"));
+      } else {
+        callback();
+      }
+    };
     return {
       pages: {
         pageNum: 1,
@@ -140,6 +153,7 @@ export default {
         ],
         roleKey: [
           { required: true, message: "请输入权限字符", trigger: "blur" },
+          { validator: checkRoleKey, trigger: "blur" },
         ],
       },
       data: [],

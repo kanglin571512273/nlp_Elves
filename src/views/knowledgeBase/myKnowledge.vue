@@ -28,7 +28,7 @@
           <span class="header">{{creatOrEdit[creatOrEditId].title}}</span>
           <el-form-item label="知识库名称:" prop="name">
             <el-input
-              v-model="ruleForm.name"
+              v-model.trim="ruleForm.name"
               maxlength="20"
               size="mini"
               show-word-limit
@@ -39,7 +39,7 @@
             <el-input
               type="textarea"
               size="mini"
-              v-model="ruleForm.remark"
+              v-model.trim="ruleForm.remark"
               maxlength="120"
               show-word-limit
               placeholder="请输入知识库名称"
@@ -54,6 +54,7 @@
               :on-remove="handleRemove"
               :on-success="handleSuccess"
               :before-remove="beforeRemove"
+              accept="image/png, image/jpeg, image/jpg"
               multiple
               :limit="1"
               :file-list="fileList"
@@ -120,15 +121,7 @@ export default {
         remark: "",
       },
       rules: {
-        name: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
-          {
-            min: 2,
-            max: 15,
-            message: "长度在 2 到 15 个字符",
-            trigger: "blur",
-          },
-        ],
+        name: [{ required: true, message: "请输入活动名称", trigger: "blur" }],
       },
     };
   },
@@ -229,7 +222,9 @@ export default {
           let form;
           if (this.creatOrEditId) {
             //修改
-            let newImg = { iconUrl: this.fileList[0].onlineUrl };
+            let newImg = {
+              iconUrl: this.fileList[0] && this.fileList[0].onlineUrl,
+            };
             form = Object.assign(this.ruleForm, newImg);
           } else {
             // 添加
@@ -237,7 +232,7 @@ export default {
             form = {
               domain: name,
               remark,
-              url: this.fileList[0].onlineUrl,
+              url: this.fileList[0] && this.fileList[0].onlineUrl,
             };
           }
           this.addKnowInfo(form);

@@ -1,13 +1,9 @@
 <template>
   <div class="officialKnowledge">
     <div class="cartContain scrollbar">
-      <CartItem
-        v-for="item in listData"
-        :key="item.id"
-        :data="item"
-        @deleteItem="deleteItem"
-        @editItem="editItem"
-      ></CartItem>
+      <CartItem v-for="item in listData" :key="item.id" :data="item"></CartItem>
+      <!--   @deleteItem="deleteItem"
+      @editItem="editItem"-->
       <div v-show="!listData.length" class="hint">暂无内容...</div>
     </div>
   </div>
@@ -49,14 +45,14 @@ export default {
         console.log(error);
       }
     },
-    // 删除
+    /* // 删除
     deleteItem() {
       Message.error("暂无权删除知识库！");
     },
     // 编辑
     editItem() {
       Message.error("暂无权编辑知识库！");
-    },
+    }, */
   },
 };
 </script>

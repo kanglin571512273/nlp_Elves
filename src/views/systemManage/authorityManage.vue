@@ -8,6 +8,7 @@
         <el-table-column label="序号" :index="indexMethod" type="index" width="70"></el-table-column>
         <el-table-column prop="menuName" label="权限名称"></el-table-column>
         <el-table-column prop="menuDesc" label="权限描述"></el-table-column>
+        <el-table-column prop="path" label="路由"></el-table-column>
         <el-table-column label="操作" class="operationTable">
           <template slot-scope="scope">
             <div class="operationCon">
@@ -44,7 +45,7 @@
         >
           <el-form-item label="权限名称：" prop="menuName">
             <el-input
-              v-model="form.menuName"
+              v-model.trim="form.menuName"
               size="mini"
               placeholder="请输入权限名称"
               maxlength="20"
@@ -53,7 +54,7 @@
           </el-form-item>
           <el-form-item label="权限描述：">
             <el-input
-              v-model="form.menuDesc"
+              v-model.trim="form.menuDesc"
               type="textarea"
               placeholder="请输入权限描述"
               size="mini"

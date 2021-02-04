@@ -27,3 +27,5 @@ new Vue({
 });
 
 export default { selectDictLabel };
+
+

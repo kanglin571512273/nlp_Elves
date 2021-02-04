@@ -32,6 +32,7 @@
 <script>
 import { Message } from "@/utils/importFile";
 import { postlogin } from "@/api/robotCenter";
+import { getRouteMenu } from "@/api/api";
 export default {
   data() {
     return {
@@ -59,7 +60,13 @@ export default {
             if (res.code == 200) {
               localStorage.setItem("token", res.token);
               localStorage.setItem("effectToken", true);
-              this.$router.push(`/`);
+              getRouteMenu().then((res) => {
+                if (res.code == 200) {
+                  this.$router.push("/" + res.userMenus[0].path);
+                } else {
+                  console.log(res);
+                }
+              });
               Message.success("登录成功~");
             } else if (res.code == 500) {
               Message.error(res.msg);

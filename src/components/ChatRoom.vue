@@ -15,7 +15,7 @@
           :key="item.id"
           @click="activeId = item.id"
         >
-          <img src="@/assets/images/1.png" alt />
+          <img :src="item.iconUrl" alt />
           <div class="info">
             <div class="title">{{item.name}}</div>
             <div class="explain">说明：{{item.remark}}</div>

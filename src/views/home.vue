@@ -27,8 +27,8 @@
             <img src="@/assets/images/avtor.png" alt />
           </div>
           <div class="changeSys">
-            <img :src="imgUrl[systemId]" alt />
-            <span @click="goOther">{{systemName[systemId]}}</span>
+            <img src="@/assets/images/manage.png" alt />
+            <span @click="logout">退出</span>
           </div>
         </div>
       </el-header>
@@ -41,7 +41,7 @@
 
 <script>
 import { getRouteMenu } from "@/api/api";
-import { Message } from "element-ui";
+import { Message, MessageBox } from "element-ui";
 export default {
   name: "home",
   data() {
@@ -67,16 +67,7 @@ export default {
       try {
         const res = await getRouteMenu();
         if (res.code !== 200) Message.error(res.msg);
-        let nav = res.userMenus.filter((item) => {
-          return item.path !== "systemManage";
-        });
-        let system = res.userMenus.filter((item) => {
-          return item.path == "systemManage";
-        });
-        // 区分系统管理
-        this.nav = nav;
-        this.tempnav = nav;
-        this.system = system;
+        this.nav = res.userMenus;
         // 刷新时，当前路由还是高亮
         this.activeIndex = this.$route.meta.parent;
       } catch (error) {
@@ -86,19 +77,27 @@ export default {
     handleSelect(key, keyPath) {
       this.activeIndex = key;
     },
-    goOther() {
-      let flag = this.$route.meta.parent == "systemManage";
-      if (!flag) {
-        this.nav = this.system;
-        this.$router.push("/systemManage");
-        this.activeIndex = "systemManage";
-        this.systemId = 1;
-      } else {
-        this.nav = this.tempnav;
-        this.$router.push("/");
-        this.activeIndex = "robot";
-        this.systemId = 0;
-      }
+    logout() {
+      MessageBox.confirm("确认退出登录吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("effectToken");
+          this.$router.push("/login");
+          Message({
+            type: "success",
+            message: "退出成功!",
+          });
+        })
+        .catch(() => {
+          Message({
+            type: "info",
+            message: "已取消退出",
+          });
+        });
     },
   },
 };
@@ -146,6 +145,7 @@ export default {
       width: 150px;
       display: flex;
       align-items: center;
+      cursor: pointer;
       .headerImg {
         position: relative;
         img {

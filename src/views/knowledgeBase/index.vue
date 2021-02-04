@@ -23,6 +23,7 @@
         >
           <img class="search" src="@/assets/images/search.png" alt slot="suffix" @click="search" />
           <el-select size="mini" v-model="select" slot="prepend" placeholder="请选择内容">
+            <!-- @change="search" -->
             <el-option label="知识库名称" value="1"></el-option>
             <el-option label="发布状态" value="2"></el-option>
             <el-option label="使用状态" value="3"></el-option>
@@ -63,8 +64,12 @@ export default {
     },
     search() {
       const { activeId, select, keyword } = this;
-      let searchName =
-        +select === 1 ? "domain" : +select === 2 ? "releaseStatus" : "isUsed";
+      if (+select === 1) {
+        let data = {
+          domain: keyword.trim(),
+        };
+      }
+      let searchName = +select === 2 ? "releaseStatus" : "isUsed";
       let data = {
         [searchName]: keyword.trim(),
       };

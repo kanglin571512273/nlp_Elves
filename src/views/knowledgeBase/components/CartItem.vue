@@ -6,7 +6,7 @@
       </div>
       <div class="rightInfo">
         <div class="title">
-          <span>{{data.name}}</span>
+          <span class="ellipsis">{{data.name}}</span>
           <div
             v-show="$route.name == 'myKnowledge' && data.isUsed "
             class="myBtn myBtn_success myBtn_plain"
@@ -15,7 +15,7 @@
         <div class="info">
           <div class="infoItem ellipsis">
             <span>说明：</span>
-            <span>{{data.remark}}</span>
+            <span class="ellipsis">{{data.remark}}</span>
           </div>
           <div class="infoItem ellipsis">
             <span>时间：</span>
@@ -46,8 +46,11 @@
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item :command="'1-' + data.id">体验</el-dropdown-item>
-            <el-dropdown-item :command="'2-' + data.id">编辑</el-dropdown-item>
-            <el-dropdown-item :command="'3-' + data.id">删除</el-dropdown-item>
+            <el-dropdown-item v-if="$route.name == 'myKnowledge'" :command="'2-' + data.id">编辑</el-dropdown-item>
+            <el-dropdown-item
+              v-if="$route.name == 'myKnowledge'"
+              :command="'3-' + data.id + '-' + data.releaseStatus"
+            >删除</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -56,6 +59,8 @@
 </template>
 
 <script>
+import { Message } from "@/utils/importFile";
+
 export default {
   props: { data: { type: Object, default: () => {} } },
   mounted() {
@@ -92,9 +97,11 @@ export default {
           this.$emit("editItem", id);
           break;
         case 3:
+          let releaseStatus = index.split("-")[2];
+          if (releaseStatus === "true")
+            return Message.error("已发布内容不允许删除！！");
           this.$emit("deleteItem", id);
           break;
-
         default:
           break;
       }
@@ -129,6 +136,7 @@ export default {
     .rightInfo {
       margin-left: 15px;
       flex: 1;
+      overflow: hidden;
       .title {
         display: flex;
         justify-content: space-between;

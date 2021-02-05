@@ -47,15 +47,7 @@ export default {
   data() {
     return {
       activeIndex: "",
-      systemId: 0,
-      imgUrl: [
-        require("@/assets/images/manage.png"),
-        require("@/assets/images/home.png"),
-      ],
-      systemName: ["系统管理", "返回首页"],
       nav: [],
-      tempnav: [],
-      system: [],
     };
   },
   created() {

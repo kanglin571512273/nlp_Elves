@@ -13,15 +13,20 @@ import "@/utils/importFile";
 export default {
   name: "App",
   components: {
-    Home
+    Home,
   },
 };
 </script>
 
 <style lang="less">
-
 #app,
 .el-container {
   height: 100%;
+}
+.el-tooltip__popper {
+  max-width: 300px;
+  line-height: 20px;
+  text-indent: 2em;
+  text-align: left;
 }
 </style>

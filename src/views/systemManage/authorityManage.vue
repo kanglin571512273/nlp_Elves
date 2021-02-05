@@ -7,7 +7,7 @@
       <el-table :data="tableData" border style="width: 100%" height="91%">
         <el-table-column label="序号" :index="indexMethod" type="index" width="70"></el-table-column>
         <el-table-column prop="menuName" label="权限名称"></el-table-column>
-        <el-table-column prop="menuDesc" label="权限描述"></el-table-column>
+        <el-table-column prop="menuDesc" label="权限描述" show-overflow-tooltip></el-table-column>
         <el-table-column prop="path" label="路由"></el-table-column>
         <el-table-column label="操作" class="operationTable">
           <template slot-scope="scope">
@@ -296,4 +296,5 @@ export default {
     }
   }
 }
+
 </style>

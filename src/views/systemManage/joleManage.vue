@@ -4,11 +4,11 @@
     <!-- 展示区  -->
     <div class="mainContainer">
       <div class="createBtn" @click="createRole">创建角色</div>
-      <el-table :data="tableData" border style="width: 100%" height="91%">
+      <el-table :data="tableData" border style="width: 100%" height="91%" empty-text="暂无">
         <el-table-column label="序号" :index="indexMethod" type="index" width="70"></el-table-column>
         <el-table-column prop="roleName" label="角色名称"></el-table-column>
         <el-table-column prop="roleKey" label="权限字符"></el-table-column>
-        <el-table-column prop="roleDesc" label="角色描述"></el-table-column>
+        <el-table-column prop="roleDesc" label="角色描述" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" class="operationTable">
           <template slot-scope="scope">
             <div class="operationCon">

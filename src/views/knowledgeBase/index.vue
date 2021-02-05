@@ -14,21 +14,19 @@
         >第三方知识库</div>
       </div>
       <div class="rightSearch">
-        <el-input
-          size="mini"
-          placeholder="请输入内容..."
-          v-model="keyword"
-          @change="search"
-          class="input-with-select"
-        >
+        <el-select size="mini" v-model="releaseStatus" @change="search" placeholder="请选择发布状态">
+          <el-option label="未发布" :value="0"></el-option>
+          <el-option label="已发布" :value="1"></el-option>
+        </el-select>
+        <el-select size="mini" v-model="isUsed" @change="search" placeholder="请选择使用状态">
+          <!--  -->
+          <el-option label="未使用" :value="0"></el-option>
+          <el-option label="已使用" :value="1"></el-option>
+        </el-select>
+        <el-input size="mini" placeholder="请输入知识库名称..." v-model="domain" @blur="search">
           <img class="search" src="@/assets/images/search.png" alt slot="suffix" @click="search" />
-          <el-select size="mini" v-model="select" slot="prepend" placeholder="请选择内容">
-            <!-- @change="search" -->
-            <el-option label="知识库名称" value="1"></el-option>
-            <el-option label="发布状态" value="2"></el-option>
-            <el-option label="使用状态" value="3"></el-option>
-          </el-select>
         </el-input>
+        <div class="reset" @click="reset">重置</div>
       </div>
     </div>
     <!-- 展示区 -->
@@ -47,7 +45,9 @@ export default {
   data() {
     return {
       keyword: "",
-      select: "1",
+      releaseStatus: null,
+      isUsed: null,
+      domain: null,
       activeId: "myKnowledge",
     };
   },
@@ -63,18 +63,15 @@ export default {
       this.$router.push(`/${arr[index - 1]}`);
     },
     search() {
-      const { activeId, select, keyword } = this;
-      if (+select === 1) {
-        let data = {
-          domain: keyword.trim(),
-        };
-      }
-      let searchName = +select === 2 ? "releaseStatus" : "isUsed";
-      let data = {
-        [searchName]: keyword.trim(),
-      };
+      let { releaseStatus, isUsed, domain } = this;
+      let data = { releaseStatus, isUsed, domain };
       this.$refs.child.getList(data);
-      this.keyword = "";
+    },
+    reset() {
+      this.releaseStatus = null;
+      this.isUsed = null;
+      this.domain = null;
+      this.search();
     },
   },
 };
@@ -106,11 +103,23 @@ export default {
       }
     }
     .rightSearch {
+      display: flex;
       .search {
         width: 13px;
         margin: 7px;
       }
     }
+  }
+  .reset {
+    color: #fff;
+    background-color: #2d3291;
+    width: 85px;
+    height: 27px;
+    line-height: 27px;
+    text-align: center;
+    border-radius: 4px;
+    padding: 0 5px;
+    margin: 0 4px;
   }
   // 展示区
   .belowMain {
@@ -129,7 +138,7 @@ export default {
 // 修改element样式
 // .knowledge {
 .knowledge .el-select .el-input {
-  width: 110px;
+  width: 130px;
 }
 .knowledge .input-with-select .el-input-group__prepend {
   background-color: #fff;

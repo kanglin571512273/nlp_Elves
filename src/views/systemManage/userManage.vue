@@ -83,7 +83,7 @@
           <el-form-item label="手机号：" prop="phonenumber">
             <el-input v-model.trim.number="form.phonenumber" placeholder="请输入手机号" size="mini"></el-input>
           </el-form-item>
-          <el-form-item label="密码：" prop="password">
+          <el-form-item v-show="!creatOrEditId" label="密码：" prop="password">
             <el-input v-model.trim.number="form.password" placeholder="请输入密码" size="mini"></el-input>
           </el-form-item>
         </el-form>

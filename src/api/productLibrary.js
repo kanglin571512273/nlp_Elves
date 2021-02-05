@@ -7,6 +7,13 @@ export const getList = data => {
     data
   });
 };
+// 获取字典
+export const getdictionary = params => {
+  return axios.request({
+    url: "/dict/getTreeDict/"+params,
+    method: "get",
+  });
+};
 // 创建机器人
 export const addrobotts = params => {
   return axios.request({

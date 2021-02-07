@@ -39,18 +39,19 @@
                 <!-- :on-success="handleAvatarSuccess" -->
                 <el-upload
                   class="upload-demo"
-                  action="http://192.168.0.195:8089/img/upload"
+                  action="#"
                   :http-request="uploadSectionFile"
                   :on-change="handleChange"
                   :before-remove="beforeRemove"
                   :file-list="fileList"
                   list-type="picture"
                   :limit="1"
+                  accept="image/png,image/gif"
                 >
                   <!-- <el-button size="small" type="primary">点击上传</el-button> -->
                   <div class="upload">点击上传</div>
                   <div slot="tip" class="el-upload__tip">
-                    只能上传jpg/png文件，且不超过500kb
+                    只能上传jpg/png文件
                   </div>
                 </el-upload>
               </el-form-item>
@@ -160,9 +161,9 @@ export default {
         id: ""
       },
       rules: {
-        name: [
+        robotName: [
           { required: true, message: "请输入机器人名称", trigger: "blur" },
-          { min: 3, max: 20, message: "长度在 3 到 5 个字符", trigger: "blur" }
+          { min: 3, max: 20, message: "长度在 3 到 20 个字符", trigger: "blur" }
         ],
         type: [{ required: true, message: "请选择活动资源", trigger: "change" }]
       },
@@ -193,7 +194,7 @@ export default {
     // 查询字典库
     async getdictionary() {
       try {
-        const res = await getdictionary('robot_type');
+        const res = await getdictionary("robot_type");
         if (res.code == 200) {
           this.dictionary = res.data;
           this.getList(1, 10);
@@ -212,7 +213,7 @@ export default {
       this.ruleForm = {
         robotName: "",
         type: "api",
-        pictureUrl: " ",
+        pictureUrl: "",
         id: ""
       };
       this.fileList = [];
@@ -238,9 +239,20 @@ export default {
       this.ruleForm.robotName = row.robotName;
       this.ruleForm.type = row.type;
       this.ruleForm.pictureUrl = row.pictureUrl;
-      console.log(this.ruleForm.pictureUrl);
-      this.fileList.push({ name: row.seriesId, url: this.ruleForm.pictureUrl });
+      if (
+        row.pictureUrl == "" ||
+        row.pictureUrl == undefined ||
+        row.pictureUrl == null
+      ) {
+      } else {
+        this.fileList.push({
+          name: row.seriesId,
+          url: this.ruleForm.pictureUrl
+        });
+      }
+
       this.ruleForm.id = row.id;
+      console.log(row);
     },
     // 删除
     deleteClick(row) {
@@ -257,6 +269,7 @@ export default {
     },
     handleCurrentChange(val) {
       this.getList(val, 10);
+      this.currentPage1 = val;
       console.log(`当前页: ${val}`);
     },
     handleClose(done) {
@@ -315,9 +328,9 @@ export default {
     },
     informationClick(row) {
       this.$router.push({
-        name: "overview",
+        name: "overview"
       });
-      localStorage.setItem("seriesId",row.id) 
+      localStorage.setItem("seriesId", row.id);
     },
     handleChange(file, fileList) {
       this.fileList = fileList.slice(-1);

@@ -193,7 +193,7 @@
             </div>
             <div class="card_fonts">
               <div class="card_title">{{ item.name }}</div>
-              <div>说明：{{ item.remark }}</div>
+              <div class="description">说明：{{ item.remark }}</div>
               <div>时间：{{ item.createTime }}</div>
             </div>
           </div>
@@ -523,8 +523,8 @@ export default {
       var similarQuestion = this.problemForm.domains.map(function(item) {
         return item.value;
       });
-      var answer = this.answerForm.domains.map(function(item) {
-        return item.value;
+      var answer = this.arrquestion.map(function(item) {
+        return item;
       });
       if (this.total <= 9) {
         try {
@@ -561,6 +561,7 @@ export default {
           var arr2 = res.data.question;
           this.arr = [].concat(arr1);
           this.arrquestion = [].concat(arr2);
+          console.log(this.arr);
         }
       });
     },
@@ -851,6 +852,16 @@ export default {
         div {
           line-height: 28px;
         }
+      }
+      .description {
+        height: 30px;
+        text-overflow: -o-ellipsis-lastline;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
       }
     }
   }

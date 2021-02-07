@@ -31,7 +31,7 @@ class HttpRequest {
       config => {
         //只针对get方式进行序列化
         if (config.method === "get") {
-          config.paramsSerializer = function (params) {
+          config.paramsSerializer = function(params) {
             return qs.stringify(params, { arrayFormat: "repeat" });
           };
         }
@@ -59,8 +59,14 @@ class HttpRequest {
           // 自己处理
         }
         if (data.code === 401) {
-          Message.error('用户信息已过期，请重新登录~')
+          Message.error("用户信息已过期，请重新登录~");
+          // MessageBox.confirm("用户信息已过期，请重新登录~", "超时过期", {
+          //   confirmButtonText: "确定",
+          //   callback: () => {
+          //   }
+          // });
           localStorage.setItem("effectToken", false);
+          window.location.reload();
         } else {
           localStorage.setItem("effectToken", true);
         }

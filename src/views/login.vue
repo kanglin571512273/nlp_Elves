@@ -15,14 +15,24 @@
               ref="formLabelAlign"
             >
               <el-form-item label="用户名：" prop="username">
-                <el-input clearable v-model="formLabelAlign.username"></el-input>
+                <el-input
+                  clearable
+                  maxlength="20"
+                  v-model="formLabelAlign.username"
+                ></el-input>
               </el-form-item>
               <el-form-item label="密码：" prop="password">
-                <el-input placeholder="请输入密码" v-model="formLabelAlign.password" show-password></el-input>
+                <el-input
+                  placeholder="请输入密码"
+                  v-model="formLabelAlign.password"
+                  show-password
+                ></el-input>
               </el-form-item>
             </el-form>
           </div>
-          <button class="bg-login" @click="login('formLabelAlign')">登录</button>
+          <button class="bg-login" @click="login('formLabelAlign')">
+            登录
+          </button>
         </div>
       </el-card>
     </div>
@@ -38,29 +48,32 @@ export default {
     return {
       formLabelAlign: {
         username: "admin",
-        password: "",
+        password: ""
       },
       rules: {
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+          {
+            required: true,
+            message: "请输入用户名",
+            trigger: "blur",
+            validator: "/^[a-zA-Z]\w{6,18}$/"
+          },
+          { min: 3, max: 20, message: "长度在 3 到 20 个字符", trigger: "blur" }
         ],
-        password: [
-          { required: true, message: "请输入密码", trigger: "change" },
-        ],
-      },
+        password: [{ required: true, message: "请输入密码", trigger: "change" }]
+      }
     };
   },
 
   methods: {
     login(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
-          postlogin(this.formLabelAlign).then((res) => {
+          postlogin(this.formLabelAlign).then(res => {
             if (res.code == 200) {
               localStorage.setItem("token", res.token);
               localStorage.setItem("effectToken", true);
-              getRouteMenu().then((res) => {
+              getRouteMenu().then(res => {
                 if (res.code == 200) {
                   this.$router.push("/" + res.userMenus[0].path);
                 } else {
@@ -77,8 +90,8 @@ export default {
           return false;
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

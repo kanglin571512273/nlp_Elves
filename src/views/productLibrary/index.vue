@@ -1,8 +1,12 @@
 <template>
   <div class="robot">
     <div>
-      <div class="create" @click="dialogFormVisible = true">创建产品库</div>
-      <el-dialog width="80%" :visible.sync="dialogFormVisible">
+      <div class="create" @click="addrobot">创建产品库</div>
+      <el-dialog
+        width="80%"
+        :visible.sync="dialogFormVisible"
+        @close="resetForm('ruleForm')"
+      >
         <el-card class="productfix">
           <div class="input-fix">
             <el-form
@@ -13,18 +17,18 @@
               class="demo-ruleForm"
               label-position="left"
             >
-              <el-form-item label="产品库类型：" prop="name">
+              <el-form-item label="产品库类型：" prop="productLibraryType">
                 <el-input
-                  v-model="ruleForm.name"
+                  v-model="ruleForm.productLibraryType"
                   placeholder="请输入产品库类型"
                   maxlength="10"
                   show-word-limit
                   clearable
                 ></el-input>
               </el-form-item>
-              <el-form-item label="产品库说明：" prop="description">
+              <el-form-item label="产品库说明：">
                 <el-input
-                  v-model="ruleForm.description"
+                  v-model="ruleForm.productLibraryDesc"
                   type="textarea"
                   :rows="2"
                   placeholder="请输入产品库说明"
@@ -50,7 +54,7 @@
         <el-table :data="tableData" border style="width: 100%">
           <el-table-column prop="serial" type="index" label="序号" width="80">
           </el-table-column>
-          <el-table-column :formatter="statusFormat" label="产品库类型">
+          <el-table-column prop="productLibraryType" label="产品库类型">
           </el-table-column>
           <el-table-column prop="productContentNum" label="内容数量">
             <template slot-scope="scope">
@@ -61,7 +65,8 @@
           </el-table-column>
           <el-table-column prop="productLibraryDesc" label="产品库说明">
           </el-table-column>
-          <el-table-column prop="createTime" label="日期"> </el-table-column>
+          <el-table-column prop="createTime" label="创建时间">
+          </el-table-column>
           <el-table-column fixed="right" label="操作" width="210">
             <template slot-scope="scope">
               <el-button
@@ -71,7 +76,11 @@
                 class="edit"
                 >编辑</el-button
               >
-              <el-button type="text" size="small" class="delete"
+              <el-button
+                @click="deleteClick(scope.row)"
+                type="text"
+                size="small"
+                class="delete"
                 >删除</el-button
               >
             </template>
@@ -83,9 +92,9 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page.sync="currentPage1"
-          :page-size="100"
+          :page-size="10"
           layout="total, prev, pager, next"
-          :total="1000"
+          :total="total"
         >
         </el-pagination>
       </div>
@@ -94,25 +103,34 @@
 </template>
 
 <script>
-import { getList, getdictionary } from "@/api/productLibrary";
+import {
+  getList,
+  getdictionary,
+  addproduct,
+  editList,
+  deleteList
+} from "@/api/productLibrary";
+import { Message } from "@/utils/importFile";
 export default {
   data() {
     return {
-      currentPage1: 5,
+      currentPage1: 1,
       dialogFormVisible: false,
       robotname: null,
       radio: "1",
+      total: 1,
       dictionary: [],
       ruleForm: {
-        name: "",
-        description: ""
+        productLibraryType: "",
+        productLibraryDesc: "",
+        id: ""
       },
       rules: {
-        name: [
+        productLibraryType: [
           { required: true, message: "请输入产品库类型", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
+          { min: 3, max: 10, message: "长度在 3 到 10 个字符", trigger: "blur" }
         ],
-        description: [
+        productLibraryDesc: [
           { required: true, message: "请输入产品库说明", trigger: "change" }
         ]
       },
@@ -129,48 +147,7 @@ export default {
             "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
         }
       ],
-      tableData: [
-        {
-          serial: 1,
-          date: "2016-05-02",
-          name: "王小虎",
-          id: 67907790,
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
-        },
-        {
-          serial: 2,
-          date: "2016-05-04",
-          id: 67907790,
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1517 弄",
-          zip: 200333
-        },
-        {
-          serial: 3,
-          date: "2016-05-01",
-          id: 67907790,
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1519 弄",
-          zip: 200333
-        },
-        {
-          serial: 4,
-          date: "2016-05-03",
-          name: "王小虎",
-          province: "上海",
-          id: 67907790,
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1516 弄",
-          zip: 200333
-        }
-      ]
+      tableData: []
     };
   },
   mounted() {
@@ -183,35 +160,62 @@ export default {
         const res = await getdictionary("product_type");
         if (res.code == 200) {
           this.dictionary = res.data;
-          this.getlists();
+          this.getlists(1, 10);
         }
       } catch (error) {
         console.log(error);
       }
+    },
+    // 创建产品库
+    addrobot() {
+      this.ruleForm = {
+        productLibraryType: "",
+        productLibraryDesc: "",
+        id: ""
+      };
+      this.dialogFormVisible = true;
+    },
+    resetForm(ruleForm) {
+      this.$refs[ruleForm].resetFields();
     },
     // 岗位状态字典翻译
     statusFormat(row, column) {
       return this.selectDictLabel(this.dictionary, row.productLibraryType);
     },
     // 获取产品库列表
-    async getlists() {
+    async getlists(pageNum, pageSize) {
       try {
-        const res = await getList({});
+        const res = await getList({ pageSize: pageSize, pageNum: pageNum });
         if (res.code == 200) {
           this.tableData = res.rows;
+          this.total = res.total;
         }
       } catch (error) {
         console.log(error);
       }
     },
     handleClick(row) {
-      console.log(row);
+      this.dialogFormVisible = true;
+      this.ruleForm.id = row.id;
+      this.ruleForm.productLibraryType = row.productLibraryType;
+      this.ruleForm.productLibraryDesc = row.productLibraryDesc;
+    },
+    // 删除
+    deleteClick(row) {
+      deleteList(row.id).then(response => {
+        if (response.code === 200) {
+          Message.success("删除成功");
+          this.getlists(1, 10);
+          // this.getList();
+        }
+      });
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.getlists(val, 10);
+      this.currentPage1 = val;
     },
     handleClose(done) {
       // this.$confirm("确认关闭？")
@@ -239,6 +243,25 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          if (this.ruleForm.id == "") {
+            addproduct(this.ruleForm).then(response => {
+              if (response.code === 200) {
+                Message.success("新增成功");
+                this.dialogFormVisible = false;
+                this.getlists(1, 10);
+                // this.getList();
+              }
+            });
+          } else {
+            editList(this.ruleForm).then(response => {
+              if (response.code === 200) {
+                Message.success("编辑成功");
+                this.dialogFormVisible = false;
+                this.getlists(1, 10);
+                // this.getList();
+              }
+            });
+          }
           this.dialogFormVisible = false;
         } else {
           console.log("error submit!!");
@@ -281,7 +304,7 @@ export default {
   font-size: 14px;
 }
 .box-card {
-  height: 530px;
+  height: 710px;
   position: relative;
 }
 .pagination {

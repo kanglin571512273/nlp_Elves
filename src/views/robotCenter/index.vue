@@ -46,7 +46,7 @@
                   :file-list="fileList"
                   list-type="picture"
                   :limit="1"
-                  accept="image/png,image/gif"
+                  accept="image/png,image/gif,image/jpg"
                 >
                   <!-- <el-button size="small" type="primary">点击上传</el-button> -->
                   <div class="upload">点击上传</div>

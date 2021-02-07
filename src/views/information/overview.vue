@@ -8,7 +8,7 @@
         <span>创建时间：{{ robotData.createTime }}</span>
       </div>
     </div>
-    <div class="img-box" v-show="robotData.pictureUrl != ' '">
+    <div class="img-box" v-show="robotData.pictureUrl != ''">
       <img :src="robotData.pictureUrl" alt="img" />
     </div>
   </div>
@@ -27,17 +27,21 @@ export default {
   },
   mounted() {
     this.seriesId = localStorage.getItem("seriesId");
-    this.detailsList(this.seriesId);
     this.getdictionary();
+    this.detailsList(this.seriesId);
   },
   methods: {
     // 查询字典库
     async getdictionary() {
       try {
-        const res = await getdictionary();
+        const res = await getdictionary('robot_type');
         if (res.code == 200) {
           this.dictionary = res.data;
-          this.statusFormat(this.robotData.type);
+          this.type = this.selectDictLabel(
+            this.dictionary,
+            this.robotData.type
+          );
+          console.log(this.type);
         }
       } catch (error) {
         console.log(error);
@@ -49,7 +53,6 @@ export default {
         const res = await detailsList(id);
         if (res.code == 200) {
           this.robotData = res.data;
-          console.log(this.robotData);
         }
       } catch (error) {
         console.log(error);
@@ -57,7 +60,7 @@ export default {
     },
     // 岗位状态字典翻译
     statusFormat(row) {
-      this.type = this.selectDictLabel(this.dictionary, row);
+      console.log(row);
     }
   }
 };

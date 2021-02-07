@@ -52,6 +52,7 @@
 
 <script>
 import { getKnowInfo, chatTest } from "@/api/api";
+import { getconfiguredList } from "@/api/robotCenter";
 import { Message } from "element-ui";
 export default {
   data() {
@@ -59,6 +60,7 @@ export default {
       messageList: [],
       ruleForm: [],
       id: null,
+      robotId: null,
       activeId: null,
     };
   },
@@ -66,6 +68,9 @@ export default {
     if (this.$route.params.id) {
       this.id = this.$route.params.id;
       this.getKnowInfo(this.id);
+    } else if (this.$route.params.robotId) {
+      this.robotId = this.$route.params.robotId;
+      this.getconfiguredList(this.robotId);
     } else {
       this.$router.go(-1);
     }
@@ -82,6 +87,7 @@ export default {
         console.log(error);
       }
     },
+    // 发送信息
     async sendMsg(msg) {
       try {
         const res = await chatTest({ libraryId: this.activeId, question: msg });
@@ -90,6 +96,19 @@ export default {
         this.messageList.push({ message: data, type: 2 });
         this.$refs.chatDisplay.scrollTop = this.$refs.chatDisplay.scrollHeight;
       } catch (error) {}
+    },
+    // 通过机器人ID查询
+    async getconfiguredList(robotId) {
+      try {
+        const res = await getconfiguredList({
+          pageNum: 1,
+          pageSize: 1000,
+          robotId,
+        });
+        console.log(res, "robotId");
+      } catch (error) {
+        console.log(error);
+      }
     },
     send(e) {
       if (e.keyCode !== 13 || e.target.value.trim() == "") return false;

@@ -62,6 +62,7 @@
               value-key="roleId"
               placeholder="请选择"
               @change="$forceUpdate()"
+              style="width:100%"
             >
               <el-option
                 v-for="item in options"
@@ -83,8 +84,13 @@
           <el-form-item label="手机号：" prop="phonenumber">
             <el-input v-model.trim.number="form.phonenumber" placeholder="请输入手机号" size="mini"></el-input>
           </el-form-item>
-          <el-form-item v-show="!creatOrEditId" label="密码：" prop="password">
-            <el-input v-model.trim.number="form.password" placeholder="请输入密码" size="mini"></el-input>
+          <el-form-item v-if="!creatOrEditId" label="密码：" prop="password">
+            <el-input
+              v-model.trim.number="form.password"
+              maxlength="18"
+              placeholder="请输入密码"
+              size="mini"
+            ></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -125,7 +131,7 @@ export default {
       }
     };
     var checkPsw = (rule, value, callback) => {
-      var reg = /^[a-zA-Z]\w{6,18}$/;
+      var reg = /^[a-zA-Z]\w{5,18}$/;
       if (this.form.password == "" || this.form.password == undefined) {
         callback();
       } else if (!reg.test(this.form.password)) {

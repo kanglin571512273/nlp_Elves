@@ -3,7 +3,7 @@
   <div class="authorityManage">
     <!-- 展示区  -->
     <div class="mainContainer">
-      <div class="createBtn" @click="dialogFormVisible = true">创建权限</div>
+      <div class="createBtn" @click="createAuth">创建权限</div>
       <el-table :data="tableData" border style="width: 100%" height="91%">
         <el-table-column label="序号" :index="indexMethod" type="index" width="70"></el-table-column>
         <el-table-column prop="menuName" label="权限名称"></el-table-column>
@@ -157,6 +157,10 @@ export default {
         console.log(error);
       }
     },
+    createAuth() {
+      this.dialogFormVisible = true;
+      this.creatOrEditId = 0;
+    },
     // 添加  /  修改用户
     async addMenu(form) {
       try {
@@ -193,6 +197,7 @@ export default {
     },
     // 提交
     submitForm(formName) {
+      this.creatOrEditId=1
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.addMenu(this.form);
@@ -296,5 +301,4 @@ export default {
     }
   }
 }
-
 </style>

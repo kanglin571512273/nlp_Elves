@@ -18,8 +18,15 @@
           <img :src="item.iconUrl" alt />
           <div class="info">
             <div class="title">{{item.name}}</div>
-            <div class="explain">说明：{{item.remark}}</div>
-            <div class="time">时间：{{item.createTime}}</div>
+            <div class="explain">
+              <span class="label">说明：</span>
+
+              <span class="content two_ellipsis">{{item.remark}}</span>
+            </div>
+            <div class="time">
+              <span class="label">时间：</span>
+              <span class="content two_ellipsis">{{item.createTime}}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -135,13 +142,24 @@ export default {
         border-radius: 4px;
         display: flex;
         margin-bottom: 10px;
-        image {
+        img {
           width: 108px;
           height: 80px;
         }
         .info {
           margin-left: 10px;
-          line-height: 25px;
+          line-height: 23px;
+          .explain,
+          .time {
+            display: flex;
+            .label {
+              width: 40px;
+            }
+            .content {
+              flex: 1;
+            }
+            // .two_ellic
+          }
         }
       }
     }

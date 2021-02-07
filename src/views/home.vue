@@ -139,6 +139,7 @@ export default {
       align-items: center;
       cursor: pointer;
       .headerImg {
+        cursor: default;
         position: relative;
         img {
           width: 40px;

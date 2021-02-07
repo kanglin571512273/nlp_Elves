@@ -99,6 +99,16 @@
     white-space: nowrap;
 }
 
+.two_ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-overflow: -o-ellipsis-lastline;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
 .scrollbar::-webkit-scrollbar {
     width: 0;
 }

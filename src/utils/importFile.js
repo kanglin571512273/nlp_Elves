@@ -23,6 +23,7 @@ import {
   Table,
   TableColumn,
   Tree,
+  Tooltip,
   Upload,
   Switch,
   Card,
@@ -59,4 +60,5 @@ Vue.use(RadioGroup);
 Vue.use(Radio);
 Vue.use(Tree);
 Vue.use(InputNumber);
+Vue.use(Tooltip);
 export { MessageBox, Message };

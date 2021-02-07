@@ -1,7 +1,10 @@
 <template>
   <div class="chatRoom">
     <div class="btnContainer">
-      <div class="myBtn myBtn_blue myBtn_plain myBtn_plain_blue" @click="$router.go(-1)">
+      <div
+        class="myBtn myBtn_blue myBtn_plain myBtn_plain_blue"
+        @click="$router.go(-1)"
+      >
         <img src="@/assets/images/arrow.png" alt />
         返回
       </div>
@@ -10,22 +13,22 @@
       <!-- 知识库列表 -->
       <div class="libraryList">
         <div
-          :class="{libraryItem:true, active: activeId == item.id}"
+          :class="{ libraryItem: true, active: activeId == item.id }"
           v-for="item in ruleForm"
           :key="item.id"
           @click="activeId = item.id"
         >
           <img :src="item.iconUrl" alt />
           <div class="info">
-            <div class="title">{{item.name}}</div>
+            <div class="title">{{ item.name }}</div>
             <div class="explain">
               <span class="label">说明：</span>
 
-              <span class="content two_ellipsis">{{item.remark}}</span>
+              <span class="content two_ellipsis">{{ item.remark }}</span>
             </div>
             <div class="time">
               <span class="label">时间：</span>
-              <span class="content two_ellipsis">{{item.createTime}}</span>
+              <span class="content two_ellipsis">{{ item.createTime }}</span>
             </div>
           </div>
         </div>
@@ -34,16 +37,32 @@
         <!-- 聊天展示区 -->
         <div ref="chatDisplay" class="chatDisplay">
           <span class="welcome">数字迎宾机器人，为您服务~</span>
-          <div class="chatItemContainer" v-for="(item,index) in messageList" :key="index">
+          <div
+            class="chatItemContainer"
+            v-for="(item, index) in messageList"
+            :key="index"
+          >
             <div
-              :class="{chatItem:true, [item.type == 1 ? 'question' : 'answer']:true}"
-            >{{item.message}}</div>
+              :class="{
+                chatItem: true,
+                [item.type == 1 ? 'question' : 'answer']: true
+              }"
+            >
+              {{ item.message }}
+            </div>
           </div>
         </div>
         <!-- 输入框 -->
         <div class="chatInput">
           <!-- <input type="text" placeholder="请输入您的问题，按Enter键发送~" /> -->
-          <textarea name id cols="30" rows="10" placeholder="请输入您的问题，按Enter键发送~" @keyup="send"></textarea>
+          <textarea
+            name
+            id
+            cols="30"
+            rows="10"
+            placeholder="请输入您的问题，按Enter键发送~"
+            @keyup="send"
+          ></textarea>
         </div>
       </div>
     </div>
@@ -59,7 +78,7 @@ export default {
       messageList: [],
       ruleForm: [],
       id: null,
-      activeId: null,
+      activeId: null
     };
   },
   mounted() {
@@ -99,8 +118,8 @@ export default {
       this.sendMsg(msg);
       e.target.value = "";
       this.$refs.chatDisplay.scrollTop = this.$refs.chatDisplay.scrollHeight;
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

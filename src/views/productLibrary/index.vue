@@ -15,7 +15,7 @@
               ref="ruleForm"
               label-width="110px"
               class="demo-ruleForm"
-              label-position="left"
+              label-position="right"
             >
               <el-form-item label="产品库类型：" prop="productLibraryType">
                 <el-input
@@ -63,7 +63,11 @@
               }}</el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="productLibraryDesc" label="产品库说明">
+          <el-table-column
+            prop="productLibraryDesc"
+            show-overflow-tooltip
+            label="产品库说明"
+          >
           </el-table-column>
           <el-table-column prop="createTime" label="创建时间">
           </el-table-column>
@@ -128,7 +132,7 @@ export default {
       rules: {
         productLibraryType: [
           { required: true, message: "请输入产品库类型", trigger: "blur" },
-          { min: 3, max: 10, message: "长度在 3 到 10 个字符", trigger: "blur" }
+          { min: 1, max: 20, message: "长度在 1 到 20 个字符", trigger: "blur" }
         ],
         productLibraryDesc: [
           { required: true, message: "请输入产品库说明", trigger: "change" }

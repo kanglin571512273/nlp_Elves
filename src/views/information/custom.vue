@@ -67,7 +67,6 @@
                 v-for="(domain, index) in problemForm.domains"
                 :label="'相似问题' + (index + 1)"
                 :key="domain.key"
-                :prop="'domains.' + index + '.value'"
                 :rules="{
                   required: true,
                   message: '问题不能为空',
@@ -116,7 +115,7 @@
                 v-for="(domain, index) in answerForm.domains"
                 :label="'文本答案' + (index + 1)"
                 :key="domain.key"
-                :prop="'domains.' + index + '.value'"
+                :prop="arrquestion[index]"
                 :rules="{
                   required: true,
                   message: '答案不能为空',
@@ -155,10 +154,18 @@
         </el-card>
       </div>
     </el-dialog>
+    <div class="adproblem" @click="dialogue">对话测试</div>
     <div class="digital-box">
       <div class="title">
         对话设置
-        <i class="el-icon-question" style="color:#2D3291;"></i>
+        <el-tooltip
+          class="item"
+          effect="dark"
+          content="当用户需要个性化定制问答时，可以使用此功能。例：可以创建机器人唤醒语，或未知问题回答等"
+          placement="right"
+        >
+          <i class="el-icon-question" style="color:#2D3291;"></i>
+        </el-tooltip>
       </div>
       <div class="types">
         <span class="sapanel">类型：</span>
@@ -172,7 +179,14 @@
     <div class="digital-box">
       <div class="title">
         推荐反问配置
-        <i class="el-icon-question" style="color:#2D3291;"></i>
+        <el-tooltip
+          class="item"
+          effect="dark"
+          content="开启后，系统将在回答用户问题后，自动推荐相关备选问题，引导用户深入对话；关闭后，系统将只回答问题，不做推荐引导。"
+          placement="right"
+        >
+          <i class="el-icon-question" style="color:#2D3291;"></i>
+        </el-tooltip>
       </div>
       <div>
         <span>推荐反问状态：</span>
@@ -192,8 +206,8 @@
               <img :src="item.iconUrl" alt="img" />
             </div>
             <div class="card_fonts">
-              <div class="card_title">{{ item.name }}</div>
-              <div class="description">说明：{{ item.remark }}</div>
+              <div class="card_title ">{{ item.name }}</div>
+              <div class="two_ellipsis card_fos">说明：{{ item.remark }}</div>
               <div>时间：{{ item.createTime }}</div>
             </div>
           </div>
@@ -254,7 +268,9 @@
                   </div>
                   <div class="card_fonts">
                     <div class="card_title">{{ item.name }}</div>
-                    <div>说明：{{ item.remark }}</div>
+                    <div class="two_ellipsis card_fos">
+                      说明：{{ item.remark }}
+                    </div>
                     <div>时间：{{ item.createTime }}</div>
                   </div>
                 </div>
@@ -285,8 +301,10 @@
                     <img :src="item.img" alt="img" />
                   </div>
                   <div class="card_fonts">
-                    <div class="card_title">{{ item.title }}</div>
-                    <div>说明：{{ item.description }}</div>
+                    <div class="card_title ">{{ item.title }}</div>
+                    <div class="two_ellipsis card_fos">
+                      说明：{{ item.description }}
+                    </div>
                     <div>时间：{{ item.time }}</div>
                   </div>
                 </div>
@@ -318,7 +336,9 @@
                   </div>
                   <div class="card_fonts">
                     <div class="card_title">{{ item.title }}</div>
-                    <div>说明：{{ item.description }}</div>
+                    <div class="two_ellipsis card_fos">
+                      说明：{{ item.description }}
+                    </div>
                     <div>时间：{{ item.time }}</div>
                   </div>
                 </div>
@@ -465,13 +485,31 @@ export default {
     this.getconfiguredLists();
   },
   methods: {
+    dialogue() {
+      this.$router.push({
+        name: "chatRoom",
+        params: {
+          robotId: this.seriesId
+        }
+      });
+    },
     // 新增问题按钮
     addquest() {
       this.arr = [];
       this.arrquestion = [];
-      this.problemForm.domains = [];
+      this.problemForm.domains = [
+        {
+          key: "",
+          value: ""
+        }
+      ];
       this.problemForm.question = "";
-      this.answerForm.domains = [];
+      this.answerForm.domains = [
+        {
+          key: "",
+          value: ""
+        }
+      ];
       this.addstatus = false;
     },
     // 查询知识库列表
@@ -520,12 +558,13 @@ export default {
     },
     // 新增问题
     async getaddquestionLists() {
-      var similarQuestion = this.problemForm.domains.map(function(item) {
-        return item.value;
+      var similarQuestion = this.arr.map(function(item) {
+        return item;
       });
       var answer = this.arrquestion.map(function(item) {
         return item;
       });
+      console.log(this.total, "this.total");
       if (this.total <= 9) {
         try {
           const res = await addquestion({
@@ -554,14 +593,32 @@ export default {
       getquestion(id).then(res => {
         if (res.code == 200) {
           // this.problemForm.domains = res.data.similarQuestion
-          this.problemForm.domains = res.data.similarQuestion;
-          this.answerForm.domains = res.data.answer;
+          var problem = res.data.similarQuestion;
+          var arr = [];
+          for (let index = 0; index < problem.length; index++) {
+            var obj = {
+              value: problem[index],
+              key: index
+            };
+            arr.push(obj);
+          }
+          var answer = res.data.answer;
+          var answerarr = [];
+          for (let index = 0; index < answer.length; index++) {
+            var obj = {
+              value: answer[index],
+              key: index
+            };
+            answerarr.push(obj);
+          }
+          this.problemForm.domains = arr;
+          this.answerForm.domains = answerarr;
           this.problemForm.question = res.data.question;
           var arr1 = res.data.similarQuestion;
-          var arr2 = res.data.question;
+          var arr2 = res.data.answer;
           this.arr = [].concat(arr1);
           this.arrquestion = [].concat(arr2);
-          console.log(this.arr);
+          console.log(this.arrquestion);
         }
       });
     },
@@ -795,8 +852,11 @@ export default {
           font-weight: bold;
           color: #333;
         }
+        .card_fos {
+          width: 300px;
+        }
         div {
-          line-height: 28px;
+          line-height: 25px;
         }
       }
     }
@@ -849,19 +909,12 @@ export default {
           font-weight: bold;
           color: #999;
         }
-        div {
-          line-height: 28px;
+        .card_fos {
+          width: 300px;
         }
-      }
-      .description {
-        height: 30px;
-        text-overflow: -o-ellipsis-lastline;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
-        -webkit-box-orient: vertical;
+        div {
+          line-height: 25px;
+        }
       }
     }
   }

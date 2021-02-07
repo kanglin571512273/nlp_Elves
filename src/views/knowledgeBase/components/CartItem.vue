@@ -13,13 +13,13 @@
           >已使用</div>
         </div>
         <div class="info">
-          <div class="infoItem ellipsis">
-            <span>说明：</span>
-            <span class="ellipsis">{{data.remark}}</span>
+          <div class="infoItem">
+            <span class="label">说明：</span>
+            <span class="content two_ellipsis">{{data.remark}}</span>
           </div>
           <div class="infoItem ellipsis">
-            <span>时间：</span>
-            <span>{{data.createTime}}</span>
+            <span class="label">时间：</span>
+            <span class="content ellipsis">{{data.createTime}}</span>
           </div>
         </div>
       </div>
@@ -148,7 +148,17 @@ export default {
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: #999999;
-        line-height: 44px;
+        line-height: 30px;
+        .label {
+          width: 43px;
+          display: inline-block;
+        }
+        .content {
+          flex: 1;
+        }
+        .infoItem {
+          display: flex;
+        }
       }
     }
   }

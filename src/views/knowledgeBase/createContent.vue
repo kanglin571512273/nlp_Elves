@@ -175,11 +175,11 @@ export default {
       id: null,
       keyword: "", //搜索关键字
       nodeNum: 1, //节点个数
-      dialogFormVisible: true, //弹框显示
+      dialogFormVisible: false, //弹框显示
       //基本属性表单
       basicAttrForm: {
         name: "",
-        defaultColor: "#409EFF", //默认颜色
+        defafalseltColor: "#409EFF", //默认颜色
         slider: 20, //滑块
       },
       colors: ["#FF6F49", "#004FFF", "#FF9C05", "#A6FF00", "#CC8DFF"],

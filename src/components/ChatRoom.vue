@@ -1,10 +1,7 @@
 <template>
   <div class="chatRoom">
     <div class="btnContainer">
-      <div
-        class="myBtn myBtn_blue myBtn_plain myBtn_plain_blue"
-        @click="$router.go(-1)"
-      >
+      <div class="myBtn myBtn_blue myBtn_plain myBtn_plain_blue" @click="$router.go(-1)">
         <img src="@/assets/images/arrow.png" alt />
         返回
       </div>
@@ -16,7 +13,7 @@
           :class="{ libraryItem: true, active: activeId == item.id }"
           v-for="item in ruleForm"
           :key="item.id"
-          @click="activeId = item.id"
+          @click="chooseItem(item.id)"
         >
           <img :src="item.iconUrl" alt />
           <div class="info">
@@ -37,32 +34,19 @@
         <!-- 聊天展示区 -->
         <div ref="chatDisplay" class="chatDisplay">
           <span class="welcome">数字迎宾机器人，为您服务~</span>
-          <div
-            class="chatItemContainer"
-            v-for="(item, index) in messageList"
-            :key="index"
-          >
+          <div class="chatItemContainer" v-for="(item, index) in messageList" :key="index">
             <div
               :class="{
                 chatItem: true,
                 [item.type == 1 ? 'question' : 'answer']: true
               }"
-            >
-              {{ item.message }}
-            </div>
+            >{{ item.message }}</div>
           </div>
         </div>
         <!-- 输入框 -->
         <div class="chatInput">
           <!-- <input type="text" placeholder="请输入您的问题，按Enter键发送~" /> -->
-          <textarea
-            name
-            id
-            cols="30"
-            rows="10"
-            placeholder="请输入您的问题，按Enter键发送~"
-            @keyup="send"
-          ></textarea>
+          <textarea name id cols="30" rows="10" placeholder="请输入您的问题，按Enter键发送~" @keyup="send"></textarea>
         </div>
       </div>
     </div>
@@ -124,10 +108,18 @@ export default {
           pageSize: 1000,
           robotId,
         });
+        if (res.code !== 200) return Message.error(res.msg);
+        this.ruleForm = res.rows;
+        this.activeId = this.ruleForm[0].id;
         console.log(res, "robotId");
       } catch (error) {
         console.log(error);
       }
+    },
+    chooseItem(id) {
+      if (id === this.activeId) return false;
+      this.activeId = id;
+      this.messageList = [];
     },
     send(e) {
       if (e.keyCode !== 13 || e.target.value.trim() == "") return false;
@@ -137,8 +129,8 @@ export default {
       this.sendMsg(msg);
       e.target.value = "";
       this.$refs.chatDisplay.scrollTop = this.$refs.chatDisplay.scrollHeight;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="less" scoped>

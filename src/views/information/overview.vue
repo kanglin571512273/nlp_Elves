@@ -28,19 +28,16 @@ export default {
   mounted() {
     this.seriesId = localStorage.getItem("seriesId");
     this.getdictionary();
-    this.detailsList(this.seriesId);
   },
   methods: {
     // 查询字典库
     async getdictionary() {
       try {
-        const res = await getdictionary('robot_type');
+        const res = await getdictionary("robot_type");
         if (res.code == 200) {
           this.dictionary = res.data;
-          this.type = this.selectDictLabel(
-            this.dictionary,
-            this.robotData.type
-          );
+          this.detailsList(this.seriesId);
+
           console.log(this.type);
         }
       } catch (error) {
@@ -53,6 +50,10 @@ export default {
         const res = await detailsList(id);
         if (res.code == 200) {
           this.robotData = res.data;
+          this.type = this.selectDictLabel(
+            this.dictionary,
+            this.robotData.type
+          );
         }
       } catch (error) {
         console.log(error);

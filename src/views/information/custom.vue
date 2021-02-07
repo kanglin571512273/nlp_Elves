@@ -851,9 +851,14 @@ export default {
         .card_title {
           font-weight: bold;
           color: #333;
+          width: 220px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          word-break: break-all;
         }
         .card_fos {
-          width: 300px;
+          width: 220px;
         }
         div {
           line-height: 25px;
@@ -908,9 +913,14 @@ export default {
         .card_title {
           font-weight: bold;
           color: #999;
+          width: 220px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          word-break: break-all;
         }
         .card_fos {
-          width: 300px;
+          width: 220px;
         }
         div {
           line-height: 25px;

@@ -41,6 +41,7 @@ export default {
   .toptNav {
     display: flex;
     .btnItem {
+      cursor: pointer;
       height: 28px;
       border: 2px solid #f0f2f5;
       padding: 3px 30px;

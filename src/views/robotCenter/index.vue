@@ -46,12 +46,12 @@
                   :file-list="fileList"
                   list-type="picture"
                   :limit="1"
-                  accept="image/png,image/gif,image/jpg"
+                  accept="image/png,image/gif,image/jpeg"
                 >
                   <!-- <el-button size="small" type="primary">点击上传</el-button> -->
                   <div class="upload">点击上传</div>
                   <div slot="tip" class="el-upload__tip">
-                    只能上传jpg/png文件
+                    只能上传jpg/png/jpeg/gif文件
                   </div>
                 </el-upload>
               </el-form-item>
@@ -297,7 +297,6 @@ export default {
       // return MessageBox.confirm(`确定移除 ${file.name}？`);
     },
     submitForm(formName) {
-      console.log(this.ruleForm);
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.ruleForm.id == "") {
@@ -306,7 +305,9 @@ export default {
                 Message.success("新增成功");
                 this.dialogFormVisible = false;
                 this.getList(1, 10);
-                // this.getList();
+                this.getList();
+              } else if (response.code === 500) {
+                Message.success(response.msg);
               }
             });
           } else {

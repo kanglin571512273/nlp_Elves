@@ -154,7 +154,9 @@
         </el-card>
       </div>
     </el-dialog>
-    <div class="adproblem" @click="dialogue">对话测试</div>
+    <div class="adproblem" @click="dialogue" v-show="configured.length != 0">
+      对话测试
+    </div>
     <div class="digital-box">
       <div class="title">
         对话设置
@@ -195,7 +197,7 @@
     </div>
     <div class="digital-box">
       <div class="title">知识库设置</div>
-      <div class="configuration" @click="knowledgebase = true">知识库配置</div>
+      <div class="configuration" @click="knowledgebasetrue">知识库配置</div>
       <div class="card-box">
         <div class="card_items card_list" v-if="configured.length == 0">
           <span>为机器人添加知识库吧，让它可以更加智能～</span>
@@ -251,8 +253,42 @@
               </div>
               <div
                 class="card_bases"
-                :class="{ base_items: spanIndex.indexOf(item.id) > -1 }"
+                :class="{ base_items: activeitem.includes(item.id) }"
                 v-for="item in knowledgedata"
+                :key="item.id"
+                @click="knowledge(item.id)"
+              >
+                <div class="card_item">
+                  <div class="round-box">
+                    <div
+                      class="round"
+                      :class="{ roundts: activeitem.includes(item.id) }"
+                    ></div>
+                  </div>
+                  <div class="card_img">
+                    <img :src="item.iconUrl" alt="img" />
+                  </div>
+                  <div class="card_fonts">
+                    <div class="card_title">{{ item.name }}</div>
+                    <div class="two_ellipsis card_fos">
+                      说明：{{ item.remark }}
+                    </div>
+                    <div>时间：{{ item.createTime }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 官方知识库  -->
+          <div v-show="activeNav == 2">
+            <div class="card-box">
+              <div class="card_items card_list" v-if="officialdata.length == 0">
+                <span>为机器人添加知识库吧，让它可以更加智能～</span>
+              </div>
+              <div
+                class="card_bases"
+                :class="{ base_items: spanIndex.indexOf(item.id) > -1 }"
+                v-for="item in officialdata"
                 :key="item.id"
                 @click="knowledge(item.id)"
               >
@@ -277,44 +313,10 @@
               </div>
             </div>
           </div>
-          <!-- 官方知识库  -->
-          <div v-show="activeNav == 2">
-            <div class="card-box">
-              <div class="card_items card_list">
-                <span>为机器人添加知识库吧，让它可以更加智能～</span>
-              </div>
-              <div
-                class="card_bases"
-                :class="{ base_items: spanIndex.indexOf(item.id) > -1 }"
-                v-for="item in officialdata"
-                :key="item.id"
-                @click="knowledge(item.id)"
-              >
-                <div class="card_item">
-                  <div class="round-box">
-                    <div
-                      class="round"
-                      :class="{ roundts: spanIndex.indexOf(item.id) > -1 }"
-                    ></div>
-                  </div>
-                  <div class="card_img">
-                    <img :src="item.img" alt="img" />
-                  </div>
-                  <div class="card_fonts">
-                    <div class="card_title ">{{ item.title }}</div>
-                    <div class="two_ellipsis card_fos">
-                      说明：{{ item.description }}
-                    </div>
-                    <div>时间：{{ item.time }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           <!-- 第三方知识库  -->
           <div class="ruleEditForm scrollbar" v-show="activeNav == 3">
             <div class="card-box">
-              <div class="card_items card_list">
+              <div class="card_items card_list" v-if="partydata.length == 0">
                 <span>为机器人添加知识库吧，让它可以更加智能～</span>
               </div>
               <div
@@ -332,14 +334,14 @@
                     ></div>
                   </div>
                   <div class="card_img">
-                    <img :src="item.img" alt="img" />
+                    <img :src="item.iconUrl" alt="img" />
                   </div>
                   <div class="card_fonts">
-                    <div class="card_title">{{ item.title }}</div>
+                    <div class="card_title">{{ item.name }}</div>
                     <div class="two_ellipsis card_fos">
-                      说明：{{ item.description }}
+                      说明：{{ item.remark }}
                     </div>
-                    <div>时间：{{ item.time }}</div>
+                    <div>时间：{{ item.createTime }}</div>
                   </div>
                 </div>
               </div>
@@ -363,7 +365,7 @@
           </div>-->
         </div>
         <div class="submit-box">
-          <div class="create cancel" @click="knowledgebase = false">取 消</div>
+          <div class="create cancel" @click="knowledgebasfalse">取 消</div>
           <div class="create" @click="know">确 定</div>
         </div>
       </el-card>
@@ -379,7 +381,8 @@ import {
   problemList,
   addquestion,
   getquestion,
-  deleteQuestion
+  deleteQuestion,
+  editquestion
 } from "@/api/robotCenter";
 export default {
   data() {
@@ -391,10 +394,12 @@ export default {
       knowledgebase: false,
       addstatus: true,
       activeNav: 1,
+      type: 1,
       value: "1231231",
       total: "",
       activebase: null,
       seriesId: "",
+      id: "",
       spanIndex: [],
       problemListData: [],
       arr: [],
@@ -407,76 +412,11 @@ export default {
         domains: [],
         answer: ""
       },
+      activeitem: [],
       configured: [],
       knowledgedata: [],
-      officialdata: [
-        {
-          id: 1,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png"
-        },
-        {
-          id: 2,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2020/11/02/13/15/reindeer-5706627__340.png"
-        },
-        {
-          id: 3,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png"
-        },
-        {
-          id: 4,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2020/09/04/20/09/cartoon-5544856__340.jpg"
-        }
-      ],
-      partydata: [
-        {
-          id: 1,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2020/05/04/23/06/plant-5131048__340.jpg"
-        },
-        {
-          id: 2,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2020/06/26/00/25/summer-5341326__340.jpg"
-        },
-        {
-          id: 3,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2020/05/20/03/50/gears-5193383__340.png"
-        },
-        {
-          id: 4,
-          title: "农行知识库",
-          description: "理财知识库",
-          time: "2021-01-13 12:12:12",
-          img:
-            "https://cdn.pixabay.com/photo/2020/10/04/09/27/halloween-5625737__340.png"
-        }
-      ]
+      officialdata: [],
+      partydata: []
     };
   },
   mounted() {
@@ -497,12 +437,13 @@ export default {
     addquest() {
       this.arr = [];
       this.arrquestion = [];
-      this.problemForm.domains = [
-        {
-          key: "",
-          value: ""
-        }
-      ];
+      (this.id = ""),
+        (this.problemForm.domains = [
+          {
+            key: "",
+            value: ""
+          }
+        ]);
       this.problemForm.question = "";
       this.answerForm.domains = [
         {
@@ -518,10 +459,43 @@ export default {
         const res = await getrobotLibrary({
           pageNum: 1,
           pageSize: 999,
-          robotId: this.seriesId
+          robotId: this.seriesId,
+          type: 1
         });
         if (res.code == 200) {
           this.knowledgedata = res.rows;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 查询官方知识库列表
+    async getofficiallists() {
+      try {
+        const res = await getrobotLibrary({
+          pageNum: 1,
+          pageSize: 999,
+          robotId: this.seriesId,
+          type: 2
+        });
+        if (res.code == 200) {
+          this.officialdata = res.rows;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 查询第三方知识库列表
+    async getpartylists() {
+      try {
+        const res = await getrobotLibrary({
+          pageNum: 1,
+          pageSize: 999,
+          robotId: this.seriesId,
+          type: 3
+        });
+        if (res.code == 200) {
+          this.partydata = res.rows;
         }
       } catch (error) {
         console.log(error);
@@ -587,9 +561,41 @@ export default {
         Message.error("最多新增十条记录");
       }
     },
+    // 编辑问题
+    async getquestionLists() {
+      var similarQuestion = this.arr.map(function(item) {
+        return item;
+      });
+      var answer = this.arrquestion.map(function(item) {
+        return item;
+      });
+      console.log(this.total, "this.total");
+      if (this.total <= 9) {
+        try {
+          const res = await editquestion({
+            id: this.id,
+            question: this.problemForm.question,
+            similarQuestion: similarQuestion,
+            answer: answer
+          });
+          if (res.code == 200) {
+            Message.success("编辑成功");
+            this.addstatus = true;
+            this.getproblemList();
+          } else if (res.code == 500) {
+            Message.error(res.msg);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        Message.error("最多编辑十条记录");
+      }
+    },
     // 编辑
     handleClick(id) {
       this.addstatus = false;
+      this.id = id;
       getquestion(id).then(res => {
         if (res.code == 200) {
           // this.problemForm.domains = res.data.similarQuestion
@@ -639,7 +645,12 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.getaddquestionLists();
+          console.log(this.problemListData);
+          if (this.id == "") {
+            this.getaddquestionLists();
+          } else {
+            this.getquestionLists();
+          }
         } else {
           console.log("error submit!!");
           return false;
@@ -692,20 +703,36 @@ export default {
     },
     changeNav(ind) {
       this.activeNav = ind;
+      this.type = ind;
+      switch (ind) {
+        case 1:
+          this.getlists();
+          break;
+        case 2:
+          this.getofficiallists();
+          break;
+        case 3:
+          this.getpartylists();
+          break;
+        default:
+          break;
+      }
     },
     knowledge(i) {
-      let arrIndex = this.spanIndex.indexOf(i);
+      let arrIndex = this.activeitem.indexOf(i);
       // this.activebase = !this.activebase;
       if (arrIndex > -1) {
         this.spanIndex.splice(arrIndex, 1);
+        this.activeitem.splice(arrIndex, 1);
       } else {
         this.spanIndex.push(i);
+        this.activeitem.push(i);
       }
     },
     know() {
-      console.log(this.spanIndex, 54444);
+      console.log(this.activeitem, 54444);
       var obj = {
-        libraryId: this.spanIndex.length == 0 ? [-1] : this.spanIndex,
+        libraryId: this.activeitem.length == 0 ? [-1] : this.activeitem,
         robotId: this.seriesId
       };
       addConfiguration(obj).then(res => {
@@ -714,6 +741,20 @@ export default {
         }
       });
       this.knowledgebase = false;
+    },
+    // 知识库配种
+    knowledgebasetrue() {
+      this.knowledgebase = true;
+      var id = this.configured.map(function(item) {
+        return item.id;
+      });
+      this.activeitem = id;
+      console.log(id);
+    },
+    //  取消按钮
+    knowledgebasfalse() {
+      this.knowledgebase = false;
+      this.getconfiguredLists();
     }
   }
 };

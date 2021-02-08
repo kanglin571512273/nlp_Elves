@@ -147,6 +147,7 @@ export function handleTree(data, id, parentId, children, rootId) {
 	});
 	return treeData != '' ? treeData : data;
 }
+// 删除前提问
 export const deleteItem = function (callback) {
 	MessageBox.confirm("此操作将删除该条信息, 是否继续?", "提示", {
 		confirmButtonText: "确定",

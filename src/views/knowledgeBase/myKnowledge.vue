@@ -320,7 +320,7 @@ export default {
     padding: 0 20px 0px;
   }
   .el-dialog__headerbtn {
-    top: 8px;
+    top: 1px;
   }
   .el-dialog {
     margin-top: 9vh !important;

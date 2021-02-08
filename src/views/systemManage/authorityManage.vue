@@ -4,20 +4,13 @@
     <!-- 展示区  -->
     <div class="mainContainer">
       <div class="createBtn" @click="createAuth">创建权限</div>
-      <el-table :data="tableData" border style="width: 100%" height="91%">
-        <el-table-column label="序号" :index="indexMethod" type="index" width="70"></el-table-column>
-        <el-table-column prop="menuName" label="权限名称"></el-table-column>
-        <el-table-column prop="menuDesc" label="权限描述" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="path" label="路由"></el-table-column>
-        <el-table-column label="操作" class="operationTable">
-          <template slot-scope="scope">
-            <div class="operationCon">
-              <div @click="handleEdit(scope.row)" class="operation">编辑</div>
-              <div @click="handleDelete(scope.row)" class="operation">删除</div>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
+      <sysTable
+        :tableHeader="tableHeader"
+        :tableData="tableData"
+        :pages="pages"
+        @handleEdit="handleEdit"
+        @handleDelete="handleDelete"
+      ></sysTable>
     </div>
     <!-- 分页 -->
     <div class="pagination">
@@ -85,9 +78,18 @@ import {
   addMenuInfo,
   editMenuInfo,
 } from "@/api/api";
+import sysTable from "./sysTable";
 export default {
+  components: {
+    sysTable,
+  },
   data() {
     return {
+      tableHeader: [
+        { id: 1, label: "权限名称", prop: "menuName" },
+        { id: 2, label: "权限描述", prop: "menuDesc" },
+        { id: 3, label: "路由", prop: "path" },
+      ],
       pages: {
         pageNum: 1,
         pageSize: 10,
@@ -136,12 +138,12 @@ export default {
     },
     // 删除权限
     async deleteMenu(id) {
+      const { pageSize, total } = this.pages;
       try {
         const res = await deleteMenuItem(id);
         if (res.code !== 200) return Message.error(res.msg);
         Message.success("删除成功");
-        // Math.ceil(--this.pages.total / this.pages.pageSize)
-        this.pages.pageNum = 1;
+        (total - 1) % pageSize ? "" : this.pages.pageNum--;
         this.getList();
       } catch (error) {
         console.log(error);
@@ -197,7 +199,6 @@ export default {
     },
     // 提交
     submitForm(formName) {
-      this.creatOrEditId=1
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.addMenu(this.form);
@@ -290,7 +291,7 @@ export default {
     padding: 0 20px 0px;
   }
   .el-dialog__headerbtn {
-    top: 8px;
+    top: 1px;
   }
   .el-dialog {
     margin-top: 9vh !important;

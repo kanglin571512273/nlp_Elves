@@ -17,6 +17,7 @@
               class="demo-ruleForm"
               label-position="right"
             >
+              <div class="header">创建产品库</div>
               <el-form-item label="产品库类型：" prop="productLibraryType">
                 <el-input
                   v-model="ruleForm.productLibraryType"
@@ -52,7 +53,7 @@
 
       <el-card class="box-card">
         <el-table :data="tableData" border style="width: 100%">
-          <el-table-column prop="serial" type="index" label="序号" width="80">
+          <el-table-column prop="serial" type="index" :index="indexMethod" label="序号" width="80">
           </el-table-column>
           <el-table-column prop="productLibraryType" label="产品库类型">
           </el-table-column>
@@ -198,7 +199,7 @@ export default {
       deleteList(row.id).then(response => {
         if (response.code === 200) {
           Message.success("删除成功");
-          this.getlists(1, 10);
+          this.getlists(this.currentPage1, 10);
           // this.getList();
         } else if (response.code === 500) {
           console.log(response);
@@ -208,6 +209,10 @@ export default {
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
+    },
+      // 表格序号
+    indexMethod(index) {
+      return index + 1 + (this.currentPage1 - 1) * 10; // 返回表格序号
     },
     handleCurrentChange(val) {
       this.getlists(val, 10);
@@ -244,7 +249,7 @@ export default {
               if (response.code === 200) {
                 Message.success("新增成功");
                 this.dialogFormVisible = false;
-                this.getlists(1, 10);
+                this.getlists(this.currentPage1, 10);
                 // this.getList();
               }
             });
@@ -253,7 +258,7 @@ export default {
               if (response.code === 200) {
                 Message.success("编辑成功");
                 this.dialogFormVisible = false;
-                this.getlists(1, 10);
+                this.getlists(this.currentPage1, 10);
                 // this.getList();
               }
             });
@@ -309,7 +314,7 @@ export default {
   margin: 20px 0;
 }
 .productfix {
-  height: 475px;
+  height: 510px;
 }
 .input-fix {
   width: 600px;
@@ -328,6 +333,12 @@ export default {
     margin-right: 50px;
     text-align: left;
   }
+}
+.header {
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+  text-align: left;
 }
 .submit-box {
   margin-top: 270px;

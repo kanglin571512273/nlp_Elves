@@ -20,6 +20,7 @@
               class="demo-ruleForm"
               label-position="right"
             >
+              <div class="header">创建产品内容</div>
               <el-form-item label="产品库内容名称：" prop="productContentName">
                 <el-input
                   v-model="ruleForm.productContentName"
@@ -121,7 +122,13 @@
 
       <el-card class="box-card">
         <el-table :data="tableData" border style="width: 100%">
-          <el-table-column prop="serial" type="index" label="序号" width="80">
+          <el-table-column
+            prop="serial"
+            type="index"
+            :index="indexMethod"
+            label="序号"
+            width="80"
+          >
           </el-table-column>
           <el-table-column prop="productContentName" label="产品内容名称">
           </el-table-column>
@@ -181,7 +188,8 @@ import {
   deletecontentList,
   release,
   getexport,
-  upload
+  upload,
+  indList
 } from "@/api/productLibrary";
 import { Message, MessageBox } from "@/utils/importFile";
 export default {
@@ -248,6 +256,10 @@ export default {
         console.log(error);
       }
     },
+    // 表格序号
+    indexMethod(index) {
+      return index + 1 + (this.currentPage1 - 1) * 10; // 返回表格序号
+    },
     // 岗位状态字典翻译
     statusFormat(row, column) {
       return this.selectDictLabel(
@@ -283,7 +295,7 @@ export default {
       deletecontentList(row.id).then(response => {
         if (response.code === 200) {
           Message.success("删除成功");
-          this.getlists(1, 10);
+          this.getlists(this.currentPage1, 10);
           // this.getList();
         } else if (response.code === 500) {
           Message.error(response.msg);
@@ -317,20 +329,25 @@ export default {
       }
     },
     handleClick(row) {
-      console.log(row);
-      this.fileList = [];
-      this.dialogFormVisible = true;
-      this.ruleForm.productContentName = row.productContentName;
-      this.ruleForm.productContentDesc = row.productContentDesc;
-      this.ruleForm.productContentDateNum = row.productContentDateNum;
-      this.ruleForm.productContentImportType = row.productContentImportType.toString();
-      this.radiotype = row.productContentImportType;
-      this.fileList.push({
-        name: row.createBy + ".xlsx",
-        url: this.ruleForm.productContentFileUrl
+      console.log(row.id);
+      indList(row.id).then(res => {
+        if (res.code === 200) {
+          console.log(res);
+          // this.fileList = [];
+          this.dialogFormVisible = true;
+          this.ruleForm.productContentName = res.data.productContentName;
+          this.ruleForm.productContentDesc = res.data.productContentDesc;
+          this.ruleForm.productContentDateNum = res.data.productContentDateNum;
+          this.ruleForm.productContentImportType = res.data.productContentImportType.toString();
+          this.radiotype = res.data.productContentImportType;
+          // this.fileList.push({
+          //   name: row.createBy + ".xlsx",
+          //   url: this.ruleForm.productContentFileUrl
+          // });
+          // this.ruleForm.productContentImportType = row.productContentImportType;
+          this.ruleForm.id = row.id;
+        }
       });
-      // this.ruleForm.productContentImportType = row.productContentImportType;
-      this.ruleForm.id = row.id;
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
@@ -385,7 +402,7 @@ export default {
               if (response.code === 200) {
                 Message.success("新增成功");
                 this.dialogFormVisible = false;
-                this.getlists(1, 10);
+                this.getlists(this.currentPage1, 10);
               }
             });
           } else {
@@ -393,7 +410,7 @@ export default {
               if (response.code === 200) {
                 Message.success("编辑成功");
                 this.dialogFormVisible = false;
-                this.getlists(1, 10);
+                this.getlists(this.currentPage1, 10);
                 // this.getList();
               }
             });
@@ -486,6 +503,12 @@ export default {
   margin: 0 25px;
   font-weight: 400;
   font-size: 14px;
+}
+.header {
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+  text-align: left;
 }
 .delete {
   color: #ff4a00;

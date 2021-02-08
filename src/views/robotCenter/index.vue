@@ -13,6 +13,7 @@
               class="demo-ruleForm"
               label-position="right"
             >
+              <div class="header">创建机器人</div>
               <el-form-item label="机器人名称：" prop="robotName">
                 <el-input
                   v-model="ruleForm.robotName"
@@ -87,7 +88,12 @@
       </el-dialog>
       <el-card class="box-card">
         <el-table :data="tableData" border style="width: 100%">
-          <el-table-column type="index" label="序号" width="80">
+          <el-table-column
+            type="index"
+            :index="indexMethod"
+            label="序号"
+            width="80"
+          >
           </el-table-column>
           <el-table-column prop="robotName" label="名称">
             <template slot-scope="scope">
@@ -174,6 +180,8 @@ export default {
   },
   mounted() {
     this.getdictionary();
+
+    console.log(process.env.ADMIN_SERVER);
   },
   methods: {
     // 获取列表
@@ -259,7 +267,7 @@ export default {
       deleteList(row.id).then(response => {
         if (response.code === 200) {
           Message.success("删除成功");
-          this.getList(1, 10);
+          this.getList(this.currentPage1, 10);
           // this.getList();
         }
       });
@@ -296,6 +304,10 @@ export default {
       console.log(file, fileList);
       // return MessageBox.confirm(`确定移除 ${file.name}？`);
     },
+    // 表格序号
+    indexMethod(index) {
+      return index + 1 + (this.currentPage1 - 1) * 10; // 返回表格序号
+    },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -304,8 +316,7 @@ export default {
               if (response.code === 200) {
                 Message.success("新增成功");
                 this.dialogFormVisible = false;
-                this.getList(1, 10);
-                this.getList();
+                this.getList(this.currentPage1, 10);
               } else if (response.code === 500) {
                 Message.success(response.msg);
               }
@@ -315,7 +326,7 @@ export default {
               if (response.code === 200) {
                 Message.success("编辑成功");
                 this.dialogFormVisible = false;
-                this.getList(1, 10);
+                this.getList(this.currentPage1, 10);
                 // this.getList();
               }
             });
@@ -390,7 +401,12 @@ export default {
   margin: 0;
   font-size: 14px;
 }
-
+.header {
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+  text-align: left;
+}
 .input-suffix {
   width: 600px;
   display: flex;

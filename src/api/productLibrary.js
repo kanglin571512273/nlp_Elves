@@ -62,6 +62,13 @@ export const editproductList = data => {
   });
 };
 // 删除列表
+export const indList = params => {
+  return axios.request({
+    url: "/content/" + params,
+    method: "get"
+  });
+};
+// 删除列表
 export const deletecontentList = params => {
   return axios.request({
     url: "/content/" + params,

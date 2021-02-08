@@ -115,7 +115,6 @@
                 v-for="(domain, index) in answerForm.domains"
                 :label="'文本答案' + (index + 1)"
                 :key="domain.key"
-                :prop="arrquestion[index]"
                 :rules="{
                   required: true,
                   message: '答案不能为空',
@@ -170,7 +169,7 @@
         </el-tooltip>
       </div>
       <div class="types">
-        <span class="sapanel">类型：</span>
+        <!-- <span class="sapanel">类型：</span> -->
         <div class="type">
           <span>自定义回答：</span>
           <el-switch v-model="reply"></el-switch>
@@ -287,7 +286,7 @@
               </div>
               <div
                 class="card_bases"
-                :class="{ base_items: spanIndex.indexOf(item.id) > -1 }"
+                :class="{ base_items: activeitem.indexOf(item.id) > -1 }"
                 v-for="item in officialdata"
                 :key="item.id"
                 @click="knowledge(item.id)"
@@ -296,7 +295,7 @@
                   <div class="round-box">
                     <div
                       class="round"
-                      :class="{ roundts: spanIndex.indexOf(item.id) > -1 }"
+                      :class="{ roundts: activeitem.indexOf(item.id) > -1 }"
                     ></div>
                   </div>
                   <div class="card_img">
@@ -321,7 +320,7 @@
               </div>
               <div
                 class="card_bases"
-                :class="{ base_items: spanIndex.indexOf(item.id) > -1 }"
+                :class="{ base_items: activeitem.indexOf(item.id) > -1 }"
                 v-for="item in partydata"
                 :key="item.id"
                 @click="knowledge(item.id)"
@@ -330,7 +329,7 @@
                   <div class="round-box">
                     <div
                       class="round"
-                      :class="{ roundts: spanIndex.indexOf(item.id) > -1 }"
+                      :class="{ roundts: activeitem.indexOf(item.id) > -1 }"
                     ></div>
                   </div>
                   <div class="card_img">
@@ -538,24 +537,34 @@ export default {
       var answer = this.arrquestion.map(function(item) {
         return item;
       });
-      console.log(this.total, "this.total");
+      console.log(similarQuestion, answer, "this.total");
       if (this.total <= 9) {
-        try {
-          const res = await addquestion({
-            robotId: this.seriesId,
-            question: this.problemForm.question,
-            similarQuestion: similarQuestion,
-            answer: answer
-          });
-          if (res.code == 200) {
-            Message.success("新增成功");
-            this.addstatus = true;
-            this.getproblemList();
-          } else if (res.code == 500) {
-            Message.error(res.msg);
+        if (
+          similarQuestion.length === 0 ||
+          similarQuestion.includes("") ||
+          answer.includes("") ||
+          answer.length === 0
+        ) {
+          console.log("有空值");
+          Message.error("请填写相似问题或者答案文本");
+        } else {
+          try {
+            const res = await addquestion({
+              robotId: this.seriesId,
+              question: this.problemForm.question,
+              similarQuestion: similarQuestion,
+              answer: answer
+            });
+            if (res.code == 200) {
+              Message.success("新增成功");
+              this.addstatus = true;
+              this.getproblemList();
+            } else if (res.code == 500) {
+              Message.error(res.msg);
+            }
+          } catch (error) {
+            console.log(error);
           }
-        } catch (error) {
-          console.log(error);
         }
       } else {
         Message.error("最多新增十条记录");
@@ -624,7 +633,6 @@ export default {
           var arr2 = res.data.answer;
           this.arr = [].concat(arr1);
           this.arrquestion = [].concat(arr2);
-          console.log(this.arrquestion);
         }
       });
     },
@@ -660,23 +668,29 @@ export default {
     // 重置问题
     resetForm(formName) {
       this.$refs[formName].resetFields();
+      this.arr = [];
     },
     // 重置答案
     resetanswerForm(formName) {
       this.$refs[formName].resetFields();
+      this.arrquestion = [];
     },
     // 删除问题
     removeDomain(item) {
       var index = this.problemForm.domains.indexOf(item);
+      console.log(index);
       if (index !== -1) {
         this.problemForm.domains.splice(index, 1);
+        this.arr.splice(index, 1);
       }
     },
     // 删除答案
     removeAnswer(item) {
       var index = this.answerForm.domains.indexOf(item);
+      console.log(index);
       if (index !== -1) {
         this.answerForm.domains.splice(index, 1);
+        this.arrquestion.splice(index, 1);
       }
     },
     // 新增问题
@@ -686,6 +700,8 @@ export default {
           value: "",
           key: Date.now()
         });
+        this.arr.push("");
+        console.log(this.arr);
       } else {
         Message.error("最多添加十个问题~");
       }
@@ -697,6 +713,7 @@ export default {
           value: "",
           key: Date.now()
         });
+        this.arrquestion.push("");
       } else {
         Message.error("最多添加十个答案~");
       }

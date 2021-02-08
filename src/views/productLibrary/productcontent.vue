@@ -20,7 +20,7 @@
                 <el-input
                   v-model="ruleForm.productContentName"
                   placeholder="请输入产品库类型"
-                  maxlength="10"
+                  maxlength="20"
                   show-word-limit
                   clearable
                 ></el-input>
@@ -164,13 +164,8 @@ export default {
       rules: {
         productContentName: [
           { required: true, message: "请输入产品库类型", trigger: "blur" },
-          {
-            min: 3,
-            max: 20,
-            message: "长度在 3 到 20 个字符",
-            trigger: "blur",
-          },
-        ],
+          { min: 1, max: 20, message: "长度在 1 到 20 个字符", trigger: "blur" }
+        ]
       },
       formLabelWidth: "120px",
       fileList: [],

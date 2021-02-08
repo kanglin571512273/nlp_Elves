@@ -286,8 +286,7 @@ export default {
       // return MessageBox.confirm(`确定移除 ${file.name}？`);
     },
     submitForm(formName) {
-      console.log(this.ruleForm);
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.ruleForm.id == "") {
             addrobotts(this.ruleForm).then((response) => {
@@ -295,7 +294,9 @@ export default {
                 Message.success("新增成功");
                 this.dialogFormVisible = false;
                 this.getList(1, 10);
-                // this.getList();
+                this.getList();
+              } else if (response.code === 500) {
+                Message.success(response.msg);
               }
             });
           } else {

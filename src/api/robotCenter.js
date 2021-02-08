@@ -103,6 +103,14 @@ export const addquestion = data => {
     data
   });
 };
+// 编辑问题
+export const editquestion = data => {
+  return axios.request({
+    url: "/v1/question",
+    method: "put",
+    data
+  });
+};
 // 获取问题详情
 export const getquestion = params => {
   return axios.request({

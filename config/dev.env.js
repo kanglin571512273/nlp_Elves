@@ -4,7 +4,7 @@ const prodEnv = require("./prod.env");
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  ADMIN_SERVER: '"/api/"',
+  ADMIN_SERVER: '"/api"',
 
   // devServer: {
   //   host: "localhost",

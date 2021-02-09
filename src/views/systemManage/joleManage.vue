@@ -98,8 +98,15 @@ import {
   getAuthList,
   editRoleInfo,
 } from "@/api/api";
-import { deleteItem } from "@/utils/public";
+import { deleteItem } from "@/utils/requestApi";
 import { Message } from "@/utils/importFile";
+import {
+  _getList,
+  _delete,
+  _getInfo,
+  _getSelect,
+  _addItem,
+} from "@/utils/requestApi";
 import sysTable from "./sysTable";
 export default {
   components: {
@@ -172,78 +179,31 @@ export default {
   },
   methods: {
     // 获取角色列表
-    async getList() {
-      try {
-        const { pageNum, pageSize } = this.pages;
-        const res = await getRoleList({ pageSize, pageNum });
-        if (res.code !== 200) return Message.error(res.msg);
+    getList() {
+      const { pageNum, pageSize } = this.pages;
+      let data = { pageSize, pageNum };
+      _getList(getRoleList, data, (res) => {
         this.tableData = res.rows;
         this.pages.total = res.total;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    // 删除角色
-    async deleteRole(id) {
-      const { pageSize, total } = this.pages;
-      try {
-        const res = await deleteRole(id);
-        if (res.code !== 200) return Message.error(res.msg);
-        Message.success("删除成功");
-        (total - 1) % pageSize ? "" : this.pages.pageNum--;
-        this.getList();
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    // 获取权限列表及选中权限
-    async getAuthAndChoosed(id) {
-      try {
-        const res = await getAuthAndChoosed(id);
-        if (res.code !== 200) Message.error(res.msg);
-        this.defaultCheckedKey = res.checkedMenus;
-        // this.data = res.data;
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
     // 获取权限列表
-    async getAuthList() {
-      try {
-        const res = await getAuthList();
-        if (res.code !== 200) Message.error(res.msg);
+    getAuthList() {
+      _getSelect(getAuthList, {}, (res) => {
         this.data = res.data;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    // 获取角色信息
-    async getRoleInfo(id) {
-      try {
-        const res = await getRoleInfo(id);
-        if (res.code !== 200) Message.error(res.msg);
-        this.form = res.data;
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
     // 添加  /  修改用户
-    async addRole(form) {
-      try {
-        let menuIds = this.$refs.tree.getCheckedKeys();
-        form = { ...form, menuIds };
-        // creatOrEditId :  0 创建 1 修改
-        const res = this.creatOrEditId
-          ? await editRoleInfo(form)
-          : await addRoleInfo(form);
-        if (res.code !== 200) return Message.error(res.msg);
+    addRole(form) {
+      let menuIds = this.$refs.tree.getCheckedKeys();
+      form = { ...form, menuIds };
+      const requestApi = this.creatOrEditId ? editRoleInfo : addRoleInfo;
+      _addItem(requestApi, form, () => {
+        this.dialogFormVisible = false;
         let message = this.creatOrEditId ? "修改成功" : "添加成功";
         Message.success(message);
-        this.dialogFormVisible = false;
         this.getList();
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
     // 创建角色
     createRole() {
@@ -252,15 +212,23 @@ export default {
     },
     // 编辑
     handleEdit(row) {
+      console.log(row);
       this.creatOrEditId = 1;
       this.dialogFormVisible = true;
-      this.getRoleInfo(row.roleId);
-      this.getAuthAndChoosed(row.roleId);
+      _getInfo(getRoleInfo, row.roleId, (res) => {
+        this.form = res.data;
+      });
+      _getSelect(getAuthAndChoosed, row.roleId, (res) => {
+        this.defaultCheckedKey = res.checkedMenus;
+      });
     },
     // 删除
     handleDelete(row) {
       deleteItem(() => {
-        this.deleteRole(row.roleId);
+        _delete(deleteRole, this.pages, row.roleId, (flag) => {
+          if (flag) this.pages.pageNum--;
+          this.getList();
+        });
       });
     },
     // 提交

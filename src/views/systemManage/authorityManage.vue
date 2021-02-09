@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { deleteItem } from "@/utils/public";
+import { deleteItem } from "@/utils/requestApi";
 import { Message } from "@/utils/importFile";
 import {
   getMenuList,
@@ -79,6 +79,7 @@ import {
   editMenuInfo,
 } from "@/api/api";
 import sysTable from "./sysTable";
+import { _getList, _delete, _getInfo, _addItem } from "@/utils/requestApi";
 export default {
   components: {
     sysTable,
@@ -125,59 +126,27 @@ export default {
   },
   methods: {
     // 获取权限列表
-    async getList() {
-      try {
-        const { pageNum, pageSize } = this.pages;
-        const res = await getMenuList({ pageSize, pageNum });
-        if (res.code !== 200) return Message.error(res.msg);
+    getList() {
+      const { pageNum, pageSize } = this.pages;
+      let data = { pageSize, pageNum };
+      _getList(getMenuList, data, (res) => {
         this.tableData = res.rows;
         this.pages.total = res.total;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    // 删除权限
-    async deleteMenu(id) {
-      const { pageSize, total } = this.pages;
-      try {
-        const res = await deleteMenuItem(id);
-        if (res.code !== 200) return Message.error(res.msg);
-        Message.success("删除成功");
-        (total - 1) % pageSize ? "" : this.pages.pageNum--;
-        this.getList();
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    // 获取权限信息
-    async getMenuInfo(id) {
-      try {
-        const res = await getMenuInfo(id);
-        if (res.code !== 200) Message.error(res.msg);
-        this.form = res.data;
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
     createAuth() {
       this.dialogFormVisible = true;
       this.creatOrEditId = 0;
     },
     // 添加  /  修改用户
-    async addMenu(form) {
-      try {
-        // creatOrEditId :  0 创建 1 修改
-        const res = this.creatOrEditId
-          ? await editMenuInfo(form)
-          : await addMenuInfo(form);
-        if (res.code !== 200) return Message.error(res.msg);
+    addMenu(form) {
+      const requestApi = this.creatOrEditId ? editMenuInfo : addMenuInfo;
+      _addItem(requestApi, form, () => {
+        this.dialogFormVisible = false;
         let message = this.creatOrEditId ? "修改成功" : "添加成功";
         Message.success(message);
-        this.dialogFormVisible = false;
         this.getList();
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
     // 创建权限
     createRole() {
@@ -188,13 +157,17 @@ export default {
     handleEdit(row) {
       this.creatOrEditId = 1;
       this.dialogFormVisible = true;
-      this.getMenuInfo(row.menuId);
+      _getInfo(getMenuInfo, row.menuId, (res) => {
+        this.form = res.data;
+      });
     },
     // 删除
     handleDelete(row) {
       deleteItem(() => {
-        // console.log(row.menuId);
-        this.deleteMenu(row.menuId);
+        _delete(deleteMenuItem, this.pages, row.menuId, (flag) => {
+          if (flag) this.pages.pageNum--;
+          this.getList();
+        });
       });
     },
     // 提交

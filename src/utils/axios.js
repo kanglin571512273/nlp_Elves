@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "qs";
-import { MessageBox, Message } from "@/utils/importFile";
+import {  Message } from "@/utils/importFile";
 
 class HttpRequest {
   constructor(baseUrl) {

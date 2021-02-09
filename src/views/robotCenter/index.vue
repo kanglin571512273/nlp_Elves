@@ -132,7 +132,7 @@ import {
   editList,
 } from "@/api/robotCenter";
 import { Message, MessageBox } from "@/utils/importFile";
-import { deleteItem } from "@/utils/public";
+import { deleteItem } from "@/utils/requestApi";
 export default {
   data() {
     return {

@@ -91,7 +91,7 @@ import {
   deleteList,
 } from "@/api/productLibrary";
 import { Message } from "@/utils/importFile";
-import { deleteItem } from "@/utils/public";
+import { deleteItem } from "@/utils/requestApi";
 export default {
   data() {
     return {

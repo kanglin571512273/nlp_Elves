@@ -87,7 +87,14 @@ import {
   editKnowInfo,
 } from "@/api/api";
 import CartItem from "./components/CartItem";
-import { deleteItem } from "@/utils/public";
+import {
+  _getList,
+  _delete,
+  _getInfo,
+  _editStatus,
+  _addItem,
+  deleteItem,
+} from "@/utils/requestApi";
 import { MessageBox, Message } from "@/utils/importFile";
 export default {
   components: { CartItem },
@@ -130,70 +137,31 @@ export default {
   },
   methods: {
     // 获取列表
-    async getList(search = {}) {
-      try {
-        let { pageIndex, pageSize } = this.pages;
-        let newData = Object.assign(
-          { dataSource: 1, pageIndex, pageSize },
-          search
-        );
-        const res = await getKnowList(newData);
-        if (res.code !== 200) Message.error(res.msg);
+    getList(search = {}) {
+      let { pageIndex, pageSize } = this.pages;
+      let newData = Object.assign(
+        { dataSource: 1, pageIndex, pageSize },
+        search
+      );
+      _getList(getKnowList, newData, (res) => {
         let { nodeList, totalCount } = res.data;
         this.listData = nodeList;
         this.pages.totalCount = totalCount;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    // 删除
-    async deleteKnowItem(id) {
-      try {
-        const res = await deleteKnowItem({ domainid: id });
-        if (res.code !== 200) return Message.error("删除失败");
-        Message.success("删除成功");
-        this.getList();
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
     // 修改发布状态
-    async editReleaseStatus(ids, status) {
-      try {
-        const res = await editReleaseStatus({ ids, status });
-        if (res.code !== 200) return Message.error(res.msg);
-        Message.success(res.msg);
+    editReleaseStatus(ids, status) {
+      _editStatus(editReleaseStatus, { ids, status }, () => {
         this.getList();
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    // 查询知识库详情
-    async getKnowInfo(domainId) {
-      try {
-        const res = await getKnowInfo({ domainId });
-        if (res.code !== 200) return Message.error(res.msg);
-        this.ruleForm = res.data;
-        this.fileList = [{ name: "iconImg.jpeg", url: res.data.iconUrl }];
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
     // 创建  /  修改  知识库
-    async addKnowInfo(form) {
-      try {
-        // creatOrEditId :  0 创建 1 修改
-        const res = this.creatOrEditId
-          ? await editKnowInfo(form)
-          : await addKnowInfo(form);
-        if (res.code !== 200) return Message.error(res.msg);
-        let message = this.creatOrEditId ? "修改成功" : "添加成功";
-        Message.success(message);
+    addKnowInfo(form) {
+      const requestApi = this.creatOrEditId ? editKnowInfo : addKnowInfo;
+      _addItem(requestApi, form, () => {
         this.dialogFormVisible = false;
         this.getList();
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
     // 添加
     addKnowItem() {
@@ -203,8 +171,9 @@ export default {
     // 删除
     deleteItem(id) {
       deleteItem(() => {
-        // console.log(id);
-        this.deleteKnowItem(id);
+        _delete(deleteKnowItem, this.pages, { domainid: id }, (flag) => {
+          this.getList();
+        });
       });
     },
     // 编辑
@@ -212,7 +181,10 @@ export default {
       console.log(id);
       this.creatOrEditId = 1;
       this.dialogFormVisible = true;
-      this.getKnowInfo(id);
+      _getInfo(getKnowInfo, { domainId: id }, (res) => {
+        this.ruleForm = res.data;
+        this.fileList = [{ name: "iconImg.jpeg", url: res.data.iconUrl }];
+      });
     },
     addKnowledge() {},
     // 提交表单

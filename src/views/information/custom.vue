@@ -323,7 +323,7 @@ import {
   deleteQuestion,
   editquestion,
 } from "@/api/robotCenter";
-import { deleteItem } from "@/utils/public";
+import { deleteItem } from "@/utils/requestApi";
 export default {
   data() {
     return {

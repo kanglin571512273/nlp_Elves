@@ -96,7 +96,6 @@
 </template>
 
 <script>
-import { deleteItem } from "@/utils/public";
 import {
   getUserList,
   deleteUser,
@@ -109,6 +108,15 @@ import {
 } from "@/api/api";
 import { MessageBox, Message } from "@/utils/importFile";
 import sysTable from "./sysTable";
+import {
+  _getList,
+  _delete,
+  _getInfo,
+  _editStatus,
+  _getSelect,
+  _addItem,
+  deleteItem,
+} from "@/utils/requestApi";
 export default {
   components: {
     sysTable,
@@ -116,9 +124,7 @@ export default {
   data() {
     var checkTel = (rule, value, callback) => {
       var reg = /^(((13[0-9]{1})|(15[0-9]{1})|(16[0-9]{1})|(17[3-8]{1})|(18[0-9]{1})|(19[0-9]{1})|(14[5-7]{1}))+\d{8})$/;
-      if (this.form.phonenumber == "" || this.form.phonenumber == undefined) {
-        callback();
-      } else if (!reg.test(this.form.phonenumber)) {
+      if (!reg.test(this.form.phonenumber)) {
         callback(new Error("手机号码格式不正确"));
       } else {
         callback();
@@ -126,9 +132,7 @@ export default {
     };
     var checkPsw = (rule, value, callback) => {
       var reg = /^[a-zA-Z]\w{5,18}$/;
-      if (this.form.password == "" || this.form.password == undefined) {
-        callback();
-      } else if (!reg.test(this.form.password)) {
+      if (!reg.test(this.form.password)) {
         callback(
           new Error("以字母开头，长度在6-18之间，只能包含字符、数字和下划线")
         );
@@ -173,7 +177,10 @@ export default {
           { required: true, message: "请输入用户名称", trigger: "blur" },
         ],
         roleIds: [{ required: true, message: "请选择角色", trigger: "blur" }],
-        phonenumber: [{ validator: checkTel, trigger: "blur" }],
+        phonenumber: [
+          { required: true, message: "请输入手机号码", trigger: "blur" },
+          { validator: checkTel, trigger: "blur" },
+        ],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
           {
@@ -190,97 +197,31 @@ export default {
   },
   methods: {
     // 获取列表
-    async getList() {
-      try {
-        const { pageNum, pageSize } = this.pages;
-        const res = await getUserList({ pageSize, pageNum });
-        if (res.code !== 200) return Message.error(res.msg);
+    getList() {
+      const { pageNum, pageSize } = this.pages;
+      let data = { pageSize, pageNum };
+      _getList(getUserList, data, (res) => {
         this.tableData = res.rows;
         this.pages.total = res.total;
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
-    // 删除用户
-    async deleteUser(id) {
-      const { pageSize, total } = this.pages;
-      try {
-        const res = await deleteUser(id);
-        if (res.code !== 200) return Message.error(res.msg);
-        Message.success("删除成功");
-        (total - 1) % pageSize ? "" : this.pages.pageNum--;
-        this.getList();
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    // 获取个人信息
-    async getUserInfo(id) {
-      try {
-        const res = await getUserInfo(id);
-        if (res.code !== 200) return Message.error(res.msg);
-        const { name, userName, phonenumber, userId, password } = res.data;
-        this.form = { name, userName, phonenumber, userId, password };
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    // 修改用户状态
-    async editUserState(id, status) {
-      try {
-        const res = await editUserState({ userId: id, status });
-        if (res.code !== 200) return Message.error(res.msg);
-        Message.success("修改成功");
-        this.getList();
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    // 获取用户可选角色
-    async getUserRoleSelect(id) {
-      try {
-        const res = await getUserRoleSelect(id);
-        if (res.code !== 200) Message.error(res.msg);
-        this.options = res.roles;
-        this.form.roleIds = res.checkedRoles;
-        // console.log(res);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
     // 创建用户 // 修改用户信息
-    async addUser(form) {
-      try {
-        // creatOrEditId :  0 创建 1 修改
-        const res = this.creatOrEditId
-          ? await editUserInfo(form)
-          : await addUser(form);
-        if (res.code !== 200) return Message.error(res.msg);
+    addUser(form) {
+      const requestApi = this.creatOrEditId ? editUserInfo : addUser;
+      _addItem(requestApi, form, () => {
+        this.dialogFormVisible = false;
         let message = this.creatOrEditId ? "修改成功" : "添加成功";
         Message.success(message);
-        this.dialogFormVisible = false;
         this.getList();
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
-    // 获取所有角色列表
-    async getAllRoleList() {
-      try {
-        const res = await getAllRoleList();
-        if (res.code !== 200) return Message.error(res.msg);
-        this.options = res.data;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
     // 创建用户
     createUser() {
       this.dialogFormVisible = true;
       this.creatOrEditId = 0;
-      this.getAllRoleList();
+      _getSelect(getAllRoleList, {}, (res) => {
+        this.options = res.data;
+      });
     },
     // 启用
     handleEnable(row) {
@@ -290,9 +231,11 @@ export default {
         type: "warning",
       })
         .then(() => {
-          // console.log(row);
           let status = row.status == "0" ? "1" : "0";
-          this.editUserState(row.userId, status);
+          let data = { userId: row.userId, status };
+          _editStatus(editUserState, data, () => {
+            this.getList();
+          });
         })
         .catch(() => {
           Message.info("已取消修改");
@@ -302,13 +245,22 @@ export default {
     handleEdit(row) {
       this.creatOrEditId = 1;
       this.dialogFormVisible = true;
-      this.getUserInfo(row.userId);
-      this.getUserRoleSelect(row.userId);
+      _getInfo(getUserInfo, row.userId, (res) => {
+        const { name, userName, phonenumber, userId, password } = res.data;
+        this.form = { name, userName, phonenumber, userId, password };
+      });
+      _getSelect(getUserRoleSelect, row.userId, (res) => {
+        this.options = res.roles;
+        this.form.roleIds = res.checkedRoles;
+      });
     },
     // 删除
     handleDelete(row) {
       deleteItem(() => {
-        this.deleteUser(row.userId);
+        _delete(deleteUser, this.pages, row.userId, (flag) => {
+          if (flag) this.pages.pageNum--;
+          this.getList();
+        });
       });
     },
     // 重置表单

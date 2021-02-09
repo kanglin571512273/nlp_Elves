@@ -3,24 +3,14 @@
     <!-- 展示区  -->
     <div class="mainContainer">
       <div class="createBtn" @click="createUser">创建用户</div>
-      <el-table :data="tableData" border style="width: 100%" height="91%">
-        <el-table-column label="序号" type="index" :index="indexMethod" width="70"></el-table-column>
-        <el-table-column prop="userName" label="用户名"></el-table-column>
-        <el-table-column prop="name" label="姓名"></el-table-column>
-        <el-table-column prop="phonenumber" label="手机号"></el-table-column>
-        <el-table-column label="操作" class="operationTable">
-          <template slot-scope="scope">
-            <div class="operationCon">
-              <div
-                @click="handleEnable(scope.row)"
-                class="operation"
-              >{{scope.row.status == '0' ? '已启用':'启用'}}</div>
-              <div @click="handleEdit(scope.row)" class="operation">编辑</div>
-              <div @click="handleDelete(scope.row)" class="operation">删除</div>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
+      <sysTable
+        :tableHeader="tableHeader"
+        :tableData="tableData"
+        :pages="pages"
+        @handleEnable="handleEnable"
+        @handleEdit="handleEdit"
+        @handleDelete="handleDelete"
+      ></sysTable>
     </div>
     <!-- 分页 -->
     <div class="pagination">
@@ -118,7 +108,11 @@ import {
   getAllRoleList,
 } from "@/api/api";
 import { MessageBox, Message } from "@/utils/importFile";
+import sysTable from "./sysTable";
 export default {
+  components: {
+    sysTable,
+  },
   data() {
     var checkTel = (rule, value, callback) => {
       var reg = /^(((13[0-9]{1})|(15[0-9]{1})|(16[0-9]{1})|(17[3-8]{1})|(18[0-9]{1})|(19[0-9]{1})|(14[5-7]{1}))+\d{8})$/;
@@ -143,6 +137,11 @@ export default {
       }
     };
     return {
+      tableHeader: [
+        { id: 1, label: "用户名", prop: "userName" },
+        { id: 2, label: "姓名", prop: "name" },
+        { id: 3, label: "手机号", prop: "phonenumber" },
+      ],
       pages: {
         pageNum: 1,
         pageSize: 10,
@@ -198,24 +197,18 @@ export default {
         if (res.code !== 200) return Message.error(res.msg);
         this.tableData = res.rows;
         this.pages.total = res.total;
-        /*    res.rows.map((item) => {
-          let roleName = [];
-          item.roles.map((child) => {
-            roleName.push(child.roleName);
-          });
-          item.roleName = roleName.join(" / ");
-        }); */
       } catch (error) {
         console.log(error);
       }
     },
     // 删除用户
     async deleteUser(id) {
+      const { pageSize, total } = this.pages;
       try {
         const res = await deleteUser(id);
         if (res.code !== 200) return Message.error(res.msg);
         Message.success("删除成功");
-        this.pages.pageNum = 1;
+        (total - 1) % pageSize ? "" : this.pages.pageNum--;
         this.getList();
       } catch (error) {
         console.log(error);
@@ -250,7 +243,7 @@ export default {
         if (res.code !== 200) Message.error(res.msg);
         this.options = res.roles;
         this.form.roleIds = res.checkedRoles;
-        console.log(res);
+        // console.log(res);
       } catch (error) {
         console.log(error);
       }
@@ -297,7 +290,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          console.log(row);
+          // console.log(row);
           let status = row.status == "0" ? "1" : "0";
           this.editUserState(row.userId, status);
         })
@@ -340,11 +333,6 @@ export default {
         }
       });
     },
-    // 表格序号
-    indexMethod(index) {
-      const { pageNum, pageSize } = this.pages;
-      return index + 1 + (pageNum - 1) * pageSize; // 返回表格序号
-    },
     //   分页
     handleCurrentChange(val) {
       this.pages.pageNum = val;
@@ -365,26 +353,6 @@ export default {
     padding: 15px;
     border: 1px solid #f0f2f5;
     text-align: left;
-    .el-table {
-      margin-top: 10px;
-    }
-
-    .operationCon {
-      display: flex;
-      cursor: pointer;
-      .operation {
-        flex: 1;
-        &:nth-child(1) {
-          color: #00a195;
-        }
-        &:nth-child(2) {
-          color: #2d3291;
-        }
-        &:nth-child(3) {
-          color: #ff4a00;
-        }
-      }
-    }
   }
   .pagination {
     padding: 10px;
@@ -422,7 +390,7 @@ export default {
     padding: 0 20px 0px;
   }
   .el-dialog__headerbtn {
-    top: 8px;
+    top: 1px;
   }
   .el-dialog {
     margin-top: 9vh !important;

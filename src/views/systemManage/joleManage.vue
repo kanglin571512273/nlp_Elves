@@ -4,20 +4,13 @@
     <!-- 展示区  -->
     <div class="mainContainer">
       <div class="createBtn" @click="createRole">创建角色</div>
-      <el-table :data="tableData" border style="width: 100%" height="91%" empty-text="暂无">
-        <el-table-column label="序号" :index="indexMethod" type="index" width="70"></el-table-column>
-        <el-table-column prop="roleName" label="角色名称"></el-table-column>
-        <el-table-column prop="roleKey" label="权限字符"></el-table-column>
-        <el-table-column prop="roleDesc" label="角色描述" show-overflow-tooltip></el-table-column>
-        <el-table-column label="操作" class="operationTable">
-          <template slot-scope="scope">
-            <div class="operationCon">
-              <div @click="handleEdit(scope.row)" class="operation">编辑</div>
-              <div @click="handleDelete(scope.row)" class="operation">删除</div>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
+      <sysTable
+        :tableHeader="tableHeader"
+        :tableData="tableData"
+        :pages="pages"
+        @handleEdit="handleEdit"
+        @handleDelete="handleDelete"
+      ></sysTable>
     </div>
     <!-- 分页 -->
     <div class="pagination">
@@ -107,7 +100,11 @@ import {
 } from "@/api/api";
 import { deleteItem } from "@/utils/public";
 import { Message } from "@/utils/importFile";
+import sysTable from "./sysTable";
 export default {
+  components: {
+    sysTable,
+  },
   data() {
     const checkRoleKey = (rule, value, callback) => {
       var reg = /[\u4e00-\u9fa5]/;
@@ -123,6 +120,11 @@ export default {
       }
     };
     return {
+      tableHeader: [
+        { id: 1, label: "角色名称", prop: "roleName" },
+        { id: 2, label: "权限字符", prop: "roleKey" },
+        { id: 3, label: "角色描述", prop: "roleDesc" },
+      ],
       pages: {
         pageNum: 1,
         pageSize: 10,
@@ -183,11 +185,12 @@ export default {
     },
     // 删除角色
     async deleteRole(id) {
+      const { pageSize, total } = this.pages;
       try {
         const res = await deleteRole(id);
         if (res.code !== 200) return Message.error(res.msg);
         Message.success("删除成功");
-        this.pages.pageNum = 1;
+        (total - 1) % pageSize ? "" : this.pages.pageNum--;
         this.getList();
       } catch (error) {
         console.log(error);
@@ -356,7 +359,7 @@ export default {
     padding: 0 20px 0px;
   }
   .el-dialog__headerbtn {
-    top: 8px;
+    top: 1px;
   }
   .el-dialog {
     width: 85%;

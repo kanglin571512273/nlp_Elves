@@ -6,7 +6,7 @@
       </div>
       <div class="rightInfo">
         <div class="title">
-          <span class="ellipsis">{{data.name}}</span>
+          <span class="ellipsis titleName">{{data.name}}</span>
           <div
             v-show="$route.name == 'myKnowledge' && data.isUsed "
             class="myBtn myBtn_success myBtn_plain"
@@ -142,6 +142,9 @@ export default {
         justify-content: space-between;
         font-size: 14px;
         color: #333;
+        .titleName {
+          width: 200px;
+        }
       }
       .info {
         font-size: 14px;

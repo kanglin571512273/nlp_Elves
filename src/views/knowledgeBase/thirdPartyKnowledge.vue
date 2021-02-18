@@ -11,7 +11,7 @@
 
 <script>
 import { getKnowList } from "@/api/api";
-import { Message } from "@/utils/importFile";
+import { _getList } from "@/utils/requestApi";
 import CartItem from "./components/CartItem";
 export default {
   components: { CartItem },

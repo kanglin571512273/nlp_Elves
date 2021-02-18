@@ -29,21 +29,17 @@ export default {
     this.getList();
   },
   methods: {
-    async getList(search = {}) {
-      try {
-        let { pageIndex, pageSize } = this.pages;
-        let newData = Object.assign(
-          { dataSource: 3, pageIndex, pageSize },
-          search
-        );
-        const res = await getKnowList(newData);
-        if (res.code !== 200) Message.error(res.msg);
+    getList(search = {}) {
+      let { pageIndex, pageSize } = this.pages;
+      let newData = Object.assign(
+        { dataSource: 3, pageIndex, pageSize },
+        search
+      );
+      _getList(getKnowList, newData, (res) => {
         let { nodeList, totalCount } = res.data;
         this.listData = nodeList;
         this.pages.totalCount = totalCount;
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
     /*     // 删除
     deleteItem() {

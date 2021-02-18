@@ -187,7 +187,7 @@ import {
   upload,
   indList
 } from "@/api/productLibrary";
-import { deleteItem } from "@/utils/public";
+import { deleteItem } from "@/utils/requestApi";
 import { Message, MessageBox } from "@/utils/importFile";
 export default {
   data() {

@@ -11,7 +11,7 @@
 
 <script>
 import { getKnowList } from "@/api/api";
-import { Message } from "@/utils/importFile";
+import { _getList } from "@/utils/requestApi";
 import CartItem from "./components/CartItem";
 export default {
   components: { CartItem },
@@ -29,21 +29,17 @@ export default {
     this.getList();
   },
   methods: {
-    async getList(search = {}) {
-      try {
-        let { pageIndex, pageSize } = this.pages;
-        let newData = Object.assign(
-          { dataSource: 2, pageIndex, pageSize },
-          search
-        );
-        const res = await getKnowList(newData);
-        if (res.code !== 200) Message.error(res.msg);
+     getList(search = {}) {
+      let { pageIndex, pageSize } = this.pages;
+      let newData = Object.assign(
+        { dataSource: 2, pageIndex, pageSize },
+        search
+      );
+      _getList(getKnowList, newData, (res) => {
         let { nodeList, totalCount } = res.data;
         this.listData = nodeList;
         this.pages.totalCount = totalCount;
-      } catch (error) {
-        console.log(error);
-      }
+      });
     },
     /* // 删除
     deleteItem() {

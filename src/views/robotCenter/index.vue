@@ -32,7 +32,8 @@
                     :label="item.value"
                     v-for="item in dictionary"
                     :key="item.id"
-                  >{{ item.label }}</el-radio>
+                    >{{ item.label }}</el-radio
+                  >
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="上传图片：" prop="import">
@@ -50,7 +51,9 @@
                 >
                   <!-- <el-button size="small" type="primary">点击上传</el-button> -->
                   <div class="upload">点击上传</div>
-                  <div slot="tip" class="el-upload__tip">只能上传 jpg / png / jpeg / gif 文件</div>
+                  <div slot="tip" class="el-upload__tip">
+                    只能上传 jpg / png / jpeg / gif 文件
+                  </div>
                 </el-upload>
               </el-form-item>
               <!-- <div class="input-suffix">
@@ -74,7 +77,9 @@
             </el-form>
           </div>
           <div class="submit-box">
-            <div class="create cancel" @click="dialogFormVisible = false">取 消</div>
+            <div class="create cancel" @click="dialogFormVisible = false">
+              取 消
+            </div>
             <div class="create" @click="submitForm('ruleForm')">确 定</div>
           </div>
         </el-card>
@@ -91,19 +96,33 @@
           <el-table-column prop="robotName" label="名称">
             <template slot-scope="scope">
               <el-button type="text" @click="informationClick(scope.row)">
-                {{
-                scope.row.robotName
-                }}
+                {{ scope.row.robotName }}
               </el-button>
             </template>
           </el-table-column>
           <el-table-column prop="seriesId" label="ID"></el-table-column>
-          <el-table-column prop="type" :formatter="statusFormat" label="类型"></el-table-column>
+          <el-table-column
+            prop="type"
+            :formatter="statusFormat"
+            label="类型"
+          ></el-table-column>
           <el-table-column prop="createTime" label="创建时间"></el-table-column>
           <el-table-column fixed="right" label="操作" width="210">
             <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" type="text" size="small" class="edit">编辑</el-button>
-              <el-button type="text" size="small" class="delete" @click="deleteClick(scope.row)">删除</el-button>
+              <el-button
+                @click="handleClick(scope.row)"
+                type="text"
+                size="small"
+                class="edit"
+                >编辑</el-button
+              >
+              <el-button
+                type="text"
+                size="small"
+                class="delete"
+                @click="deleteClick(scope.row)"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -129,7 +148,7 @@ import {
   upload,
   addrobotts,
   deleteList,
-  editList,
+  editList
 } from "@/api/robotCenter";
 import { Message, MessageBox } from "@/utils/importFile";
 import { deleteItem } from "@/utils/public";
@@ -145,7 +164,7 @@ export default {
         robotName: "",
         type: "",
         pictureUrl: "",
-        id: "",
+        id: ""
       },
       rules: {
         robotName: [
@@ -154,16 +173,14 @@ export default {
             min: 3,
             max: 20,
             message: "长度在 3 到 20 个字符",
-            trigger: "blur",
-          },
+            trigger: "blur"
+          }
         ],
-        type: [
-          { required: true, message: "请选择活动资源", trigger: "change" },
-        ],
+        type: [{ required: true, message: "请选择活动资源", trigger: "change" }]
       },
       formLabelWidth: "120px",
       fileList: [],
-      tableData: [],
+      tableData: []
     };
   },
   mounted() {
@@ -177,7 +194,7 @@ export default {
       try {
         const res = await getList({
           pageSize: pageSize,
-          pageNum: pageNum,
+          pageNum: pageNum
         });
         if (res.code == 200) {
           this.tableData = res.rows;
@@ -210,7 +227,7 @@ export default {
         robotName: "",
         type: "api",
         pictureUrl: "",
-        id: "",
+        id: ""
       };
       this.fileList = [];
     },
@@ -243,7 +260,7 @@ export default {
       } else {
         this.fileList.push({
           name: row.seriesId,
-          url: this.ruleForm.pictureUrl,
+          url: this.ruleForm.pictureUrl
         });
       }
 
@@ -252,10 +269,15 @@ export default {
     },
     // 删除
     deleteClick(row) {
+      var num = this.total % 10;
       deleteList(row.id).then(response => {
         if (response.code === 200) {
           Message.success("删除成功");
-          this.getList(this.currentPage1, 10);
+          if (num == 1) {
+            this.getList(this.currentPage1 - 1, 10);
+          } else {
+            this.getList(this.currentPage1, 10);
+          }
           // this.getList();
         }
       });
@@ -283,9 +305,9 @@ export default {
     },
     handleExceed(files, fileList) {
       this.$message.warning(
-        `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
-          files.length + fileList.length
-        } 个文件`
+        `当前限制选择 3 个文件，本次选择了 ${
+          files.length
+        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
       );
     },
     beforeRemove(file, fileList) {
@@ -300,7 +322,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.ruleForm.id == "") {
-            addrobotts(this.ruleForm).then((response) => {
+            addrobotts(this.ruleForm).then(response => {
               if (response.code === 200) {
                 Message.success("新增成功");
                 this.dialogFormVisible = false;
@@ -310,7 +332,7 @@ export default {
               }
             });
           } else {
-            editList(this.ruleForm).then((response) => {
+            editList(this.ruleForm).then(response => {
               if (response.code === 200) {
                 Message.success("编辑成功");
                 this.dialogFormVisible = false;
@@ -328,14 +350,14 @@ export default {
     },
     informationClick(row) {
       this.$router.push({
-        name: "overview",
+        name: "overview"
       });
       localStorage.setItem("seriesId", row.id);
     },
     handleChange(file, fileList) {
       this.fileList = fileList.slice(-1);
-    },
-  },
+    }
+  }
 };
 </script>
 

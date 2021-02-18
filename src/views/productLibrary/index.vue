@@ -2,7 +2,11 @@
   <div class="robot">
     <div>
       <div class="create" @click="addrobot">创建产品库</div>
-      <el-dialog width="80%" :visible.sync="dialogFormVisible" @close="resetForm('ruleForm')">
+      <el-dialog
+        width="80%"
+        :visible.sync="dialogFormVisible"
+        @close="resetForm('ruleForm')"
+      >
         <el-card class="productfix">
           <div class="input-fix">
             <el-form
@@ -37,7 +41,9 @@
             </el-form>
           </div>
           <div class="submit-box">
-            <div class="create cancel" @click="dialogFormVisible = false">取 消</div>
+            <div class="create cancel" @click="dialogFormVisible = false">
+              取 消
+            </div>
             <div class="create" @click="submitForm('ruleForm')">确 定</div>
           </div>
         </el-card>
@@ -45,25 +51,45 @@
 
       <el-card class="box-card">
         <el-table :data="tableData" border style="width: 100%">
-          <el-table-column prop="serial" type="index" :index="indexMethod" label="序号" width="80">
+          <el-table-column
+            prop="serial"
+            type="index"
+            :index="indexMethod"
+            label="序号"
+            width="80"
+          >
           </el-table-column>
           <el-table-column prop="productLibraryType" label="产品库类型">
           </el-table-column>
           <el-table-column prop="productContentNum" label="内容数量">
             <template slot-scope="scope">
               <el-button type="text" @click="contentClick(scope.row)">
-                {{
-                scope.row.productContentNum
-                }}
+                {{ scope.row.productContentNum }}
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="productLibraryDesc" show-overflow-tooltip label="产品库说明"></el-table-column>
+          <el-table-column
+            prop="productLibraryDesc"
+            show-overflow-tooltip
+            label="产品库说明"
+          ></el-table-column>
           <el-table-column prop="createTime" label="创建时间"></el-table-column>
           <el-table-column fixed="right" label="操作" width="210">
             <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" type="text" size="small" class="edit">编辑</el-button>
-              <el-button @click="deleteClick(scope.row)" type="text" size="small" class="delete">删除</el-button>
+              <el-button
+                @click="handleClick(scope.row)"
+                type="text"
+                size="small"
+                class="edit"
+                >编辑</el-button
+              >
+              <el-button
+                @click="deleteClick(scope.row)"
+                type="text"
+                size="small"
+                class="delete"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -88,7 +114,7 @@ import {
   getdictionary,
   addproduct,
   editList,
-  deleteList,
+  deleteList
 } from "@/api/productLibrary";
 import { Message } from "@/utils/importFile";
 import { deleteItem } from "@/utils/public";
@@ -104,7 +130,7 @@ export default {
       ruleForm: {
         productLibraryType: "",
         productLibraryDesc: "",
-        id: "",
+        id: ""
       },
       rules: {
         productLibraryType: [
@@ -113,12 +139,12 @@ export default {
             min: 1,
             max: 20,
             message: "长度在 1 到 20 个字符",
-            trigger: "blur",
-          },
+            trigger: "blur"
+          }
         ],
         productLibraryDesc: [
-          { required: true, message: "请输入产品库说明", trigger: "change" },
-        ],
+          { required: true, message: "请输入产品库说明", trigger: "change" }
+        ]
       },
       formLabelWidth: "120px",
       fileList: [],
@@ -146,7 +172,7 @@ export default {
       this.ruleForm = {
         productLibraryType: "",
         productLibraryDesc: "",
-        id: "",
+        id: ""
       };
       this.dialogFormVisible = true;
     },
@@ -177,10 +203,15 @@ export default {
     },
     // 删除
     deleteClick(row) {
+      var num = this.total % 10;
       deleteList(row.id).then(response => {
         if (response.code === 200) {
           Message.success("删除成功");
-          this.getlists(this.currentPage1, 10);
+          if (num == 1) {
+            this.getList(this.currentPage1 - 1, 10);
+          } else {
+            this.getList(this.currentPage1, 10);
+          }
           // this.getList();
         } else if (response.code === 500) {
           console.log(response);
@@ -191,7 +222,7 @@ export default {
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
     },
-      // 表格序号
+    // 表格序号
     indexMethod(index) {
       return index + 1 + (this.currentPage1 - 1) * 10; // 返回表格序号
     },
@@ -214,19 +245,19 @@ export default {
     },
     handleExceed(files, fileList) {
       this.$message.warning(
-        `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
-          files.length + fileList.length
-        } 个文件`
+        `当前限制选择 3 个文件，本次选择了 ${
+          files.length
+        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
       );
     },
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.ruleForm.id == "") {
-            addproduct(this.ruleForm).then((response) => {
+            addproduct(this.ruleForm).then(response => {
               if (response.code === 200) {
                 Message.success("新增成功");
                 this.dialogFormVisible = false;
@@ -235,7 +266,7 @@ export default {
               }
             });
           } else {
-            editList(this.ruleForm).then((response) => {
+            editList(this.ruleForm).then(response => {
               if (response.code === 200) {
                 Message.success("编辑成功");
                 this.dialogFormVisible = false;
@@ -253,11 +284,11 @@ export default {
     },
     contentClick(row) {
       this.$router.push({
-        name: "productcontent",
+        name: "productcontent"
       });
       localStorage.setItem("productId", row.id);
-    },
-  },
+    }
+  }
 };
 </script>
 

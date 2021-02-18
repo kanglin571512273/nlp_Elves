@@ -5,7 +5,11 @@
         <div class="create return" @click="returns">返回</div>
         <div class="create" @click="addrobot">添加产品内容</div>
       </div>
-      <el-dialog width="80%" :visible.sync="dialogFormVisible" @close="resetForm('ruleForm')">
+      <el-dialog
+        width="80%"
+        :visible.sync="dialogFormVisible"
+        @close="resetForm('ruleForm')"
+      >
         <el-card>
           <div class="input-fix">
             <el-form
@@ -38,21 +42,33 @@
                 ></el-input>
               </el-form-item>
               <el-form-item label="类型：" prop="productContentImportType">
-                <el-radio-group v-model="ruleForm.productContentImportType" @change="changeradio">
+                <el-radio-group
+                  v-model="ruleForm.productContentImportType"
+                  @change="changeradio"
+                >
                   <el-radio v-model="radio" label="0">自动导入</el-radio>
                   <el-radio v-model="radio" label="1">手动导入</el-radio>
                 </el-radio-group>
               </el-form-item>
-              <el-form-item label="定时任务：" prop="productContentDateNum" v-show="radiotype == 0">
+              <el-form-item
+                label="定时任务："
+                prop="productContentDateNum"
+                v-show="radiotype == 0"
+              >
                 <el-input-number
                   v-model="ruleForm.productContentDateNum"
                   controls-position="right"
                   @change="handleChange"
                   :min="1"
                   :max="10"
-                ></el-input-number>&ensp;&ensp;周
+                ></el-input-number
+                >&ensp;&ensp;周
               </el-form-item>
-              <el-form-item label="导入文件：" prop="import" v-show="radiotype == 1">
+              <el-form-item
+                label="导入文件："
+                prop="import"
+                v-show="radiotype == 1"
+              >
                 <el-upload
                   class="upload-demo"
                   action="#"
@@ -64,7 +80,9 @@
                 >
                   <!-- <el-button size="small" type="primary">点击上传</el-button> -->
                   <div class="upload">点击上传</div>
-                  <div slot="tip" class="el-upload__tip">只能上传xlsx文件，且不超过500kb</div>
+                  <div slot="tip" class="el-upload__tip">
+                    只能上传xlsx文件，且不超过500kb
+                  </div>
                 </el-upload>
                 <div class="upload-box">
                   <!-- <a
@@ -81,14 +99,20 @@
                   </a>-->
                   <div class="up" @click="download">
                     下载模版
-                    <img class="download" src="@/assets/images/download.png" alt=".." />
+                    <img
+                      class="download"
+                      src="@/assets/images/download.png"
+                      alt=".."
+                    />
                   </div>
                 </div>
               </el-form-item>
             </el-form>
           </div>
           <div class="submit-box">
-            <div class="create cancel" @click="dialogFormVisible = false">取 消</div>
+            <div class="create cancel" @click="dialogFormVisible = false">
+              取 消
+            </div>
             <div class="create" @click="submitForm('ruleForm')">确 定</div>
           </div>
         </el-card>
@@ -113,14 +137,26 @@
           <el-table-column prop="createBy" label="操作人"> </el-table-column>
           <el-table-column fixed="right" label="操作" width="210">
             <template slot-scope="scope">
-              <el-button @click="handleEnable(scope.row)" type="text" class="release">
-                {{
-                scope.row.releaseStatus == "0" ? "未发布" : "已发布"
-                }}
+              <el-button
+                @click="handleEnable(scope.row)"
+                type="text"
+                class="release"
+              >
+                {{ scope.row.releaseStatus == "0" ? "未发布" : "已发布" }}
               </el-button>
-              <el-button @click="handleClick(scope.row)" type="text" class="edit">编辑</el-button>
+              <el-button
+                @click="handleClick(scope.row)"
+                type="text"
+                class="edit"
+                >编辑</el-button
+              >
 
-              <el-button type="text" @click="deleteClick(scope.row)" class="delete">删除</el-button>
+              <el-button
+                type="text"
+                @click="deleteClick(scope.row)"
+                class="delete"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -171,7 +207,7 @@ export default {
         productLibraryId: "",
         productContentDateNum: "",
         id: "",
-        productContentFileUrl: "",
+        productContentFileUrl: ""
       },
       rules: {
         productContentName: [
@@ -181,7 +217,7 @@ export default {
       },
       formLabelWidth: "120px",
       fileList: [],
-      tableData: [],
+      tableData: []
     };
   },
   mounted() {
@@ -207,7 +243,7 @@ export default {
         const res = await getproductlists({
           pageSize: pageSize,
           pageNum: pageNum,
-          id: this.ruleForm.productLibraryId,
+          id: this.ruleForm.productLibraryId
         });
         if (res.code == 200) {
           this.tableData = res.rows;
@@ -241,7 +277,7 @@ export default {
         productLibraryId: "",
         productContentDateNum: "",
         id: "",
-        productContentFileUrl: "",
+        productContentFileUrl: ""
       };
       this.radiotype = "0";
       this.fileList = [];
@@ -253,10 +289,15 @@ export default {
     },
     // 删除
     deleteClick(row) {
+      var num = this.total % 10;
       deletecontentList(row.id).then(response => {
         if (response.code === 200) {
           Message.success("删除成功");
-          this.getlists(this.currentPage1, 10);
+          if (num == 1) {
+            this.getList(this.currentPage1 - 1, 10);
+          } else {
+            this.getList(this.currentPage1, 10);
+          }
           // this.getList();
         } else if (response.code === 500) {
           Message.error(response.msg);
@@ -268,7 +309,7 @@ export default {
       MessageBox.confirm("此操作将修改发布状态, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning",
+        type: "warning"
       })
         .then(() => {
           let status = row.releaseStatus == "0" ? "1" : "0";
@@ -331,9 +372,9 @@ export default {
     },
     handleExceed(files, fileList) {
       this.$message.warning(
-        `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
-          files.length + fileList.length
-        } 个文件`
+        `当前限制选择 3 个文件，本次选择了 ${
+          files.length
+        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
       );
     },
     beforeRemove(file, fileList) {
@@ -356,10 +397,10 @@ export default {
       }
     },
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.ruleForm.id == "") {
-            addproductcontent(this.ruleForm).then((response) => {
+            addproductcontent(this.ruleForm).then(response => {
               if (response.code === 200) {
                 Message.success("新增成功");
                 this.dialogFormVisible = false;
@@ -367,7 +408,7 @@ export default {
               }
             });
           } else {
-            editproductList(this.ruleForm).then((response) => {
+            editproductList(this.ruleForm).then(response => {
               if (response.code === 200) {
                 Message.success("编辑成功");
                 this.dialogFormVisible = false;
@@ -384,7 +425,7 @@ export default {
       });
     },
     download() {
-      getexport(1).then((response) => {
+      getexport(1).then(response => {
         // let disposition = decodeURI(res.headers["Content-disposition"]);
         // let fileName = disposition.substring(
         //   disposition.indexOf("fileName=") + 9,
@@ -428,8 +469,8 @@ export default {
     },
     handleChange(value) {
       console.log(value);
-    },
-  },
+    }
+  }
 };
 </script>
 

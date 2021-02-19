@@ -352,5 +352,8 @@ export default {
       height: 92%;
     }
   }
+  .el-select .el-input {
+    width: 100%;
+  }
 }
 </style>

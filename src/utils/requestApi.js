@@ -23,12 +23,12 @@ export const _getList = async (requestApi, data, callback) => {
  * @param callback      对调函数，请求成功后，做的操作
  */
 export const _delete = async (requestApi, pages, id, callback) => {
-    const { pageSize, total } = pages;
+    const { pageSize, total, pageNum } = pages;
     try {
         const res = await requestApi(id);
         if (res.code !== 200) return Message.error(res.msg);
         Message.success("删除成功");
-        let flag = (total - 1) % pageSize == 0
+        let flag = ((total - 1) % pageSize == 0) && (pageNum !== 1)
         callback(flag)
     } catch (error) {
         console.log(error);

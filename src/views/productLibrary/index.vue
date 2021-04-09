@@ -20,16 +20,16 @@
               <div class="header">创建产品库</div>
               <el-form-item label="产品库类型：" prop="productLibraryType">
                 <el-input
-                  v-model="ruleForm.productLibraryType"
+                  v-model.trim="ruleForm.productLibraryType"
                   placeholder="请输入产品库类型"
-                  maxlength="10"
+                  maxlength="20"
                   show-word-limit
                   clearable
                 ></el-input>
               </el-form-item>
               <el-form-item label="产品库说明：">
                 <el-input
-                  v-model="ruleForm.productLibraryDesc"
+                  v-model.trim="ruleForm.productLibraryDesc"
                   type="textarea"
                   :rows="2"
                   placeholder="请输入产品库说明"
@@ -204,19 +204,21 @@ export default {
     // 删除
     deleteClick(row) {
       var num = this.total % 10;
-      deleteList(row.id).then(response => {
-        if (response.code === 200) {
-          Message.success("删除成功");
-          if (num == 1) {
-            this.getList(this.currentPage1 - 1, 10);
-          } else {
-            this.getList(this.currentPage1, 10);
+      deleteItem(() => {
+        deleteList(row.id).then(response => {
+          if (response.code === 200) {
+            Message.success("删除成功");
+            if (num == 1) {
+              this.getlists(this.currentPage1 - 1, 10);
+            } else {
+              this.getlists(this.currentPage1, 10);
+            }
+            // this.getList();
+          } else if (response.code === 500) {
+            console.log(response);
+            Message.error(response.msg);
           }
-          // this.getList();
-        } else if (response.code === 500) {
-          console.log(response);
-          Message.error(response.msg);
-        }
+        });
       });
     },
     handleSizeChange(val) {
@@ -263,6 +265,8 @@ export default {
                 this.dialogFormVisible = false;
                 this.getlists(this.currentPage1, 10);
                 // this.getList();
+              } else if (response.code == 500) {
+                Message.error(response.msg);
               }
             });
           } else {
@@ -272,6 +276,8 @@ export default {
                 this.dialogFormVisible = false;
                 this.getlists(this.currentPage1, 10);
                 // this.getList();
+              } else if (response.code == 500) {
+                Message.error(response.msg);
               }
             });
           }
@@ -321,7 +327,6 @@ export default {
   position: relative;
 }
 .pagination {
-  width: 500px;
   float: right;
   margin: 20px 0;
 }

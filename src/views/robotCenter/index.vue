@@ -16,7 +16,7 @@
               <div class="header">创建机器人</div>
               <el-form-item label="机器人名称：" prop="robotName">
                 <el-input
-                  v-model="ruleForm.robotName"
+                  v-model.trim="ruleForm.robotName"
                   placeholder="请输入机器人名称"
                   maxlength="20"
                   show-word-limit
@@ -218,6 +218,7 @@ export default {
     },
     // 岗位状态字典翻译
     statusFormat(row, column) {
+      console.log(this.dictionary);
       return this.selectDictLabel(this.dictionary, row.type);
     },
     // 创建机器人
@@ -270,16 +271,19 @@ export default {
     // 删除
     deleteClick(row) {
       var num = this.total % 10;
-      deleteList(row.id).then(response => {
-        if (response.code === 200) {
-          Message.success("删除成功");
-          if (num == 1) {
-            this.getList(this.currentPage1 - 1, 10);
-          } else {
-            this.getList(this.currentPage1, 10);
+
+      deleteItem(() => {
+        deleteList(row.id).then(response => {
+          if (response.code === 200) {
+            Message.success("删除成功");
+            if (num == 1) {
+              this.getList(this.currentPage1 - 1, 10);
+            } else {
+              this.getList(this.currentPage1, 10);
+            }
+            // this.getList();
           }
-          // this.getList();
-        }
+        });
       });
     },
     handleSizeChange(val) {
@@ -338,6 +342,8 @@ export default {
                 this.dialogFormVisible = false;
                 this.getList(this.currentPage1, 10);
                 // this.getList();
+              } else if (response.code === 500) {
+                Message.success(response.msg);
               }
             });
           }
@@ -444,7 +450,6 @@ export default {
   position: relative;
 }
 .pagination {
-  width: 500px;
   float: right;
   margin: 20px 0;
 }

@@ -5,14 +5,35 @@
         <div class="adproblem" @click="addquest">新增</div>
         <el-card class="adpros">
           <el-table :data="problemListData" border style="width: 100%">
-            <el-table-column type="index" label="序号" width="80"></el-table-column>
+            <el-table-column
+              type="index"
+              label="序号"
+              width="80"
+            ></el-table-column>
             <el-table-column prop="questionDesc" label="问题"></el-table-column>
-            <el-table-column prop="defaultAnswer" label="答案"></el-table-column>
-            <el-table-column prop="updateTime" label="更新时间" width="180"></el-table-column>
+            <el-table-column
+              prop="defaultAnswer"
+              label="答案"
+            ></el-table-column>
+            <el-table-column
+              prop="updateTime"
+              label="更新时间"
+              width="180"
+            ></el-table-column>
             <el-table-column fixed="right" label="操作" width="210">
               <template slot-scope="scope">
-                <el-button @click="handleClick(scope.row.id)" type="text" class="edit">编辑</el-button>
-                <el-button type="text" @click="deleteClick(scope.row)" class="delete">删除</el-button>
+                <el-button
+                  @click="handleClick(scope.row.id)"
+                  type="text"
+                  class="edit"
+                  >编辑</el-button
+                >
+                <el-button
+                  type="text"
+                  @click="deleteClick(scope.row)"
+                  class="delete"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -26,7 +47,7 @@
               :model="problemForm"
               ref="problemForm"
               label-width="100px"
-              class="demo-dynamic"
+              class="demo-dynamic similarity"
               label-position="left"
             >
               <el-form-item
@@ -40,7 +61,12 @@
                   }
                 ]"
               >
-                <el-input v-model="problemForm.question"></el-input>
+                <el-input
+                  v-model.trim="problemForm.question"
+                  maxlength="150"
+                  show-word-limit
+                  clearable
+                ></el-input>
               </el-form-item>
               <el-form-item
                 v-for="(domain, index) in problemForm.domains"
@@ -53,13 +79,24 @@
                 }"
               >
                 <div class="input_box">
-                  <el-input v-model="arr[index]"></el-input>
-                  <el-button @click.prevent="removeDomain(domain)">删除</el-button>
+                  <el-input
+                    v-model="arr[index]"
+                    maxlength="150"
+                    show-word-limit
+                    clearable
+                  ></el-input>
+                  <el-button
+                    class="probutton"
+                    @click.prevent="removeDomain(domain)"
+                    >删除</el-button
+                  >
                 </div>
               </el-form-item>
 
               <el-form-item>
-                <el-button @click="addDomain(problemForm.domains.length)">新增</el-button>
+                <el-button @click="addDomain(problemForm.domains.length)"
+                  >新增</el-button
+                >
                 <el-button @click="resetForm('problemForm')">重置</el-button>
               </el-form-item>
             </el-form>
@@ -97,14 +134,27 @@
                 }"
               >
                 <div class="input_box">
-                  <el-input v-model="arrquestion[index]"></el-input>
-                  <el-button @click.prevent="removeAnswer(domain)">删除</el-button>
+                  <el-input
+                    v-model="arrquestion[index]"
+                    maxlength="150"
+                    show-word-limit
+                    clearable
+                  ></el-input>
+                  <el-button
+                    class="aynbutton"
+                    @click.prevent="removeAnswer(domain)"
+                    >删除</el-button
+                  >
                 </div>
               </el-form-item>
 
               <el-form-item>
-                <el-button @click="addanswer(answerForm.domains.length)">新增</el-button>
-                <el-button @click="resetanswerForm('answerForm')">重置</el-button>
+                <el-button @click="addanswer(answerForm.domains.length)"
+                  >新增</el-button
+                >
+                <el-button @click="resetanswerForm('answerForm')"
+                  >重置</el-button
+                >
               </el-form-item>
             </el-form>
           </div>
@@ -122,7 +172,9 @@
         </el-card>
       </div>
     </el-dialog>
-    <div class="adproblem" @click="dialogue" v-show="configured.length != 0">对话测试</div>
+    <div class="adproblem" @click="dialogue" v-show="configured.length != 0">
+      对话测试
+    </div>
     <div class="digital-box">
       <div class="title">
         对话设置
@@ -188,15 +240,33 @@
       <!-- <div class="basefont">知识库配置</div> -->
       <el-card>
         <div class="dialogNav">
-          <div :class="{ navItem: true, active: activeNav == 1 }" @click="changeNav(1)">我的知识库</div>
-          <div :class="{ navItem: true, active: activeNav == 2 }" @click="changeNav(2)">官方知识库</div>
-          <div :class="{ navItem: true, active: activeNav == 3 }" @click="changeNav(3)">第三方知识库</div>
+          <div
+            :class="{ navItem: true, active: activeNav == 1 }"
+            @click="changeNav(1)"
+          >
+            我的知识库
+          </div>
+          <div
+            :class="{ navItem: true, active: activeNav == 2 }"
+            @click="changeNav(2)"
+          >
+            官方知识库
+          </div>
+          <div
+            :class="{ navItem: true, active: activeNav == 3 }"
+            @click="changeNav(3)"
+          >
+            第三方知识库
+          </div>
         </div>
         <div class="diaContainer">
           <!-- 我的知识库  -->
           <div v-show="activeNav == 1">
             <div class="card-box">
-              <div class="card_items card_list" v-if="knowledgedata.length == 0">
+              <div
+                class="card_items card_list"
+                v-if="knowledgedata.length == 0"
+              >
                 <span>为机器人添加知识库吧，让它可以更加智能～</span>
               </div>
               <div
@@ -208,14 +278,19 @@
               >
                 <div class="card_item">
                   <div class="round-box">
-                    <div class="round" :class="{ roundts: activeitem.includes(item.id) }"></div>
+                    <div
+                      class="round"
+                      :class="{ roundts: activeitem.includes(item.id) }"
+                    ></div>
                   </div>
                   <div class="card_img">
                     <img :src="item.iconUrl" alt="img" />
                   </div>
                   <div class="card_fonts">
                     <div class="card_title">{{ item.name }}</div>
-                    <div class="two_ellipsis card_fos">说明：{{ item.remark }}</div>
+                    <div class="two_ellipsis card_fos">
+                      说明：{{ item.remark }}
+                    </div>
                     <div>时间：{{ item.createTime }}</div>
                   </div>
                 </div>
@@ -247,7 +322,9 @@
                   </div>
                   <div class="card_fonts">
                     <div class="card_title">{{ item.name }}</div>
-                    <div class="two_ellipsis card_fos">说明：{{ item.remark }}</div>
+                    <div class="two_ellipsis card_fos">
+                      说明：{{ item.remark }}
+                    </div>
                     <div>时间：{{ item.createTime }}</div>
                   </div>
                 </div>
@@ -279,7 +356,9 @@
                   </div>
                   <div class="card_fonts">
                     <div class="card_title">{{ item.name }}</div>
-                    <div class="two_ellipsis card_fos">说明：{{ item.remark }}</div>
+                    <div class="two_ellipsis card_fos">
+                      说明：{{ item.remark }}
+                    </div>
                     <div>时间：{{ item.createTime }}</div>
                   </div>
                 </div>
@@ -321,7 +400,7 @@ import {
   addquestion,
   getquestion,
   deleteQuestion,
-  editquestion,
+  editquestion
 } from "@/api/robotCenter";
 import { deleteItem } from "@/utils/requestApi";
 export default {
@@ -346,17 +425,17 @@ export default {
       arrquestion: [],
       problemForm: {
         domains: [],
-        question: "",
+        question: ""
       },
       answerForm: {
         domains: [],
-        answer: "",
+        answer: ""
       },
       activeitem: [],
       configured: [],
       knowledgedata: [],
       officialdata: [],
-      partydata: [],
+      partydata: []
     };
   },
   mounted() {
@@ -369,8 +448,8 @@ export default {
       this.$router.push({
         name: "chatRoom",
         params: {
-          robotId: this.seriesId,
-        },
+          robotId: this.seriesId
+        }
       });
     },
     // 新增问题按钮
@@ -381,15 +460,15 @@ export default {
         (this.problemForm.domains = [
           {
             key: "",
-            value: "",
-          },
+            value: ""
+          }
         ]);
       this.problemForm.question = "";
       this.answerForm.domains = [
         {
           key: "",
-          value: "",
-        },
+          value: ""
+        }
       ];
       this.addstatus = false;
     },
@@ -400,7 +479,7 @@ export default {
           pageNum: 1,
           pageSize: 999,
           robotId: this.seriesId,
-          type: 1,
+          type: 1
         });
         if (res.code == 200) {
           this.knowledgedata = res.rows;
@@ -416,7 +495,7 @@ export default {
           pageNum: 1,
           pageSize: 999,
           robotId: this.seriesId,
-          type: 2,
+          type: 2
         });
         if (res.code == 200) {
           this.officialdata = res.rows;
@@ -432,7 +511,7 @@ export default {
           pageNum: 1,
           pageSize: 999,
           robotId: this.seriesId,
-          type: 3,
+          type: 3
         });
         if (res.code == 200) {
           this.partydata = res.rows;
@@ -445,7 +524,7 @@ export default {
     async getproblemList() {
       try {
         const res = await problemList({
-          id: this.seriesId,
+          id: this.seriesId
         });
         if (res.code == 200) {
           this.problemListData = res.rows;
@@ -461,7 +540,7 @@ export default {
         const res = await getconfiguredList({
           pageNum: 1,
           pageSize: 999,
-          robotId: this.seriesId,
+          robotId: this.seriesId
         });
         if (res.code == 200) {
           this.configured = res.rows;
@@ -472,10 +551,10 @@ export default {
     },
     // 新增问题
     async getaddquestionLists() {
-      var similarQuestion = this.arr.map(function (item) {
+      var similarQuestion = this.arr.map(function(item) {
         return item;
       });
-      var answer = this.arrquestion.map(function (item) {
+      var answer = this.arrquestion.map(function(item) {
         return item;
       });
       console.log(similarQuestion, answer, "this.total");
@@ -513,10 +592,10 @@ export default {
     },
     // 编辑问题
     async getquestionLists() {
-      var similarQuestion = this.arr.map(function (item) {
+      var similarQuestion = this.arr.map(function(item) {
         return item;
       });
-      var answer = this.arrquestion.map(function (item) {
+      var answer = this.arrquestion.map(function(item) {
         return item;
       });
       console.log(this.total, "this.total");
@@ -526,7 +605,7 @@ export default {
             id: this.id,
             question: this.problemForm.question,
             similarQuestion: similarQuestion,
-            answer: answer,
+            answer: answer
           });
           if (res.code == 200) {
             Message.success("编辑成功");
@@ -546,7 +625,7 @@ export default {
     handleClick(id) {
       this.addstatus = false;
       this.id = id;
-      getquestion(id).then((res) => {
+      getquestion(id).then(res => {
         if (res.code == 200) {
           // this.problemForm.domains = res.data.similarQuestion
           var problem = res.data.similarQuestion;
@@ -554,7 +633,7 @@ export default {
           for (let index = 0; index < problem.length; index++) {
             var obj = {
               value: problem[index],
-              key: index,
+              key: index
             };
             arr.push(obj);
           }
@@ -563,7 +642,7 @@ export default {
           for (let index = 0; index < answer.length; index++) {
             var obj = {
               value: answer[index],
-              key: index,
+              key: index
             };
             answerarr.push(obj);
           }
@@ -580,7 +659,7 @@ export default {
     // 删除
     deleteClick(row) {
       deleteItem(() => {
-        deleteQuestion(row.id).then((response) => {
+        deleteQuestion(row.id).then(response => {
           if (response.code === 200) {
             Message.success("删除成功");
             this.getproblemList();
@@ -594,7 +673,7 @@ export default {
       this.addstatus = true;
     },
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           console.log(this.problemListData);
           if (this.id == "") {
@@ -612,11 +691,25 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
       this.arr = [];
+      (this.id = ""),
+        (this.problemForm.domains = [
+          {
+            key: "",
+            value: ""
+          }
+        ]);
+      this.problemForm.question = "";
     },
     // 重置答案
     resetanswerForm(formName) {
       this.$refs[formName].resetFields();
       this.arrquestion = [];
+      this.answerForm.domains = [
+        {
+          key: "",
+          value: ""
+        }
+      ];
     },
     // 删除问题
     removeDomain(item) {
@@ -641,7 +734,7 @@ export default {
       if (e <= 9) {
         this.problemForm.domains.push({
           value: "",
-          key: Date.now(),
+          key: Date.now()
         });
         this.arr.push("");
         console.log(this.arr);
@@ -654,7 +747,7 @@ export default {
       if (e <= 9) {
         this.answerForm.domains.push({
           value: "",
-          key: Date.now(),
+          key: Date.now()
         });
         this.arrquestion.push("");
       } else {
@@ -693,9 +786,9 @@ export default {
       console.log(this.activeitem, 54444);
       var obj = {
         libraryId: this.activeitem.length == 0 ? [-1] : this.activeitem,
-        robotId: this.seriesId,
+        robotId: this.seriesId
       };
-      addConfiguration(obj).then((res) => {
+      addConfiguration(obj).then(res => {
         if (res.code == 200) {
           this.getconfiguredLists();
         }
@@ -705,7 +798,7 @@ export default {
     // 知识库配种
     knowledgebasetrue() {
       this.knowledgebase = true;
-      var id = this.configured.map(function (item) {
+      var id = this.configured.map(function(item) {
         return item.id;
       });
       this.activeitem = id;
@@ -715,8 +808,8 @@ export default {
     knowledgebasfalse() {
       this.knowledgebase = false;
       this.getconfiguredLists();
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
@@ -1009,5 +1102,11 @@ export default {
 }
 .el-form-item__content {
   text-align: left;
+}
+.similarity .is-required:nth-child(2) .probutton {
+  display: none;
+}
+.demo-dynamic .is-required:nth-child(1) .aynbutton {
+  display: none;
 }
 </style>

@@ -6,37 +6,45 @@
       </div>
       <div class="rightInfo">
         <div class="title">
-          <span class="ellipsis titleName">{{data.name}}</span>
+          <span class="ellipsis titleName">{{ data.name }}</span>
           <div
-            v-show="$route.name == 'myKnowledge' && data.isUsed "
+            v-show="$route.name == 'myKnowledge' && data.isUsed"
             class="myBtn myBtn_success myBtn_plain"
-          >已使用</div>
+          >
+            已使用
+          </div>
         </div>
         <div class="info">
           <div class="infoItem">
             <span class="label">说明：</span>
-            <span class="content two_ellipsis">{{data.remark}}</span>
+            <span class="content two_ellipsis">{{ data.remark }}</span>
           </div>
           <div class="infoItem ellipsis">
             <span class="label">时间：</span>
-            <span class="content ellipsis">{{data.createTime}}</span>
+            <span class="content ellipsis">{{ data.createTime }}</span>
           </div>
         </div>
       </div>
     </div>
     <div class="belowBtn">
       <div class="btnContain" v-show="$route.name == 'myKnowledge'">
-        <div class="littleBtn myBtn_primary" @click="createContent(data.id)">创建内容</div>
+        <div class="littleBtn myBtn_primary" @click="createContent(data.id)">
+          创建内容
+        </div>
         <div
           v-show="!data.releaseStatus"
           class="littleBtn myBtn_waring"
-          @click="editReleaseStatus(data.id,1)"
-        >发布</div>
+          @click="editReleaseStatus(data.id, 1)"
+        >
+          发布
+        </div>
         <div
           v-show="data.releaseStatus"
           class="littleBtn myBtn_info"
-          @click="editReleaseStatus(data.id,0)"
-        >取消发布</div>
+          @click="editReleaseStatus(data.id, 0)"
+        >
+          取消发布
+        </div>
       </div>
       <div class="rightIcon">
         <el-dropdown @command="handleCommand">
@@ -46,11 +54,16 @@
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item :command="'1-' + data.id">体验</el-dropdown-item>
-            <el-dropdown-item v-if="$route.name == 'myKnowledge'" :command="'2-' + data.id">编辑</el-dropdown-item>
+            <el-dropdown-item
+              v-if="$route.name == 'myKnowledge'"
+              :command="'2-' + data.id"
+              >编辑</el-dropdown-item
+            >
             <el-dropdown-item
               v-if="$route.name == 'myKnowledge'"
               :command="'3-' + data.id + '-' + data.releaseStatus"
-            >删除</el-dropdown-item>
+              >删除</el-dropdown-item
+            >
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -69,12 +82,13 @@ export default {
   methods: {
     // 创建内容
     createContent(id) {
+      localStorage.setItem("accessid", id);
       this.$router.push({
         path: "/createContent",
         name: "createContent",
         params: {
-          id,
-        },
+          id
+        }
       });
     },
     // 修改发布状态
@@ -90,7 +104,7 @@ export default {
           this.$router.push({
             path: "/chatRoom",
             name: "chatRoom",
-            params: { id },
+            params: { id }
           });
           break;
         case 2:
@@ -105,8 +119,8 @@ export default {
         default:
           break;
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

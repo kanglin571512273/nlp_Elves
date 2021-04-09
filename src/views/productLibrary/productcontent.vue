@@ -23,8 +23,8 @@
               <div class="header">创建产品内容</div>
               <el-form-item label="产品库内容名称：" prop="productContentName">
                 <el-input
-                  v-model="ruleForm.productContentName"
-                  placeholder="请输入产品库类型"
+                  v-model.trim="ruleForm.productContentName"
+                  placeholder="请输入产品内容名称"
                   maxlength="20"
                   show-word-limit
                   clearable
@@ -32,7 +32,7 @@
               </el-form-item>
               <el-form-item label="产品库内容说明：">
                 <el-input
-                  v-model="ruleForm.productContentDesc"
+                  v-model.trim="ruleForm.productContentDesc"
                   type="textarea"
                   :rows="2"
                   placeholder="请输入产品库说明"
@@ -81,7 +81,7 @@
                   <!-- <el-button size="small" type="primary">点击上传</el-button> -->
                   <div class="upload">点击上传</div>
                   <div slot="tip" class="el-upload__tip">
-                    只能上传xlsx文件，且不超过500kb
+                    只能上传xlsx文件
                   </div>
                 </el-upload>
                 <div class="upload-box">
@@ -211,7 +211,7 @@ export default {
       },
       rules: {
         productContentName: [
-          { required: true, message: "请输入产品库类型", trigger: "blur" },
+          { required: true, message: "请输入产品内容名称", trigger: "blur" },
           { min: 1, max: 20, message: "长度在 1 到 20 个字符", trigger: "blur" }
         ]
       },
@@ -290,18 +290,20 @@ export default {
     // 删除
     deleteClick(row) {
       var num = this.total % 10;
-      deletecontentList(row.id).then(response => {
-        if (response.code === 200) {
-          Message.success("删除成功");
-          if (num == 1) {
-            this.getList(this.currentPage1 - 1, 10);
-          } else {
-            this.getList(this.currentPage1, 10);
+      deleteItem(() => {
+        deletecontentList(row.id).then(response => {
+          if (response.code === 200) {
+            Message.success("删除成功");
+            if (num == 1) {
+              this.getlists(this.currentPage1 - 1, 10);
+            } else {
+              this.getlists(this.currentPage1, 10);
+            }
+            // this.getList();
+          } else if (response.code === 500) {
+            Message.error(response.msg);
           }
-          // this.getList();
-        } else if (response.code === 500) {
-          Message.error(response.msg);
-        }
+        });
       });
     },
     // 发布
@@ -405,6 +407,8 @@ export default {
                 Message.success("新增成功");
                 this.dialogFormVisible = false;
                 this.getlists(this.currentPage1, 10);
+              } else if (response.code == 500) {
+                Message.error(response.msg);
               }
             });
           } else {
@@ -414,6 +418,8 @@ export default {
                 this.dialogFormVisible = false;
                 this.getlists(this.currentPage1, 10);
                 // this.getList();
+              } else if (response.code == 500) {
+                Message.error(response.msg);
               }
             });
           }
@@ -527,7 +533,6 @@ export default {
   position: relative;
 }
 .pagination {
-  width: 500px;
   float: right;
   margin: 20px 0;
 }

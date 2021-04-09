@@ -477,7 +477,7 @@ export default {
     };
   },
   mounted() {
-    this.id = this.$route.params.id;
+    this.id = localStorage.getItem("accessid");
     var token = localStorage.getItem("token");
     this.src = this.src + this.id + "/" + token;
     console.log(this.id);
